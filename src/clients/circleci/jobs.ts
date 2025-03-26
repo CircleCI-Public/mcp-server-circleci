@@ -1,4 +1,4 @@
-import { CircleCIClient } from './index.js';
+import { HTTPClient } from './HTTPClient.js';
 
 interface JobDetails {
   web_url: string;
@@ -35,9 +35,14 @@ interface JobDetails {
   stopped_at: string;
 }
 
-export class JobsAPI extends CircleCIClient {
+export class JobsAPI {
+  protected client: HTTPClient;
+
   constructor(token: string) {
-    super(token);
+    this.client = new HTTPClient('https://circleci.com/api/v2', {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    });
   }
 
   /**
@@ -50,7 +55,7 @@ export class JobsAPI extends CircleCIClient {
     projectSlug: string,
     jobNumber: number,
   ): Promise<JobDetails> {
-    const result = await this.get<JobDetails>(
+    const result = await this.client.get<JobDetails>(
       `/project/${projectSlug}/job/${jobNumber}`,
     );
     return result;
