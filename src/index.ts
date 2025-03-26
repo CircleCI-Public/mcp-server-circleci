@@ -1,20 +1,20 @@
 #!/usr/bin/env node
 
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { CCI_HANDLERS, CCI_TOOLS, ToolHandler } from "./tools.js";
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { CCI_HANDLERS, CCI_TOOLS, ToolHandler } from './tools.js';
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const packageJson = JSON.parse(
-  fs.readFileSync(path.join(__dirname, "..", "package.json"), "utf8")
+  fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8'),
 );
 
 const server = new McpServer(
   {
-    name: "mcp-server-circleci",
+    name: 'mcp-server-circleci',
     version: packageJson.version,
   },
   {
@@ -22,7 +22,7 @@ const server = new McpServer(
       tools: {},
       resources: {},
     },
-  }
+  },
 );
 
 // Register tools
@@ -36,7 +36,7 @@ CCI_TOOLS.forEach((tool) => {
     tool.name,
     tool.description,
     { params: tool.inputSchema },
-    handler as ToolHandler<typeof tool.name>
+    handler as ToolHandler<typeof tool.name>,
   );
 });
 
@@ -50,6 +50,6 @@ async function main() {
 }
 
 main().catch((error: unknown) => {
-  console.error("Server error:", error);
+  console.error('Server error:', error);
   process.exit(1);
 });

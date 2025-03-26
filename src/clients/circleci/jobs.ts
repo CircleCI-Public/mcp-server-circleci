@@ -1,6 +1,6 @@
 import { HTTPClient } from './HTTPClient.js';
 
-interface JobDetails {
+type JobDetails = {
   web_url: string;
   project: {
     slug: string;
@@ -33,7 +33,7 @@ interface JobDetails {
   };
   queued_at: string;
   stopped_at: string;
-}
+};
 
 export class JobsAPI {
   protected client: HTTPClient;
