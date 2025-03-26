@@ -1,89 +1,104 @@
-import axios, { AxiosInstance } from 'axios';
 import { JobsAPI } from './jobs.js';
 
 export class CircleCIClient {
-  protected client: AxiosInstance;
   protected baseURL = 'https://circleci.com/api/v2';
+  protected headers: HeadersInit;
   public jobs: JobsAPI;
 
   constructor(token: string) {
-    this.client = axios.create({
-      baseURL: this.baseURL,
-      headers: {
-        'Circle-Token': token,
-        'Content-Type': 'application/json',
-      },
-    });
+    this.headers = {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    };
 
     this.jobs = new JobsAPI(token);
+  }
 
-    // Add response interceptor for error handling
-    this.client.interceptors.response.use(
-      (response) => response,
-      (error) => {
-        if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
-          throw new Error(
-            `CircleCI API Error: ${error.response.status} - ${error.response.data.message}`,
-          );
-        } else if (error.request) {
-          // The request was made but no response was received
-          throw new Error('No response received from CircleCI API');
-        } else {
-          // Something happened in setting up the request that triggered an Error
-          throw new Error(`Error setting up request: ${error.message}`);
-        }
-      },
-    );
+  /**
+   * Helper method to handle API responses
+   */
+  protected async handleResponse<T>(response: Response): Promise<T> {
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      if (response.status >= 400 && response.status < 600) {
+        throw new Error(
+          `CircleCI API Error: ${response.status} - ${errorData.message || response.statusText}`,
+        );
+      }
+      throw new Error('No response received from CircleCI API');
+    }
+    return response.json() as Promise<T>;
   }
 
   /**
    * Helper method to make GET requests
    */
-  protected async get<T>(
-    path: string,
-    params?: Record<string, any>,
-  ): Promise<T> {
-    const response = await this.client.get<T>(path, { params });
-    return response.data;
+  protected async get<T>(path: string, params?: Record<string, any>) {
+    const url = new URL(`${this.baseURL}${path}`);
+    if (params) {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) {
+          url.searchParams.append(key, String(value));
+        }
+      });
+    }
+
+    const response = await fetch(url.toString(), {
+      method: 'GET',
+      headers: this.headers,
+    });
+
+    return this.handleResponse<T>(response);
   }
 
   /**
    * Helper method to make POST requests
    */
-  protected async post<T>(
-    path: string,
-    data?: Record<string, any>,
-  ): Promise<T> {
-    const response = await this.client.post<T>(path, data);
-    return response.data;
+  protected async post<T>(path: string, data?: Record<string, any>) {
+    const response = await fetch(`${this.baseURL}${path}`, {
+      method: 'POST',
+      headers: this.headers,
+      body: data ? JSON.stringify(data) : undefined,
+    });
+
+    return this.handleResponse<T>(response);
   }
 
   /**
    * Helper method to make DELETE requests
    */
-  protected async delete<T>(path: string): Promise<T> {
-    const response = await this.client.delete<T>(path);
-    return response.data;
+  protected async delete<T>(path: string) {
+    const response = await fetch(`${this.baseURL}${path}`, {
+      method: 'DELETE',
+      headers: this.headers,
+    });
+
+    return this.handleResponse<T>(response);
   }
 
   /**
    * Helper method to make PUT requests
    */
-  protected async put<T>(path: string, data?: Record<string, any>): Promise<T> {
-    const response = await this.client.put<T>(path, data);
-    return response.data;
+  protected async put<T>(path: string, data?: Record<string, any>) {
+    const response = await fetch(`${this.baseURL}${path}`, {
+      method: 'PUT',
+      headers: this.headers,
+      body: data ? JSON.stringify(data) : undefined,
+    });
+
+    return this.handleResponse<T>(response);
   }
 
   /**
    * Helper method to make PATCH requests
    */
-  protected async patch<T>(
-    path: string,
-    data?: Record<string, any>,
-  ): Promise<T> {
-    const response = await this.client.patch<T>(path, data);
-    return response.data;
+  protected async patch<T>(path: string, data?: Record<string, any>) {
+    const response = await fetch(`${this.baseURL}${path}`, {
+      method: 'PATCH',
+      headers: this.headers,
+      body: data ? JSON.stringify(data) : undefined,
+    });
+
+    return this.handleResponse<T>(response);
   }
 }

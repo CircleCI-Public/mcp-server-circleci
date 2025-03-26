@@ -50,6 +50,9 @@ export class JobsAPI extends CircleCIClient {
     projectSlug: string,
     jobNumber: number,
   ): Promise<JobDetails> {
-    return this.get<JobDetails>(`/project/${projectSlug}/job/${jobNumber}`);
+    const result = await this.get<JobDetails>(
+      `/project/${projectSlug}/job/${jobNumber}`,
+    );
+    return result;
   }
 }
