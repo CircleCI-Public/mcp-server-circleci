@@ -1,0 +1,47 @@
+{
+  "name": "@circleci/mcp-server-circleci",
+  "version": "0.1.0",
+  "description": "TBD",
+  "private": true,
+  "type": "module",
+  "access": "public",
+  "license": "Apache-2.0",
+  "bin": {
+    "mcp-server-circleci": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
+  "packageManager": "pnpm@10.7.0",
+  "scripts": {
+    "build": "rm -rf dist && tsc && shx chmod +x dist/*.js",
+    "watch": "nodemon --watch . --ext ts,json --exec npm run build",
+    "inspector": "npx @modelcontextprotocol/inspector node ./dist/index.js",
+    "tsx": "tsx",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --ext .ts,.js",
+    "lint:fix": "eslint . --ext .ts,.js --fix",
+    "prettier": "prettier --write \"**/*.{ts,js,json}\""
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.8.0",
+    "zod": "^3.24.2",
+    "zod-to-json-schema": "^3.24.3"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "@typescript-eslint/eslint-plugin": "^8.25.0",
+    "@typescript-eslint/parser": "^8.25.0",
+    "eslint": "^9.21.0",
+    "eslint-config-prettier": "^10.0.2",
+    "eslint-plugin-prettier": "^5.2.3",
+    "nodemon": "^3.1.9",
+    "prettier": "^3.5.2",
+    "tsx": "^4.19.3",
+    "typescript": "^5.6.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
