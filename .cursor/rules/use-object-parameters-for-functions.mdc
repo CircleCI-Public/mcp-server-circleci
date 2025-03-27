@@ -3,8 +3,6 @@ description:
 globs: *.tsx,**/*.tsx
 alwaysApply: false
 ---
-Rule Name: use-object-parameters-for-functions.mdc
-Description: 
 Functions should use object parameters instead of positional parameters for better maintainability and readability.
 
 ✅ Good:
