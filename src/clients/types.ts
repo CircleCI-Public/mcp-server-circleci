@@ -1,9 +1,9 @@
 export type Pipeline = {
   id: string;
-  errors: Array<{
+  errors: {
     type: string;
     message: string;
-  }>;
+  }[];
   project_slug: string;
   updated_at: string;
   number: number;
@@ -118,10 +118,10 @@ export type Job = {
     name: string;
     external_url: string;
   };
-  parallel_runs: Array<{
+  parallel_runs: {
     index: number;
     status: string;
-  }>;
+  }[];
   started_at: string;
   latest_workflow?: {
     id: string;
@@ -159,7 +159,7 @@ export type Job = {
 };
 
 export type JobDetails = {
-  all_commit_details: Array<{
+  all_commit_details: {
     author_date: string | null;
     author_email: string;
     author_login: string;
@@ -173,7 +173,7 @@ export type JobDetails = {
     committer_login: string | null;
     committer_name: string | null;
     subject: string;
-  }>;
+  }[];
   all_commit_details_truncated: boolean;
   author_date: string | null;
   author_email: string;
@@ -236,9 +236,9 @@ export type JobDetails = {
   ssh_users: string[];
   start_time: string;
   status: string;
-  steps: Array<{
+  steps: {
     name: string;
-    actions: Array<{
+    actions: {
       index: number;
       step: number;
       allocation_id: string;
@@ -261,8 +261,8 @@ export type JobDetails = {
       infrastructure_fail: boolean | null;
       timedout: boolean | null;
       canceled: boolean | null;
-    }>;
-  }>;
+    }[];
+  }[];
   stop_time: string;
   subject: string;
   timedout: boolean;

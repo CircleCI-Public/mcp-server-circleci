@@ -1,4 +1,4 @@
-import { Job, JobDetails } from '../types.js';
+import { Job } from '../types.js';
 import { HTTPClient } from './httpClient.js';
 import { defaultPaginationOptions } from './index.js';
 
