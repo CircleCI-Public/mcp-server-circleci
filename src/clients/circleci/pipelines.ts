@@ -18,13 +18,18 @@ export class PipelinesAPI {
 
   /**
    * Get most recent page of pipelines
-   * @param projectSlug The project slug (e.g., "gh/CircleCI-Public/api-preview-docs")
+   * @param params Configuration parameters
+   * @param params.projectSlug The project slug (e.g., "gh/CircleCI-Public/api-preview-docs")
+   * @param params.branch Optional branch name to filter pipelines
    * @returns Pipelines
    */
-  async getRecentPipelines(
-    projectSlug: string,
-    branch?: string,
-  ): Promise<Pipeline[]> {
+  async getRecentPipelines({
+    projectSlug,
+    branch,
+  }: {
+    projectSlug: string;
+    branch?: string;
+  }): Promise<Pipeline[]> {
     const result = await this.client.get<PipelineResponse>(
       `/project/${projectSlug}/pipeline`,
       branch ? { branch } : undefined,
@@ -34,22 +39,30 @@ export class PipelinesAPI {
 
   /**
    * Get recent pipelines until a condition is met
-   * @param projectSlug The project slug (e.g., "gh/CircleCI-Public/api-preview-docs")
-   * @param filterFn Function to filter pipelines and determine when to stop fetching
-   * @param options Optional configuration for pagination limits
-   * @param branch Optional branch name to filter pipelines
+   * @param params Configuration parameters
+   * @param params.projectSlug The project slug (e.g., "gh/CircleCI-Public/api-preview-docs")
+   * @param params.filterFn Function to filter pipelines and determine when to stop fetching
+   * @param params.branch Optional branch name to filter pipelines
+   * @param params.options Optional configuration for pagination limits
+   * @param params.options.maxPages Maximum number of pages to fetch (default: 5)
+   * @param params.options.timeoutMs Timeout in milliseconds (default: 10000)
    * @returns Filtered pipelines until the stop condition is met
    * @throws Error if timeout or max pages reached
    */
-  async getFilteredPipelines(
-    projectSlug: string,
-    filterFn: (pipeline: Pipeline) => boolean,
-    branch?: string,
-    options: {
+  async getFilteredPipelines({
+    projectSlug,
+    filterFn,
+    branch,
+    options = {},
+  }: {
+    projectSlug: string;
+    filterFn: (pipeline: Pipeline) => boolean;
+    branch?: string;
+    options?: {
       maxPages?: number;
       timeoutMs?: number;
-    } = {},
-  ): Promise<Pipeline[]> {
+    };
+  }): Promise<Pipeline[]> {
     const {
       maxPages = 5, // Default to 5 pages maximum
       timeoutMs = 10000, // Default 10 second timeout
@@ -101,16 +114,28 @@ export class PipelinesAPI {
     return filteredPipelines;
   }
 
-  async getPipelineByCommit(
-    projectSlug: string,
-    branch: string,
-    commit: string,
-  ): Promise<Pipeline> {
-    const pipelines = await this.getFilteredPipelines(
+  /**
+   * Get a pipeline by commit hash
+   * @param params Configuration parameters
+   * @param params.projectSlug The project slug (e.g., "gh/CircleCI-Public/api-preview-docs")
+   * @param params.branch Branch name
+   * @param params.commit Commit hash to find
+   * @returns Pipeline matching the commit
+   */
+  async getPipelineByCommit({
+    projectSlug,
+    branch,
+    commit,
+  }: {
+    projectSlug: string;
+    branch: string;
+    commit: string;
+  }): Promise<Pipeline> {
+    const pipelines = await this.getFilteredPipelines({
       projectSlug,
-      (pipeline) => pipeline.vcs?.revision === commit,
+      filterFn: (pipeline) => pipeline.vcs?.revision === commit,
       branch,
-    );
+    });
 
     return pipelines[0];
   }

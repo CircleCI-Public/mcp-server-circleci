@@ -13,11 +13,18 @@ export class JobsAPI {
 
   /**
    * Get job details by job number
-   * @param projectSlug The project slug (e.g., "gh/CircleCI-Public/api-preview-docs")
-   * @param jobNumber The number of the job
+   * @param params Configuration parameters
+   * @param params.projectSlug The project slug (e.g., "gh/CircleCI-Public/api-preview-docs")
+   * @param params.jobNumber The number of the job
    * @returns Job details
    */
-  async getJobByNumber(projectSlug: string, jobNumber: number): Promise<Job> {
+  async getJobByNumber({
+    projectSlug,
+    jobNumber,
+  }: {
+    projectSlug: string;
+    jobNumber: number;
+  }): Promise<Job> {
     const result = await this.client.get<Job>(
       `/project/${projectSlug}/job/${jobNumber}`,
     );

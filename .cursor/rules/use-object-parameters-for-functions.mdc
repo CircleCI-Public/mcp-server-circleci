@@ -1,0 +1,48 @@
+---
+description: 
+globs: *.tsx,**/*.tsx
+alwaysApply: false
+---
+Rule Name: use-object-parameters-for-functions.mdc
+Description: 
+Functions should use object parameters instead of positional parameters for better maintainability and readability.
+
+✅ Good:
+```typescript
+/**
+ * Retrieves data from the API
+ * @param params Configuration parameters
+ * @param params.id The unique identifier for the data
+ * @param params.options Optional request configuration
+ * @param params.options.timeout Request timeout in milliseconds
+ * @returns The requested data
+ */
+async function getData({
+  id,
+  options = {},
+}: {
+  id: string;
+  options?: RequestOptions;
+}): Promise<Data> {
+  // ...
+}
+```
+
+❌ Bad:
+```typescript
+async function getData(id: string, options: RequestOptions = {}): Promise<Data> {
+  // ...
+}
+```
+
+Guidelines:
+1. Always use destructured object parameters for functions with:
+   - 2 or more parameters
+   - Optional parameters
+   - Complex parameter types
+2. Include TypeScript interface/type definitions for the parameter object
+3. Use JSDoc with @param params for the container object and @param params.propertyName for each property
+4. Default values should be assigned in the destructuring pattern
+
+Exceptions:
+- Single, required, primitive parameter functions may use positional parameters
