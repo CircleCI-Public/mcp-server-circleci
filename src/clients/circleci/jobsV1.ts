@@ -1,7 +1,7 @@
 import { JobDetails } from '../types.js';
 import { HTTPClient } from './httpClient.js';
 
-export class JobsAPI {
+export class JobsV1API {
   protected client: HTTPClient;
 
   constructor(token: string) {
