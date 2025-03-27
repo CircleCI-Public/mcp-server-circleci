@@ -1,6 +1,11 @@
 import { Pipeline } from '../types.js';
 import { HTTPClient } from './httpClient.js';
 
+type PipelineResponse = {
+  items: Pipeline[];
+  next_page_token: string;
+};
+
 export class PipelinesAPI {
   protected client: HTTPClient;
 
@@ -17,10 +22,9 @@ export class PipelinesAPI {
    * @returns Pipelines
    */
   async getRecentPipelines(projectSlug: string): Promise<Pipeline[]> {
-    // TODO: fix url, add pagination?
-    const result = await this.client.get<Pipeline[]>(
+    const result = await this.client.get<PipelineResponse>(
       `/project/${projectSlug}/pipeline`,
     );
-    return result;
+    return result.items;
   }
 }

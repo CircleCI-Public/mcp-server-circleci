@@ -1,35 +1,71 @@
-// TODO: fix types for pipelines
 export type Pipeline = {
   id: string;
-  projectSlug: string;
-  projectV2?: ProjectV2;
-  state: string;
-  createdAt: string;
-  number: string;
-  workflows: PipelineWorkflow[];
-  branch: string | undefined;
-  tag: string | undefined;
-  commit: PipelineCommit | undefined;
-  vcsRevision: string | undefined;
-  actor: PipelineActor;
-  vcsUrl: string | undefined;
-  messages: PipelineMessage[];
-  triggerType: Trigger;
-  policyDecision?: PolicyDecision;
-  triggerParameters: TriggerParameters;
-  pipelineValues?: PipelineValues;
+  errors: Array<{
+    type: string;
+    message: string;
+  }>;
+  project_slug: string;
+  updated_at: string;
+  number: number;
+  state: 'created' | 'errored' | 'setup-pending' | 'setup' | 'pending';
+  created_at: string;
+  trigger: {
+    type: 'webhook' | 'explicit' | 'api' | 'schedule';
+    received_at: string;
+    actor: {
+      login: string;
+      avatar_url: string;
+    };
+  };
+  vcs?: {
+    provider_name: string;
+    target_repository_url: string;
+    branch?: string;
+    review_id?: string;
+    review_url?: string;
+    revision: string;
+    tag?: string;
+    commit?: {
+      subject: string;
+      body: string;
+    };
+  };
 };
 
-export type JobDetails = {
+export type Workflow = {
+  pipeline_id: string;
+  id: string;
+  name: string;
+  project_slug: string;
+  status:
+    | 'success'
+    | 'running'
+    | 'not_run'
+    | 'failed'
+    | 'error'
+    | 'failing'
+    | 'on_hold'
+    | 'canceled'
+    | 'unauthorized';
+  started_by: string;
+  pipeline_number: number;
+  created_at: string;
+  stopped_at: string;
+};
+
+export type Job = {
   web_url: string;
   project: {
     slug: string;
     name: string;
     external_url: string;
   };
-  parallel_runs: number[];
+  parallel_runs: Array<{
+    index: number;
+    status: string;
+  }>;
   started_at: string;
-  latest_workflow: {
+  latest_workflow?: {
     id: string;
     name: string;
   };
@@ -39,7 +75,16 @@ export type JobDetails = {
     resource_class: string;
   };
   parallelism: number;
-  status: string;
+  status:
+    | 'success'
+    | 'running'
+    | 'not_run'
+    | 'failed'
+    | 'error'
+    | 'failing'
+    | 'on_hold'
+    | 'canceled'
+    | 'unauthorized';
   number: number;
   pipeline: {
     id: string;

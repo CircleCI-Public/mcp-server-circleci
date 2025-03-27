@@ -1,4 +1,4 @@
-import { JobDetails } from '../types.js';
+import { Job } from '../types.js';
 import { HTTPClient } from './httpClient.js';
 
 export class JobsAPI {
@@ -17,11 +17,8 @@ export class JobsAPI {
    * @param jobNumber The number of the job
    * @returns Job details
    */
-  async getJobByNumber(
-    projectSlug: string,
-    jobNumber: number,
-  ): Promise<JobDetails> {
-    const result = await this.client.get<JobDetails>(
+  async getJobByNumber(projectSlug: string, jobNumber: number): Promise<Job> {
+    const result = await this.client.get<Job>(
       `/project/${projectSlug}/job/${jobNumber}`,
     );
     return result;
