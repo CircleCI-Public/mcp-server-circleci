@@ -1,4 +1,4 @@
-import { HTTPClient } from './HTTPClient.js';
+import { HTTPClient } from './httpClient.js';
 
 type JobDetails = {
   web_url: string;

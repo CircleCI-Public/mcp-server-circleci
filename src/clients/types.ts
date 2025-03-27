@@ -1,0 +1,20 @@
+export type Pipeline = {
+  id: string;
+  projectSlug: string;
+  projectV2?: ProjectV2;
+  state: string;
+  createdAt: string;
+  number: string;
+  workflows: PipelineWorkflow[];
+  branch: string | undefined;
+  tag: string | undefined;
+  commit: PipelineCommit | undefined;
+  vcsRevision: string | undefined;
+  actor: PipelineActor;
+  vcsUrl: string | undefined;
+  messages: PipelineMessage[];
+  triggerType: Trigger;
+  policyDecision?: PolicyDecision;
+  triggerParameters: TriggerParameters;
+  pipelineValues?: PipelineValues;
+};
