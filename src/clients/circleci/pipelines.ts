@@ -21,9 +21,13 @@ export class PipelinesAPI {
    * @param projectSlug The project slug (e.g., "gh/CircleCI-Public/api-preview-docs")
    * @returns Pipelines
    */
-  async getRecentPipelines(projectSlug: string): Promise<Pipeline[]> {
+  async getRecentPipelines(
+    projectSlug: string,
+    branch?: string,
+  ): Promise<Pipeline[]> {
     const result = await this.client.get<PipelineResponse>(
       `/project/${projectSlug}/pipeline`,
+      branch ? { branch } : undefined,
     );
     return result.items;
   }
@@ -33,6 +37,7 @@ export class PipelinesAPI {
    * @param projectSlug The project slug (e.g., "gh/CircleCI-Public/api-preview-docs")
    * @param filterFn Function to filter pipelines and determine when to stop fetching
    * @param options Optional configuration for pagination limits
+   * @param branch Optional branch name to filter pipelines
    * @returns Filtered pipelines until the stop condition is met
    * @throws Error if timeout or max pages reached
    */
@@ -43,6 +48,7 @@ export class PipelinesAPI {
       maxPages?: number;
       timeoutMs?: number;
     } = {},
+    branch?: string,
   ): Promise<Pipeline[]> {
     const {
       maxPages = 5, // Default to 5 pages maximum
@@ -65,9 +71,10 @@ export class PipelinesAPI {
         throw new Error(`Maximum number of pages (${maxPages}) reached`);
       }
 
-      const params: { 'page-token'?: string } = nextPageToken
-        ? { 'page-token': nextPageToken }
-        : {};
+      const params: { 'page-token'?: string; branch?: string } = {
+        ...(nextPageToken ? { 'page-token': nextPageToken } : {}),
+        ...(branch ? { branch } : {}),
+      };
       const result: PipelineResponse = await this.client.get<PipelineResponse>(
         `/project/${projectSlug}/pipeline`,
         { params },
