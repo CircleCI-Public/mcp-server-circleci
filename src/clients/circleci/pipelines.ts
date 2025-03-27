@@ -1,5 +1,6 @@
 import { Pipeline } from '../types.js';
 import { HTTPClient } from './httpClient.js';
+import { defaultPaginationOptions } from './index.js';
 
 type PipelineResponse = {
   items: Pipeline[];
@@ -64,8 +65,8 @@ export class PipelinesAPI {
     };
   }): Promise<Pipeline[]> {
     const {
-      maxPages = 5, // Default to 5 pages maximum
-      timeoutMs = 10000, // Default 10 second timeout
+      maxPages = defaultPaginationOptions.maxPages,
+      timeoutMs = defaultPaginationOptions.timeoutMs,
     } = options;
 
     const startTime = Date.now();

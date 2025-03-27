@@ -1,5 +1,6 @@
-import { Job, Workflow } from '../types.js';
+import { Workflow } from '../types.js';
 import { HTTPClient } from './httpClient.js';
+import { defaultPaginationOptions } from './index.js';
 
 type WorkflowResponse = {
   items: Workflow[];
@@ -36,7 +37,10 @@ export class WorkflowsAPI {
       timeoutMs?: number;
     };
   }): Promise<Workflow[]> {
-    const { maxPages = 5, timeoutMs = 10000 } = options;
+    const {
+      maxPages = defaultPaginationOptions.maxPages,
+      timeoutMs = defaultPaginationOptions.timeoutMs,
+    } = options;
 
     const startTime = Date.now();
     const allWorkflows: Workflow[] = [];
