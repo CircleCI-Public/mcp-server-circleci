@@ -17,7 +17,7 @@ export class PipelinesAPI {
   }
 
   /**
-   * Get job details by job number
+   * Get most recent page of pipelines
    * @param projectSlug The project slug (e.g., "gh/CircleCI-Public/api-preview-docs")
    * @returns Pipelines
    */
@@ -44,11 +44,11 @@ export class PipelinesAPI {
   async getFilteredPipelines(
     projectSlug: string,
     filterFn: (pipeline: Pipeline) => boolean,
+    branch?: string,
     options: {
       maxPages?: number;
       timeoutMs?: number;
     } = {},
-    branch?: string,
   ): Promise<Pipeline[]> {
     const {
       maxPages = 5, // Default to 5 pages maximum
@@ -99,5 +99,19 @@ export class PipelinesAPI {
     }
 
     return filteredPipelines;
+  }
+
+  async getPipelineByCommit(
+    projectSlug: string,
+    branch: string,
+    commit: string,
+  ): Promise<Pipeline> {
+    const pipelines = await this.getFilteredPipelines(
+      projectSlug,
+      (pipeline) => pipeline.vcs?.revision === commit,
+      branch,
+    );
+
+    return pipelines[0];
   }
 }
