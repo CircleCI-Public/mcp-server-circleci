@@ -1,7 +1,7 @@
 import { Pipeline } from '../types.js';
 import { HTTPClient } from './httpClient.js';
 
-export class JobsAPI {
+export class PipelinesAPI {
   protected client: HTTPClient;
 
   constructor(token: string) {
@@ -14,10 +14,10 @@ export class JobsAPI {
   /**
    * Get job details by job number
    * @param projectSlug The project slug (e.g., "gh/CircleCI-Public/api-preview-docs")
-   * @param jobNumber The number of the job
-   * @returns Job details
+   * @returns Pipelines
    */
   async getRecentPipelines(projectSlug: string): Promise<Pipeline[]> {
+    // TODO: fix url, add pagination?
     const result = await this.client.get<Pipeline[]>(
       `/project/${projectSlug}/pipeline`,
     );

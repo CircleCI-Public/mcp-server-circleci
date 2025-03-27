@@ -1,39 +1,5 @@
+import { JobDetails } from '../types.js';
 import { HTTPClient } from './httpClient.js';
-
-type JobDetails = {
-  web_url: string;
-  project: {
-    slug: string;
-    name: string;
-    external_url: string;
-  };
-  parallel_runs: number[];
-  started_at: string;
-  latest_workflow: {
-    id: string;
-    name: string;
-  };
-  name: string;
-  executor: {
-    type: string;
-    resource_class: string;
-  };
-  parallelism: number;
-  status: string;
-  number: number;
-  pipeline: {
-    id: string;
-  };
-  duration: number;
-  created_at: string;
-  messages: string[];
-  contexts: string[];
-  organization: {
-    name: string;
-  };
-  queued_at: string;
-  stopped_at: string;
-};
 
 export class JobsAPI {
   protected client: HTTPClient;
