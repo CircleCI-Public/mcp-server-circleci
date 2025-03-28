@@ -12,26 +12,9 @@ export class HTTPClient {
   }
 
   /**
-   * Helper method to handle API responses
+   * Helper method to build URL with query parameters
    */
-  async handleResponse<T>(response: Response): Promise<T> {
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      if (response.status >= 400 && response.status < 600) {
-        throw new Error(
-          `CircleCI API Error: ${response.status} - ${errorData.message || response.statusText}`,
-        );
-      }
-      throw new Error('No response received from CircleCI API');
-    }
-    return response.json() as Promise<T>;
-  }
-
-  /**
-   * Helper method to make GET requests
-   */
-  // TODO: add the param handling from here to the other methods
-  async get<T>(path: string, params?: Record<string, any>) {
+  protected buildURL(path: string, params?: Record<string, any>): URL {
     const url = new URL(`${this.baseURL}${path}`);
     if (params && typeof params === 'object') {
       Object.entries(params).forEach(([key, value]) => {
@@ -48,7 +31,30 @@ export class HTTPClient {
         }
       });
     }
+    return url;
+  }
 
+  /**
+   * Helper method to handle API responses
+   */
+  protected async handleResponse<T>(response: Response): Promise<T> {
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      if (response.status >= 400 && response.status < 600) {
+        throw new Error(
+          `CircleCI API Error: ${response.status} - ${errorData.message || response.statusText}`,
+        );
+      }
+      throw new Error('No response received from CircleCI API');
+    }
+    return response.json() as Promise<T>;
+  }
+
+  /**
+   * Helper method to make GET requests
+   */
+  async get<T>(path: string, params?: Record<string, any>) {
+    const url = this.buildURL(path, params);
     const response = await fetch(url.toString(), {
       method: 'GET',
       headers: this.headers,
@@ -60,8 +66,13 @@ export class HTTPClient {
   /**
    * Helper method to make POST requests
    */
-  async post<T>(path: string, data?: Record<string, any>) {
-    const response = await fetch(`${this.baseURL}${path}`, {
+  async post<T>(
+    path: string,
+    data?: Record<string, any>,
+    params?: Record<string, any>,
+  ) {
+    const url = this.buildURL(path, params);
+    const response = await fetch(url.toString(), {
       method: 'POST',
       headers: this.headers,
       body: data ? JSON.stringify(data) : undefined,
@@ -73,8 +84,9 @@ export class HTTPClient {
   /**
    * Helper method to make DELETE requests
    */
-  async delete<T>(path: string) {
-    const response = await fetch(`${this.baseURL}${path}`, {
+  async delete<T>(path: string, params?: Record<string, any>) {
+    const url = this.buildURL(path, params);
+    const response = await fetch(url.toString(), {
       method: 'DELETE',
       headers: this.headers,
     });
@@ -85,8 +97,13 @@ export class HTTPClient {
   /**
    * Helper method to make PUT requests
    */
-  async put<T>(path: string, data?: Record<string, any>) {
-    const response = await fetch(`${this.baseURL}${path}`, {
+  async put<T>(
+    path: string,
+    data?: Record<string, any>,
+    params?: Record<string, any>,
+  ) {
+    const url = this.buildURL(path, params);
+    const response = await fetch(url.toString(), {
       method: 'PUT',
       headers: this.headers,
       body: data ? JSON.stringify(data) : undefined,
@@ -98,8 +115,13 @@ export class HTTPClient {
   /**
    * Helper method to make PATCH requests
    */
-  async patch<T>(path: string, data?: Record<string, any>) {
-    const response = await fetch(`${this.baseURL}${path}`, {
+  async patch<T>(
+    path: string,
+    data?: Record<string, any>,
+    params?: Record<string, any>,
+  ) {
+    const url = this.buildURL(path, params);
+    const response = await fetch(url.toString(), {
       method: 'PATCH',
       headers: this.headers,
       body: data ? JSON.stringify(data) : undefined,
