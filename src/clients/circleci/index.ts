@@ -3,6 +3,8 @@ import { JobsV1API } from './jobsV1.js';
 import { PipelinesAPI } from './pipelines.js';
 import { WorkflowsAPI } from './workflows.js';
 
+export type TCircleCIClient = InstanceType<typeof CircleCIClients>;
+
 export const defaultPaginationOptions = {
   maxPages: 5,
   timeoutMs: 10000,

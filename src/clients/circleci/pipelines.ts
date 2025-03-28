@@ -138,7 +138,7 @@ export class PipelinesAPI {
     projectSlug: string;
     branch: string;
     commit: string;
-  }): Promise<Pipeline> {
+  }): Promise<Pipeline | undefined> {
     const pipelines = await this.getFilteredPipelines({
       projectSlug,
       filterFn: (pipeline) =>
