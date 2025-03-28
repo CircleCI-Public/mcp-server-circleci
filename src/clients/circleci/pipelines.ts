@@ -48,6 +48,7 @@ export class PipelinesAPI {
    * @param params.options Optional configuration for pagination limits
    * @param params.options.maxPages Maximum number of pages to fetch (default: 5)
    * @param params.options.timeoutMs Timeout in milliseconds (default: 10000)
+   * @param params.options.findFirst Whether to find the first pipeline that matches the filterFn (default: false)
    * @returns Filtered pipelines until the stop condition is met
    * @throws Error if timeout or max pages reached
    */
@@ -63,11 +64,13 @@ export class PipelinesAPI {
     options?: {
       maxPages?: number;
       timeoutMs?: number;
+      findFirst?: boolean;
     };
   }): Promise<Pipeline[]> {
     const {
       maxPages = defaultPaginationOptions.maxPages,
       timeoutMs = defaultPaginationOptions.timeoutMs,
+      findFirst = defaultPaginationOptions.findFirst,
     } = options;
 
     const startTime = Date.now();
@@ -78,12 +81,14 @@ export class PipelinesAPI {
     while (nextPageToken !== undefined) {
       // Check timeout
       if (Date.now() - startTime > timeoutMs) {
-        throw new Error(`Timeout reached after ${timeoutMs}ms`);
+        nextPageToken = undefined;
+        break;
       }
 
       // Check page limit
       if (pageCount >= maxPages) {
-        throw new Error(`Maximum number of pages (${maxPages}) reached`);
+        nextPageToken = undefined;
+        break;
       }
 
       const params = {
@@ -98,18 +103,14 @@ export class PipelinesAPI {
 
       pageCount++;
 
-      console.error(`items count: ${result.items.length}`);
       // Using for...of instead of forEach to allow breaking the loop
-      // when we find a non-matching pipeline. forEach doesn't support break.
-      // TODO: the logic here is broken. we are breaking the loop when we find the first non-matching pipeline.
-
       for (const pipeline of result.items) {
-        console.error(`pipeline: ${pipeline.id}`);
         if (filterFn(pipeline)) {
           filteredPipelines.push(pipeline);
-        } else {
-          nextPageToken = undefined;
-          break;
+          if (findFirst) {
+            nextPageToken = undefined;
+            break;
+          }
         }
       }
 
@@ -145,6 +146,9 @@ export class PipelinesAPI {
         pipeline.trigger_parameters?.git?.checkout_sha === commit ||
         pipeline.vcs?.revision === commit,
       branch,
+      options: {
+        findFirst: true,
+      },
     });
 
     return pipelines[0];

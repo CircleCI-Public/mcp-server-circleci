@@ -6,6 +6,7 @@ import { WorkflowsAPI } from './workflows.js';
 export const defaultPaginationOptions = {
   maxPages: 5,
   timeoutMs: 10000,
+  findFirst: false,
 } as const;
 
 /**
