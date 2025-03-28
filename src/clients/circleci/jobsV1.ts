@@ -1,14 +1,15 @@
 import { JobDetails } from '../types.js';
 import { HTTPClient } from './httpClient.js';
+import { createCircleCIHeaders } from './index.js';
 
 export class JobsV1API {
   protected client: HTTPClient;
 
   constructor(token: string) {
-    this.client = new HTTPClient('https://circleci.com/api/v1.1', {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    });
+    this.client = new HTTPClient(
+      'https://circleci.com/api/v1.1',
+      createCircleCIHeaders({ token }),
+    );
   }
 
   async getJobDetails({

@@ -1,6 +1,6 @@
 import { Job } from '../types.js';
 import { HTTPClient } from './httpClient.js';
-import { defaultPaginationOptions } from './index.js';
+import { createCircleCIHeaders, defaultPaginationOptions } from './index.js';
 
 type WorkflowJobResponse = {
   items: Job[];
@@ -11,10 +11,10 @@ export class JobsAPI {
   protected client: HTTPClient;
 
   constructor(token: string) {
-    this.client = new HTTPClient('https://circleci.com/api/v2', {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    });
+    this.client = new HTTPClient(
+      'https://circleci.com/api/v2',
+      createCircleCIHeaders({ token }),
+    );
   }
 
   /**
