@@ -11,7 +11,13 @@ export class JobsV1API {
       createCircleCIHeaders({ token }),
     );
   }
-
+  /**
+   * Get detailed information about a specific job
+   * @param params Configuration parameters
+   * @param params.projectSlug The project slug (e.g., "gh/CircleCI-Public/api-preview-docs")
+   * @param params.jobNumber The number of the job
+   * @returns Detailed job information including status, timing, and build details
+   */
   async getJobDetails({
     projectSlug,
     jobNumber,
