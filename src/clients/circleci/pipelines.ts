@@ -31,9 +31,10 @@ export class PipelinesAPI {
     projectSlug: string;
     branch?: string;
   }): Promise<Pipeline[]> {
+    const params = branch ? { branch } : undefined;
     const result = await this.client.get<PipelineResponse>(
       `/project/${projectSlug}/pipeline`,
-      branch ? { branch } : undefined,
+      params,
     );
     return result.items;
   }
@@ -85,20 +86,25 @@ export class PipelinesAPI {
         throw new Error(`Maximum number of pages (${maxPages}) reached`);
       }
 
-      const params: { 'page-token'?: string; branch?: string } = {
-        ...(nextPageToken ? { 'page-token': nextPageToken } : {}),
+      const params = {
         ...(branch ? { branch } : {}),
+        ...(nextPageToken ? { 'page-token': nextPageToken } : {}),
       };
+
       const result: PipelineResponse = await this.client.get<PipelineResponse>(
         `/project/${projectSlug}/pipeline`,
-        { params },
+        params,
       );
 
       pageCount++;
 
+      console.error(`items count: ${result.items.length}`);
       // Using for...of instead of forEach to allow breaking the loop
       // when we find a non-matching pipeline. forEach doesn't support break.
+      // TODO: the logic here is broken. we are breaking the loop when we find the first non-matching pipeline.
+
       for (const pipeline of result.items) {
+        console.error(`pipeline: ${pipeline.id}`);
         if (filterFn(pipeline)) {
           filteredPipelines.push(pipeline);
         } else {
@@ -134,7 +140,10 @@ export class PipelinesAPI {
   }): Promise<Pipeline> {
     const pipelines = await this.getFilteredPipelines({
       projectSlug,
-      filterFn: (pipeline) => pipeline.vcs?.revision === commit,
+      filterFn: (pipeline) =>
+        pipeline.trigger_parameters?.github_app?.commit_sha === commit ||
+        pipeline.trigger_parameters?.git?.checkout_sha === commit ||
+        pipeline.vcs?.revision === commit,
       branch,
     });
 

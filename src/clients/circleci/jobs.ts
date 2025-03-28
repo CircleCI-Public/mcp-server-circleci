@@ -82,7 +82,7 @@ export class JobsAPI {
       const result: WorkflowJobResponse =
         await this.client.get<WorkflowJobResponse>(
           `/workflow/${workflowId}/job`,
-          { params },
+          params,
         );
 
       pageCount++;

@@ -1,5 +1,6 @@
 import { CircleCIClients } from './clients/circleci/index.js';
 import {
+  getPipelineByCommitInputSchema,
   getPipelineInputSchema,
   nodeVersionInputSchema,
 } from './toolsSchema.js';
@@ -16,6 +17,11 @@ export const CCI_TOOLS = [
     name: 'get_pipeline' as const,
     description: `Get a pipeline by projectSlug`,
     inputSchema: getPipelineInputSchema,
+  },
+  {
+    name: 'get_pipeline_by_commit' as const,
+    description: `Get a pipeline by projectSlug and commit`,
+    inputSchema: getPipelineByCommitInputSchema,
   },
 ];
 
@@ -45,6 +51,22 @@ export const CCI_HANDLERS = {
     });
     return {
       content: [{ type: 'text', text: JSON.stringify(pipeline) }],
+    };
+  },
+  get_pipeline_by_commit: async (args: {
+    params: { projectSlug: string; commit: string; branch: string };
+  }) => {
+    const { projectSlug, commit, branch } = args.params;
+    const pipeline = await circleci.pipelines.getPipelineByCommit({
+      projectSlug,
+      branch,
+      commit,
+    });
+    const returnText = pipeline
+      ? `Pipeline ID: ${pipeline.id}\nBranch: ${branch}\nCommit: ${commit}`
+      : 'no pipeline found';
+    return {
+      content: [{ type: 'text', text: returnText }],
     };
   },
 } satisfies ToolHandlers;

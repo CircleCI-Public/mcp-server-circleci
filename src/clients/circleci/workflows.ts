@@ -61,7 +61,7 @@ export class WorkflowsAPI {
       const params = nextPageToken ? { 'page-token': nextPageToken } : {};
       const result: WorkflowResponse = await this.client.get<WorkflowResponse>(
         `/pipeline/${pipelineId}/workflow`,
-        { params },
+        params,
       );
 
       pageCount++;

@@ -30,12 +30,21 @@ export class HTTPClient {
   /**
    * Helper method to make GET requests
    */
+  // TODO: add the param handling from here to the other methods
   async get<T>(path: string, params?: Record<string, any>) {
     const url = new URL(`${this.baseURL}${path}`);
-    if (params) {
+    if (params && typeof params === 'object') {
       Object.entries(params).forEach(([key, value]) => {
         if (value !== undefined) {
-          url.searchParams.append(key, String(value));
+          if (Array.isArray(value)) {
+            value.forEach((v) => {
+              url.searchParams.append(key, String(v));
+            });
+          } else if (typeof value === 'object') {
+            url.searchParams.append(key, JSON.stringify(value));
+          } else {
+            url.searchParams.append(key, String(value));
+          }
         }
       });
     }
