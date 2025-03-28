@@ -9,7 +9,7 @@ export type TCircleCIClient = InstanceType<typeof CircleCIClients>;
 export const defaultPaginationOptions = {
   maxPages: 5,
   timeoutMs: 10000,
-  findFirst: false,
+  findFirst: true,
 } as const;
 
 /**
