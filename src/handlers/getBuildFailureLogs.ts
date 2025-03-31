@@ -1,6 +1,10 @@
 import { ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { getBuildFailureOutputInputSchema } from '../toolsSchemas/getBuildFailureOutputInputSchema.js';
-import { identifyProjectSlug } from '../lib/project-detection/index.js';
+import {
+  getPipelineNumberFromURL,
+  getProjectSlugFromURL,
+  identifyProjectSlug,
+} from '../lib/project-detection/index.js';
 
 export const getBuildFailureLogs: ToolCallback<{
   params: typeof getBuildFailureOutputInputSchema;
@@ -22,6 +26,11 @@ export const getBuildFailureLogs: ToolCallback<{
   const token = process.env.CIRCLE_TOKEN;
 
   if (failedPipelineURL || failedJobURL) {
+    const projectSlug = getProjectSlugFromURL(failedPipelineURL ?? '');
+    const pipelineNumber = getPipelineNumberFromURL(failedPipelineURL ?? '');
+
+    // TODO: Get the pipeline failure logs using the project slug and pipeline number
+
     return {
       content: [
         {
@@ -34,6 +43,9 @@ export const getBuildFailureLogs: ToolCallback<{
 
           Exited with code exit status 1
           In case of urls.
+
+          Project slug: ${projectSlug}
+          Pipeline number: ${pipelineNumber}
           `,
         },
       ],
