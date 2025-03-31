@@ -7,7 +7,9 @@ type Params = {
   pipelineNumber?: number; // if provided, always use this to fetch the pipeline instead of the branch
 };
 
-const circleci = new CircleCIClients(process.env.CIRCLECI_TOKEN || '');
+const circleci = new CircleCIClients({
+  token: process.env.CIRCLECI_TOKEN || '',
+});
 
 const getBuildLogs = async ({
   projectSlug,
