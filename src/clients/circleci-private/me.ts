@@ -1,6 +1,6 @@
 import { HTTPClient } from '../circleci/httpClient.js';
 
-type FollowedProject = {
+export type FollowedProject = {
   default_branch: string | null;
   id: string;
   name: string;

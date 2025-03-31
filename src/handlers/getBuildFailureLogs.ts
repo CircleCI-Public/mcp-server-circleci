@@ -1,9 +1,10 @@
 import { ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js';
-import * as toolsSchemas from '../toolsSchemas/index.js';
+import { getBuildFailureOutputInputSchema } from '../toolsSchemas/getBuildFailureOutputInputSchema.js';
+import { identifyProjectSlug } from '../lib/project-detection/index.js';
 
 export const getBuildFailureLogs: ToolCallback<{
-  params: typeof toolsSchemas.getBuildFailureOutputInputSchema;
-}> = (args) => {
+  params: typeof getBuildFailureOutputInputSchema;
+}> = async (args) => {
   const {
     workspaceRoot,
     gitRemoteURL,
@@ -14,24 +15,13 @@ export const getBuildFailureLogs: ToolCallback<{
     project_name,
   } = args.params;
 
-  if (workspaceRoot && gitRemoteURL && branch && organization && project_name) {
-    return {
-      content: [
-        {
-          type: 'text' as const,
-          text: `
-          > hungry-panda@0.1.0 build
-          > next buildss
+  if (!process.env.CIRCLE_TOKEN) {
+    throw new Error('CIRCLE_TOKEN is not set');
+  }
 
-          "next buildss" does not exist. Did you mean "next build"?
+  const token = process.env.CIRCLE_TOKEN;
 
-          Exited with code exit status 1
-          In case of non urls.
-          `,
-        },
-      ],
-    };
-  } else if (failedPipelineURL || failedJobURL) {
+  if (failedPipelineURL || failedJobURL) {
     return {
       content: [
         {
@@ -44,6 +34,35 @@ export const getBuildFailureLogs: ToolCallback<{
 
           Exited with code exit status 1
           In case of urls.
+          `,
+        },
+      ],
+    };
+  } else if (
+    workspaceRoot &&
+    gitRemoteURL &&
+    branch &&
+    organization &&
+    project_name
+  ) {
+    const projectSlug = await identifyProjectSlug(token);
+
+    if (!projectSlug) {
+      throw new Error('Project not found');
+    }
+
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: `
+          > hungry-panda@0.1.0 build
+          > next buildss
+
+          "next buildss" does not exist. Did you mean "next build"?
+
+          Exited with code exit status 1
+          In case of non urls.
           `,
         },
       ],
