@@ -16,20 +16,6 @@ export const getBuildFailureOutputInputSchema = z.object({
         'For example: "https://github.com/user/my-project.git"',
     )
     .optional(),
-  organization: z
-    .string()
-    .describe(
-      'The name of the GitHub organization that the project belongs to. ' +
-        'For example: "CircleCI-Public" in "git@github.com:CircleCI-Public/hungry-panda.git"',
-    )
-    .optional(),
-  project_name: z
-    .string()
-    .describe(
-      'The name of the GitHub project that the project belongs to. ' +
-        'For example: "hungry-panda" in "git@github.com:CircleCI-Public/hungry-panda.git"',
-    )
-    .optional(),
   branch: z
     .string()
     .describe(

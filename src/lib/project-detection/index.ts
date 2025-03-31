@@ -1,16 +1,46 @@
 import { CircleCIPrivateClients } from '../../clients/circleci-private/index.js';
+import { getVCSFromHost } from './vcsTool.js';
+import gitUrlParse from 'parse-github-url';
 
-export const identifyProjectSlug = async (token: string) => {
+/**
+ * Identify the project slug from the git remote URL
+ * @param {string} gitRemoteURL - eg: https://github.com/organization/project.git
+ * @returns {string} project slug - eg: gh/organization/project
+ */
+export const identifyProjectSlug = async ({
+  token,
+  gitRemoteURL,
+}: {
+  token: string;
+  gitRemoteURL: string;
+}) => {
   const cciPrivateClients = new CircleCIPrivateClients({
     token,
   });
 
+  const parsedGitURL = gitUrlParse(gitRemoteURL);
+  if (!parsedGitURL?.host) {
+    return null;
+  }
+
+  const vcs = getVCSFromHost(parsedGitURL.host);
+  if (!vcs) {
+    throw new Error(`VCS with host ${parsedGitURL.host} is not handled`);
+  }
+
   const followedProjects = await cciPrivateClients.me.getFollowedProjects();
 
   const project = followedProjects.items.find(
-    (project) => project.name === 'hungry-panda',
+    (followedProject) =>
+      followedProject.name === parsedGitURL.name &&
+      followedProject.vcs_type === vcs.name,
   );
-  return project?.slug;
+
+  if (!project) {
+    return null;
+  }
+
+  return project.slug;
 };
 
 /**

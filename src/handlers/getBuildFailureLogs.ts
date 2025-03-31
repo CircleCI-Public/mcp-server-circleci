@@ -15,8 +15,6 @@ export const getBuildFailureLogs: ToolCallback<{
     branch,
     failedPipelineURL,
     failedJobURL,
-    organization,
-    project_name,
   } = args.params;
 
   if (!process.env.CIRCLE_TOKEN) {
@@ -50,17 +48,27 @@ export const getBuildFailureLogs: ToolCallback<{
         },
       ],
     };
-  } else if (
-    workspaceRoot &&
-    gitRemoteURL &&
-    branch &&
-    organization &&
-    project_name
-  ) {
-    const projectSlug = await identifyProjectSlug(token);
+  } else if (workspaceRoot && gitRemoteURL && branch) {
+    const projectSlug = await identifyProjectSlug({
+      token,
+      gitRemoteURL,
+    });
 
     if (!projectSlug) {
-      throw new Error('Project not found');
+      return {
+        content: [
+          {
+            type: 'text' as const,
+            text: `
+            Project not found. Ask the user to provide the inputs user can provide based on the tool description.
+
+            Project slug: ${projectSlug}
+            Git remote URL: ${gitRemoteURL}
+            Branch: ${branch}
+            `,
+          },
+        ],
+      };
     }
 
     return {
