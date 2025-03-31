@@ -54,6 +54,8 @@ export const getBuildFailureLogs: ToolCallback<{
       gitRemoteURL,
     });
 
+    // TODO: Get the pipeline number from the git remote URL and branch
+
     if (!projectSlug) {
       return {
         content: [
