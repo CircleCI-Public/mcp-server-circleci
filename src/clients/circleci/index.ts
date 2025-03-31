@@ -33,17 +33,31 @@ export function createCircleCIHeaders({
   return headers;
 }
 
-const defaultV2HTTPClient = (token: string) =>
-  new HTTPClient(
-    'https://circleci.com/api/v2',
-    createCircleCIHeaders({ token }),
-  );
+/**
+ * Creates a default HTTP client for the CircleCI API v2
+ * @param token CircleCI API token
+ * @returns HTTP client for CircleCI API v2
+ */
+const defaultV2HTTPClient = (token: string) => {
+  if (!token) {
+    throw new Error('Token is required');
+  }
+  const headers = createCircleCIHeaders({ token });
+  return new HTTPClient('https://circleci.com/api/v2', headers);
+};
 
-const defaultV1HTTPClient = (token: string) =>
-  new HTTPClient(
-    'https://circleci.com/api/v1.1',
-    createCircleCIHeaders({ token }),
-  );
+/**
+ * Creates a default HTTP client for the CircleCI API v1
+ * @param token CircleCI API token
+ * @returns HTTP client for CircleCI API v1
+ */
+const defaultV1HTTPClient = (token: string) => {
+  if (!token) {
+    throw new Error('Token is required');
+  }
+  const headers = createCircleCIHeaders({ token });
+  return new HTTPClient('https://circleci.com/api/v1.1', headers);
+};
 
 export class CircleCIClients {
   public jobs: JobsAPI;
