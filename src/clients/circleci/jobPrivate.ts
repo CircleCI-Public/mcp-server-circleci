@@ -9,6 +9,7 @@ type JobErrorResponse = {
   error: string;
 };
 
+// TODO: move this into circleci-private
 export class JobsPrivate {
   protected client: HTTPClient;
 

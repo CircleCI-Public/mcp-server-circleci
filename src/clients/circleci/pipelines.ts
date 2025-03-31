@@ -245,5 +245,3 @@ export class PipelinesAPI {
     return result;
   }
 }
-
-// TODO: add a function to get a pipeline by projectSlug and pipelineNumber
