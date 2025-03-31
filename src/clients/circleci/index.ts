@@ -1,3 +1,4 @@
+import { HTTPClient } from './httpClient.js';
 import { JobsAPI } from './jobs.js';
 import { JobsV1API } from './jobsV1.js';
 import { PipelinesAPI } from './pipelines.js';
@@ -32,16 +33,36 @@ export function createCircleCIHeaders({
   return headers;
 }
 
+const defaultV2HTTPClient = (token: string) =>
+  new HTTPClient(
+    'https://circleci.com/api/v2',
+    createCircleCIHeaders({ token }),
+  );
+
+const defaultV1HTTPClient = (token: string) =>
+  new HTTPClient(
+    'https://circleci.com/api/v1.1',
+    createCircleCIHeaders({ token }),
+  );
+
 export class CircleCIClients {
   public jobs: JobsAPI;
   public pipelines: PipelinesAPI;
   public workflows: WorkflowsAPI;
   public jobsV1: JobsV1API;
 
-  constructor(token: string) {
-    this.jobs = new JobsAPI(token);
-    this.pipelines = new PipelinesAPI(token);
-    this.workflows = new WorkflowsAPI(token);
-    this.jobsV1 = new JobsV1API(token);
+  constructor({
+    token,
+    v2httpClient = defaultV2HTTPClient(token),
+    v1httpClient = defaultV1HTTPClient(token),
+  }: {
+    token: string;
+    v2httpClient?: HTTPClient;
+    v1httpClient?: HTTPClient;
+  }) {
+    this.jobs = new JobsAPI(v2httpClient);
+    this.pipelines = new PipelinesAPI(v2httpClient);
+    this.workflows = new WorkflowsAPI(v2httpClient);
+    this.jobsV1 = new JobsV1API(v1httpClient);
   }
 }

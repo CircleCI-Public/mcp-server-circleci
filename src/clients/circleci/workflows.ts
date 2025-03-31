@@ -1,6 +1,6 @@
 import { Workflow } from '../types.js';
 import { HTTPClient } from './httpClient.js';
-import { createCircleCIHeaders, defaultPaginationOptions } from './index.js';
+import { defaultPaginationOptions } from './index.js';
 
 type WorkflowResponse = {
   items: Workflow[];
@@ -10,11 +10,8 @@ type WorkflowResponse = {
 export class WorkflowsAPI {
   protected client: HTTPClient;
 
-  constructor(token: string) {
-    this.client = new HTTPClient(
-      'https://circleci.com/api/v2',
-      createCircleCIHeaders({ token }),
-    );
+  constructor(httpClient: HTTPClient) {
+    this.client = httpClient;
   }
 
   /**
