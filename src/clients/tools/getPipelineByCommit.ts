@@ -1,6 +1,8 @@
 import { CircleCIClients } from '../circleci/index.js';
 
-const circleci = new CircleCIClients(process.env.CIRCLECI_TOKEN ?? '');
+const circleci = new CircleCIClients({
+  token: process.env.CIRCLECI_TOKEN ?? '',
+});
 
 export const getPipelineByCommit = async (args: {
   params: { projectSlug: string; commit: string; branch: string };

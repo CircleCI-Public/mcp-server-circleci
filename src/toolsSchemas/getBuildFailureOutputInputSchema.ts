@@ -1,7 +1,5 @@
 import { z } from 'zod';
 
-export const nodeVersionInputSchema = z.object({});
-
 export const getBuildFailureOutputInputSchema = z.object({
   workspaceRoot: z
     .string()
@@ -38,14 +36,4 @@ export const getBuildFailureOutputInputSchema = z.object({
       'The URL of the failed CircleCI job. This should be a link to the job in the CircleCI web app.',
     )
     .optional(),
-});
-
-export const getPipelineInputSchema = z.object({
-  projectSlug: z.string(),
-});
-
-export const getPipelineByCommitInputSchema = z.object({
-  projectSlug: z.string(),
-  commit: z.string(),
-  branch: z.string(),
 });

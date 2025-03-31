@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { CCI_HANDLERS, CCI_TOOLS, ToolHandler } from './tools.js';
+import { CCI_HANDLERS, CCI_TOOLS, ToolHandler } from './circleci-tools.js';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import fs from 'node:fs';
 import path from 'node:path';
