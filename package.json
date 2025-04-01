@@ -29,12 +29,14 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.8.0",
+    "parse-github-url": "^1.0.3",
     "zod": "^3.24.2",
     "zod-to-json-schema": "^3.24.3"
   },
   "devDependencies": {
-    "@types/node": "^22",
     "@eslint/js": "^9.21.0",
+    "@types/node": "^22",
+    "@types/parse-github-url": "^1.0.3",
     "@typescript-eslint/eslint-plugin": "^8.25.0",
     "@typescript-eslint/parser": "^8.25.0",
     "eslint": "^9.21.0",
