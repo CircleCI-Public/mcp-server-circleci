@@ -1,0 +1,66 @@
+version: 2.1
+
+orbs:
+  node: circleci/node@7.1.0
+
+executors:
+  node-executor:
+    docker:
+      - image: cimg/node:22.14
+
+jobs:
+  build:
+    executor: node-executor
+    steps:
+      - checkout
+      - node/install-packages:
+          pkg-manager: pnpm
+          cache-path: node_modules
+          override-ci-command: pnpm install
+      - run:
+          name: Build
+          command: pnpm build
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
+
+  test:
+    executor: node-executor
+    steps:
+      - attach_workspace:
+          at: .
+      - node/install-packages:
+          pkg-manager: pnpm
+          cache-path: node_modules
+          override-ci-command: pnpm install
+      - run:
+          name: Run Tests
+          command: pnpm test
+
+  lint:
+    executor: node-executor
+    steps:
+      - attach_workspace:
+          at: .
+      - node/install-packages:
+          pkg-manager: pnpm
+          cache-path: node_modules
+          override-ci-command: pnpm install
+      - run:
+          name: Run Linting
+          command: pnpm lint
+      - run:
+          name: Type Check
+          command: pnpm typecheck
+
+workflows:
+  build-and-test:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+      - lint:
+          requires:
+            - build
