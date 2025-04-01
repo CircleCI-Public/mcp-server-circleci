@@ -3,7 +3,7 @@ import { HTTPClient } from './httpClient.js';
 import { defaultPaginationOptions } from './index.js';
 import { z } from 'zod';
 
-const PipelineResponseSchema = z.object({
+const PaginatedPipelineResponseSchema = z.object({
   items: z.array(Pipeline),
   next_page_token: z.string(),
 });
@@ -13,30 +13,6 @@ export class PipelinesAPI {
 
   constructor(httpClient: HTTPClient) {
     this.client = httpClient;
-  }
-
-  /**
-   * Get most recent page of pipelines
-   * @param params Configuration parameters
-   * @param params.projectSlug The project slug (e.g., "gh/CircleCI-Public/api-preview-docs")
-   * @param params.branch Optional branch name to filter pipelines
-   * @returns Pipelines
-   */
-  async getRecentPipelines({
-    projectSlug,
-    branch,
-  }: {
-    projectSlug: string;
-    branch?: string;
-  }): Promise<Pipeline[]> {
-    const params = branch ? { branch } : undefined;
-    const rawResult = await this.client.get<unknown>(
-      `/project/${projectSlug}/pipeline`,
-      params,
-    );
-    // Validate the response against our PipelineResponse schema
-    const result = PipelineResponseSchema.parse(rawResult);
-    return result.items;
   }
 
   /**
@@ -52,15 +28,13 @@ export class PipelinesAPI {
    * @returns Filtered pipelines until the stop condition is met
    * @throws Error if timeout or max pages reached
    */
-  async getFilteredPipelines({
+  async getPipelinesByBranch({
     projectSlug,
-    filterFn,
     branch,
     options = {},
   }: {
     projectSlug: string;
-    filterFn: (pipeline: Pipeline) => boolean;
-    branch?: string;
+    branch: string;
     options?: {
       maxPages?: number;
       timeoutMs?: number;
@@ -79,13 +53,11 @@ export class PipelinesAPI {
     let pageCount = 0;
 
     while (nextPageToken !== undefined) {
-      // Check timeout
       if (Date.now() - startTime > timeoutMs) {
         nextPageToken = undefined;
         break;
       }
 
-      // Check page limit
       if (pageCount >= maxPages) {
         nextPageToken = undefined;
         break;
@@ -101,19 +73,16 @@ export class PipelinesAPI {
         params,
       );
 
-      // Validate the response against our PipelineResponse schema
-      const result = PipelineResponseSchema.parse(rawResult);
+      const result = PaginatedPipelineResponseSchema.parse(rawResult);
 
       pageCount++;
 
       // Using for...of instead of forEach to allow breaking the loop
       for (const pipeline of result.items) {
-        if (filterFn(pipeline)) {
-          filteredPipelines.push(pipeline);
-          if (findFirst) {
-            nextPageToken = undefined;
-            break;
-          }
+        filteredPipelines.push(pipeline);
+        if (findFirst) {
+          nextPageToken = undefined;
+          break;
         }
       }
 
@@ -125,35 +94,17 @@ export class PipelinesAPI {
     return filteredPipelines;
   }
 
-  /**
-   * Get a pipeline by commit hash
-   * @param params Configuration parameters
-   * @param params.projectSlug The project slug (e.g., "gh/CircleCI-Public/api-preview-docs")
-   * @param params.branch Branch name
-   * @param params.commit Commit hash to find
-   * @returns Pipeline matching the commit
-   */
-  async getPipelineByCommit({
+  async getPipelineByNumber({
     projectSlug,
-    branch,
-    commit,
+    pipelineNumber,
   }: {
     projectSlug: string;
-    branch: string;
-    commit: string;
+    pipelineNumber: number;
   }): Promise<Pipeline | undefined> {
-    const pipelines = await this.getFilteredPipelines({
-      projectSlug,
-      filterFn: (pipeline) =>
-        pipeline.trigger_parameters?.github_app?.commit_sha === commit ||
-        pipeline.trigger_parameters?.git?.checkout_sha === commit ||
-        pipeline.vcs?.revision === commit,
-      branch,
-      options: {
-        findFirst: true,
-      },
-    });
+    const rawResult = await this.client.get<unknown>(
+      `/project/${projectSlug}/pipeline/${pipelineNumber}`,
+    );
 
-    return pipelines[0];
+    return Pipeline.parse(rawResult);
   }
 }
