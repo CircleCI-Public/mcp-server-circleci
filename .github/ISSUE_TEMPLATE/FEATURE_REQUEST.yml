@@ -1,0 +1,44 @@
+name: '💡 Feature Request'
+description: Have an idea for improving the MCP CircleCI server? Begin by submitting a Feature Request
+title: 'Feature Request: '
+labels: [feature_request]
+# assignees: ''
+body:
+  - type: checkboxes
+    attributes:
+      label: 'Is there an existing issue that is already proposing this?'
+      description: 'Please search [here](https://github.com/CircleCI-Public/mcp-server-circleci/issues?q=is%3Aissue) to see if an issue already exists for the feature you are requesting'
+      options:
+        - label: 'I have searched the existing issues'
+          required: true
+  - type: textarea
+    id: contact
+    attributes:
+      label: 'Is your feature request related to a problem with the MCP CircleCI integration?'
+      description: 'A clear and concise description of what the problem is. This could be related to the Model Context Protocol implementation, CircleCI integration, or server functionality.'
+      placeholder: |
+        I have an issue when trying to...
+        - Integrate with MCP Client enabled Agents (eg: Cursor, Windsurf, Claude Code, etc)
+        - Handle specific model responses
+        - Process certain types of requests
+        - etc.
+    validations:
+      required: false
+  - type: textarea
+    validations:
+      required: true
+    attributes:
+      label: "Describe the solution you'd like"
+      description: "A clear and concise description of what you want to happen. Include any specific MCP or CircleCI features you'd like to see supported."
+  - type: textarea
+    validations:
+      required: true
+    attributes:
+      label: 'Implementation and compatibility considerations'
+      description: "Please describe any considerations around:\n- Compatibility with existing MCP features\n- CircleCI API integration requirements\n- Performance implications\n- Security considerations"
+  - type: textarea
+    validations:
+      required: true
+    attributes:
+      label: 'What is the motivation / use case for this feature?'
+      description: 'Describe the specific use case this would enable for MCP CircleCI integration. For example, how would this improve the development workflow or enhance the integration capabilities?'

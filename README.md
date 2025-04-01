@@ -1,8 +1,8 @@
 # CircleCI MCP Server
 
-[![npm version](https://img.shields.io/npm/v/@circleci/mcp-server-circleci)](https://www.npmjs.com/package/@circleci/mcp-server-circleci)
-[![npm downloads](https://img.shields.io/npm/dt/@circleci/mcp-server-circleci)](https://www.npmjs.com/package/@circleci/mcp-server-circleci)
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache2.0-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub](https://img.shields.io/github/license/CircleCI-Public/mcp-server-circleci)](https://github.com/CircleCI-Public/mcp-server-circleci/blob/main/LICENSE)
+[![CircleCI](https://img.shields.io/circleci/build/gh/CircleCI-Public/mcp-server-circleci/main?logo=circleci&token=5fcb5715c180e9f7d3a076d95779cd88f75d2093)](https://app.circleci.com/pipelines/github/CircleCI-Public/mcp-server-circleci)
+[![npm](https://img.shields.io/npm/v/@circleci/mcp-server-circleci?logo=npm)](https://www.npmjs.com/package/@circleci/mcp-server-circleci)
 
 Model Context Protocol (MCP) is a [new, standardized protocol](https://modelcontextprotocol.io/introduction) for managing context between large language models (LLMs) and external systems. In this repository, we provide an MCP Server for [CircleCI](https://circleci.com).
 
