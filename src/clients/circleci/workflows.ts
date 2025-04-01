@@ -1,13 +1,13 @@
-import { Job } from '../types.js';
+import { Workflow } from '../types.js';
 import { HTTPClient } from './httpClient.js';
 import { defaultPaginationOptions } from './index.js';
 
-type WorkflowJobResponse = {
-  items: Job[];
+type WorkflowResponse = {
+  items: Workflow[];
   next_page_token: string;
 };
 
-export class JobsAPI {
+export class WorkflowsAPI {
   protected client: HTTPClient;
 
   constructor(httpClient: HTTPClient) {
@@ -15,52 +15,32 @@ export class JobsAPI {
   }
 
   /**
-   * Get job details by job number
+   * Get all workflows for a pipeline with pagination support
    * @param params Configuration parameters
-   * @param params.projectSlug The project slug (e.g., "gh/CircleCI-Public/api-preview-docs")
-   * @param params.jobNumber The number of the job
-   * @returns Job details
-   */
-  async getJobByNumber({
-    projectSlug,
-    jobNumber,
-  }: {
-    projectSlug: string;
-    jobNumber: number;
-  }): Promise<Job> {
-    const result = await this.client.get<Job>(
-      `/project/${projectSlug}/job/${jobNumber}`,
-    );
-    return result;
-  }
-
-  /**
-   * Get jobs for a workflow with pagination support
-   * @param params Configuration parameters
-   * @param params.workflowId The ID of the workflow
+   * @param params.pipelineId The pipeline ID
    * @param params.options Optional configuration for pagination limits
    * @param params.options.maxPages Maximum number of pages to fetch (default: 5)
    * @param params.options.timeoutMs Timeout in milliseconds (default: 10000)
-   * @returns All jobs for the workflow
+   * @returns All workflows from the pipeline
    * @throws Error if timeout or max pages reached
    */
-  async getWorkflowJobs({
-    workflowId,
+  async getPipelineWorkflows({
+    pipelineId,
     options = {},
   }: {
-    workflowId: string;
+    pipelineId: string;
     options?: {
       maxPages?: number;
       timeoutMs?: number;
     };
-  }): Promise<Job[]> {
+  }): Promise<Workflow[]> {
     const {
       maxPages = defaultPaginationOptions.maxPages,
       timeoutMs = defaultPaginationOptions.timeoutMs,
     } = options;
 
     const startTime = Date.now();
-    const allJobs: Job[] = [];
+    const allWorkflows: Workflow[] = [];
     let nextPageToken: string | undefined = '';
     let pageCount = 0;
 
@@ -76,17 +56,16 @@ export class JobsAPI {
       }
 
       const params = nextPageToken ? { 'page-token': nextPageToken } : {};
-      const result: WorkflowJobResponse =
-        await this.client.get<WorkflowJobResponse>(
-          `/workflow/${workflowId}/job`,
-          params,
-        );
+      const result: WorkflowResponse = await this.client.get<WorkflowResponse>(
+        `/pipeline/${pipelineId}/workflow`,
+        params,
+      );
 
       pageCount++;
-      allJobs.push(...result.items);
+      allWorkflows.push(...result.items);
       nextPageToken = result.next_page_token || undefined;
     }
 
-    return allJobs;
+    return allWorkflows;
   }
 }

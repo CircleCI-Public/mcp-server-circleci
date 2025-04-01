@@ -12,9 +12,32 @@ export class HTTPClient {
   }
 
   /**
+   * Helper method to build URL with query parameters
+   */
+  protected buildURL(path: string, params?: Record<string, any>): URL {
+    const url = new URL(`${this.baseURL}${path}`);
+    if (params && typeof params === 'object') {
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined) {
+          if (Array.isArray(value)) {
+            value.forEach((v) => {
+              url.searchParams.append(key, String(v));
+            });
+          } else if (typeof value === 'object') {
+            url.searchParams.append(key, JSON.stringify(value));
+          } else {
+            url.searchParams.append(key, String(value));
+          }
+        }
+      });
+    }
+    return url;
+  }
+
+  /**
    * Helper method to handle API responses
    */
-  async handleResponse<T>(response: Response): Promise<T> {
+  protected async handleResponse<T>(response: Response): Promise<T> {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       if (response.status >= 400 && response.status < 600) {
@@ -31,15 +54,7 @@ export class HTTPClient {
    * Helper method to make GET requests
    */
   async get<T>(path: string, params?: Record<string, any>) {
-    const url = new URL(`${this.baseURL}${path}`);
-    if (params) {
-      Object.entries(params).forEach(([key, value]) => {
-        if (value !== undefined) {
-          url.searchParams.append(key, String(value));
-        }
-      });
-    }
-
+    const url = this.buildURL(path, params);
     const response = await fetch(url.toString(), {
       method: 'GET',
       headers: this.headers,
@@ -51,8 +66,13 @@ export class HTTPClient {
   /**
    * Helper method to make POST requests
    */
-  async post<T>(path: string, data?: Record<string, any>) {
-    const response = await fetch(`${this.baseURL}${path}`, {
+  async post<T>(
+    path: string,
+    data?: Record<string, any>,
+    params?: Record<string, any>,
+  ) {
+    const url = this.buildURL(path, params);
+    const response = await fetch(url.toString(), {
       method: 'POST',
       headers: this.headers,
       body: data ? JSON.stringify(data) : undefined,
@@ -64,8 +84,9 @@ export class HTTPClient {
   /**
    * Helper method to make DELETE requests
    */
-  async delete<T>(path: string) {
-    const response = await fetch(`${this.baseURL}${path}`, {
+  async delete<T>(path: string, params?: Record<string, any>) {
+    const url = this.buildURL(path, params);
+    const response = await fetch(url.toString(), {
       method: 'DELETE',
       headers: this.headers,
     });
@@ -76,8 +97,13 @@ export class HTTPClient {
   /**
    * Helper method to make PUT requests
    */
-  async put<T>(path: string, data?: Record<string, any>) {
-    const response = await fetch(`${this.baseURL}${path}`, {
+  async put<T>(
+    path: string,
+    data?: Record<string, any>,
+    params?: Record<string, any>,
+  ) {
+    const url = this.buildURL(path, params);
+    const response = await fetch(url.toString(), {
       method: 'PUT',
       headers: this.headers,
       body: data ? JSON.stringify(data) : undefined,
@@ -89,8 +115,13 @@ export class HTTPClient {
   /**
    * Helper method to make PATCH requests
    */
-  async patch<T>(path: string, data?: Record<string, any>) {
-    const response = await fetch(`${this.baseURL}${path}`, {
+  async patch<T>(
+    path: string,
+    data?: Record<string, any>,
+    params?: Record<string, any>,
+  ) {
+    const url = this.buildURL(path, params);
+    const response = await fetch(url.toString(), {
       method: 'PATCH',
       headers: this.headers,
       body: data ? JSON.stringify(data) : undefined,
