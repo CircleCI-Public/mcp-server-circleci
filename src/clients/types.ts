@@ -112,27 +112,14 @@ export type Workflow = {
 };
 
 export type Job = {
-  web_url: string;
-  project: {
-    slug: string;
-    name: string;
-    external_url: string;
-  };
-  parallel_runs: {
-    index: number;
-    status: string;
-  }[];
+  id: string;
+  job_number: number;
   started_at: string;
-  latest_workflow?: {
-    id: string;
-    name: string;
-  };
+  stopped_at: string;
   name: string;
-  executor: {
-    type: string;
-    resource_class: string;
-  };
-  parallelism: number;
+  project_slug: string;
+  type: string;
+  requires: Record<string, unknown>;
   status:
     | 'success'
     | 'running'
@@ -143,19 +130,7 @@ export type Job = {
     | 'on_hold'
     | 'canceled'
     | 'unauthorized';
-  number: number;
-  pipeline: {
-    id: string;
-  };
-  duration: number;
-  created_at: string;
-  messages: string[];
-  contexts: string[];
-  organization: {
-    name: string;
-  };
-  queued_at: string;
-  stopped_at: string;
+  dependencies: string[]; // TODO: check if this is correct
 };
 
 export type JobDetails = {

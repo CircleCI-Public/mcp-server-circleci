@@ -1,4 +1,5 @@
 import { HTTPClient } from './httpClient.js';
+import { JobsPrivate } from './jobPrivate.js';
 import { JobsAPI } from './jobs.js';
 import { JobsV1API } from './jobsV1.js';
 import { PipelinesAPI } from './pipelines.js';
@@ -9,7 +10,7 @@ export type TCircleCIClient = InstanceType<typeof CircleCIClients>;
 export const defaultPaginationOptions = {
   maxPages: 5,
   timeoutMs: 10000,
-  findFirst: false,
+  findFirst: true,
 } as const;
 
 /**
@@ -66,7 +67,7 @@ export class CircleCIClients {
   public pipelines: PipelinesAPI;
   public workflows: WorkflowsAPI;
   public jobsV1: JobsV1API;
-
+  public jobsPrivate: JobsPrivate;
   constructor({
     token,
     v2httpClient = defaultV2HTTPClient(token),
@@ -80,5 +81,6 @@ export class CircleCIClients {
     this.pipelines = new PipelinesAPI(v2httpClient);
     this.workflows = new WorkflowsAPI(v2httpClient);
     this.jobsV1 = new JobsV1API(v1httpClient);
+    this.jobsPrivate = new JobsPrivate(token);
   }
 }

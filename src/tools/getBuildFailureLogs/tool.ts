@@ -1,4 +1,4 @@
-import { getBuildFailureOutputInputSchema } from '../toolsSchemas/getBuildFailureOutputInputSchema.js';
+import { getBuildFailureOutputInputSchema } from './inputSchema.js';
 
 export const getBuildFailureLogsTool = {
   name: 'get_build_failure_logs' as const,
