@@ -8,8 +8,6 @@ const WorkflowResponseSchema = z.object({
   next_page_token: z.string(),
 });
 
-type WorkflowResponse = z.infer<typeof WorkflowResponseSchema>;
-
 export class WorkflowsAPI {
   protected client: HTTPClient;
 

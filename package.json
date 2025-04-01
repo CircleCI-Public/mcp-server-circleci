@@ -20,8 +20,8 @@
     "inspector": "npx @modelcontextprotocol/inspector node ./dist/index.js",
     "tsx": "tsx",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint . --ext .ts,.js",
-    "lint:fix": "eslint . --ext .ts,.js --fix",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "prettier": "prettier --write \"**/*.{ts,js,json}\"",
     "test": "vitest",
     "test:watch": "vitest watch",
@@ -34,6 +34,7 @@
   },
   "devDependencies": {
     "@types/node": "^22",
+    "@eslint/js": "^9.21.0",
     "@typescript-eslint/eslint-plugin": "^8.25.0",
     "@typescript-eslint/parser": "^8.25.0",
     "eslint": "^9.21.0",

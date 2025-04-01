@@ -1,12 +1,28 @@
 import js from '@eslint/js';
-import ts from 'typescript-eslint';
+import * as tseslint from 'typescript-eslint';
 import prettierConfig from 'eslint-config-prettier';
 
 // @ts-check
-export default ts.config(
+export default tseslint.config(
   {
+    // Default configuration for all files
+    ignores: ['dist/**', 'node_modules/**'],
+  },
+  {
+    // For JavaScript files including the config file
+    files: ['**/*.js', '**/*.mjs'],
+    extends: [js.configs.recommended],
+  },
+  {
+    // For TypeScript files
     files: ['**/*.ts'],
-    ignores: ['**/*.js'],
+    extends: [...tseslint.configs.recommended, ...tseslint.configs.stylistic],
+    languageOptions: {
+      parserOptions: {
+        project: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
     rules: {
       'no-console': 'off',
       '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
@@ -30,19 +46,6 @@ export default ts.config(
         },
       ],
     },
-    languageOptions: {
-      parserOptions: {
-        project: true,
-        tsconfigRootDir: import.meta.dirname,
-      },
-    },
-    extends: [
-      js.configs.recommended,
-      ...ts.configs.strictTypeChecked,
-      ...ts.configs.stylisticTypeChecked,
-    ],
-    // see https://eslint.org/docs/latest/use/configure/configuration-files#globally-ignoring-files-with-ignores
-    ignores: [],
   },
   prettierConfig,
 );

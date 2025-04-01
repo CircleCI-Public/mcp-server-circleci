@@ -8,8 +8,6 @@ const PipelineResponseSchema = z.object({
   next_page_token: z.string(),
 });
 
-type PipelineResponse = z.infer<typeof PipelineResponseSchema>;
-
 export class PipelinesAPI {
   protected client: HTTPClient;
 
