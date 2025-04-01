@@ -1,11 +1,14 @@
-import { Pipeline } from '../types.js';
+import { Pipeline } from '../schemas.js';
 import { HTTPClient } from './httpClient.js';
 import { defaultPaginationOptions } from './index.js';
+import { z } from 'zod';
 
-type PipelineResponse = {
-  items: Pipeline[];
-  next_page_token: string;
-};
+const PipelineResponseSchema = z.object({
+  items: z.array(Pipeline),
+  next_page_token: z.string(),
+});
+
+type PipelineResponse = z.infer<typeof PipelineResponseSchema>;
 
 export class PipelinesAPI {
   protected client: HTTPClient;
@@ -29,10 +32,12 @@ export class PipelinesAPI {
     branch?: string;
   }): Promise<Pipeline[]> {
     const params = branch ? { branch } : undefined;
-    const result = await this.client.get<PipelineResponse>(
+    const rawResult = await this.client.get<unknown>(
       `/project/${projectSlug}/pipeline`,
       params,
     );
+    // Validate the response against our PipelineResponse schema
+    const result = PipelineResponseSchema.parse(rawResult);
     return result.items;
   }
 
@@ -93,10 +98,13 @@ export class PipelinesAPI {
         ...(nextPageToken ? { 'page-token': nextPageToken } : {}),
       };
 
-      const result: PipelineResponse = await this.client.get<PipelineResponse>(
+      const rawResult = await this.client.get<unknown>(
         `/project/${projectSlug}/pipeline`,
         params,
       );
+
+      // Validate the response against our PipelineResponse schema
+      const result = PipelineResponseSchema.parse(rawResult);
 
       pageCount++;
 

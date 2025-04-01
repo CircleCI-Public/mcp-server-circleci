@@ -1,4 +1,4 @@
-import { JobDetails } from '../types.js';
+import { JobDetails } from '../schemas.js';
 import { HTTPClient } from './httpClient.js';
 
 export class JobsV1API {
@@ -21,9 +21,10 @@ export class JobsV1API {
     projectSlug: string;
     jobNumber: number;
   }): Promise<JobDetails> {
-    const result = await this.client.get<JobDetails>(
+    const rawResult = await this.client.get<unknown>(
       `/project/${projectSlug}/${jobNumber}`,
     );
-    return result;
+    // Validate the response against our JobDetails schema
+    return JobDetails.parse(rawResult);
   }
 }

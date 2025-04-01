@@ -1,11 +1,14 @@
-import { Workflow } from '../types.js';
+import { Workflow } from '../schemas.js';
 import { HTTPClient } from './httpClient.js';
 import { defaultPaginationOptions } from './index.js';
+import { z } from 'zod';
 
-type WorkflowResponse = {
-  items: Workflow[];
-  next_page_token: string;
-};
+const WorkflowResponseSchema = z.object({
+  items: z.array(Workflow),
+  next_page_token: z.string(),
+});
+
+type WorkflowResponse = z.infer<typeof WorkflowResponseSchema>;
 
 export class WorkflowsAPI {
   protected client: HTTPClient;
@@ -56,10 +59,13 @@ export class WorkflowsAPI {
       }
 
       const params = nextPageToken ? { 'page-token': nextPageToken } : {};
-      const result: WorkflowResponse = await this.client.get<WorkflowResponse>(
+      const rawResult = await this.client.get<unknown>(
         `/pipeline/${pipelineId}/workflow`,
         params,
       );
+
+      // Validate the response against our WorkflowResponse schema
+      const result = WorkflowResponseSchema.parse(rawResult);
 
       pageCount++;
       allWorkflows.push(...result.items);
