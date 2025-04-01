@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const packageJson = JSON.parse(
-  fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8'),
+  fs.readFileSync(path.join(__dirname, '../..', 'package.json'), 'utf8'),
 );
 
 const server = new McpServer(

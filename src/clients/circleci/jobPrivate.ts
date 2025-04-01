@@ -26,7 +26,7 @@ export class JobsPrivate {
    * @param params.jobNumber The number of the job
    * @returns Detailed job information including status, timing, and build details
    */
-  async getJobDetails({
+  async getStepOutput({
     projectSlug,
     jobNumber,
     taskIndex,
@@ -46,6 +46,9 @@ export class JobsPrivate {
     const error = await this.client.get<JobErrorResponse>(
       `/output/raw/${projectSlug}/${jobNumber}/error/${taskIndex}/${stepId}`,
     );
+
+    console.error('output:\n', output);
+    console.error('error:\n', error);
 
     return {
       output: output.output,

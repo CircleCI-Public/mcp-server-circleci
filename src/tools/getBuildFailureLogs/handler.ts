@@ -1,10 +1,10 @@
 import { ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { getBuildFailureOutputInputSchema } from '../toolsSchemas/getBuildFailureOutputInputSchema.js';
 import {
   getPipelineNumberFromURL,
   getProjectSlugFromURL,
   identifyProjectSlug,
-} from '../lib/project-detection/index.js';
+} from '../../lib/project-detection/index.js';
+import { getBuildFailureOutputInputSchema } from './inputSchema.js';
 
 export const getBuildFailureLogs: ToolCallback<{
   params: typeof getBuildFailureOutputInputSchema;

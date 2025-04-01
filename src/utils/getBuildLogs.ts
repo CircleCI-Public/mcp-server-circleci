@@ -1,5 +1,7 @@
+import { z } from 'zod';
 import { CircleCIClients } from '../clients/circleci/index.js';
 import { Pipeline } from '../clients/types.js';
+import { ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 type Params = {
   projectSlug: string;
@@ -61,7 +63,51 @@ const getBuildLogs = async ({
   );
 
   // TODO: pull out just the useful pieces of jobDetails
-  return jobsDetails;
+  const job = jobsDetails[0];
+  const stepId = job.steps[0].actions[0].step;
+  const index = job.steps[0].actions[0].index;
+  const logs = await circleci.jobsPrivate.getStepOutput({
+    projectSlug,
+    jobNumber: job.build_num,
+    taskIndex: index,
+    stepId,
+  });
+  return logs;
 };
 
 export default getBuildLogs;
+
+export const getBuildLogsInputSchema = z.object({
+  projectSlug: z.string(),
+  branch: z.string(),
+  pipelineNumber: z.number().optional(),
+});
+
+export const getBuildLogsTool = {
+  name: 'get_build_logs' as const,
+  description: 'Get the logs for a build',
+  inputSchema: getBuildLogsInputSchema,
+};
+
+export const getBuildLogsToolFunction: ToolCallback<{
+  params: typeof getBuildLogsInputSchema;
+}> = async (args) => {
+  const { projectSlug, branch, pipelineNumber } = args.params;
+  const logs = await getBuildLogs({
+    projectSlug,
+    branch,
+    pipelineNumber,
+  });
+  return {
+    content: [
+      {
+        type: 'text' as const,
+        text: logs.output,
+      },
+      {
+        type: 'text' as const,
+        text: logs.error,
+      },
+    ],
+  };
+};
