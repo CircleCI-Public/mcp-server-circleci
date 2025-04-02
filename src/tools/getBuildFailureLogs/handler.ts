@@ -18,11 +18,11 @@ export const getBuildFailureLogs: ToolCallback<{
     failedJobURL,
   } = args.params;
 
-  if (!process.env.CIRCLE_TOKEN) {
-    throw new Error('CIRCLE_TOKEN is not set');
+  if (!process.env.CIRCLECI_TOKEN) {
+    throw new Error('CIRCLECI_TOKEN is not set');
   }
 
-  const token = process.env.CIRCLE_TOKEN;
+  const token = process.env.CIRCLECI_TOKEN;
   let projectSlug: string | null | undefined;
   let pipelineNumber: number | undefined;
 
