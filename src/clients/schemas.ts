@@ -166,53 +166,6 @@ const JobSchema = z.object({
   ]),
   id: z.string(),
   dependencies: z.array(z.string()).optional(),
-
-  // Keep optional fields from previous schema that might still be needed
-  // web_url: z.string().optional(),
-  // project: z
-  //   .object({
-  //     slug: z.string(),
-  //     name: z.string(),
-  //     external_url: z.string(),
-  //   })
-  //   .optional(),
-  // parallel_runs: z
-  //   .array(
-  //     z.object({
-  //       index: z.number(),
-  //       status: z.string(),
-  //     }),
-  //   )
-  //   .optional(),
-  // latest_workflow: z
-  //   .object({
-  //     id: z.string(),
-  //     name: z.string(),
-  //   })
-  //   .optional(),
-  // executor: z
-  //   .object({
-  //     type: z.string(),
-  //     resource_class: z.string(),
-  //   })
-  //   .optional(),
-  // parallelism: z.number().optional(),
-  // number: z.number().optional(),
-  // pipeline: z
-  //   .object({
-  //     id: z.string(),
-  //   })
-  //   .optional(),
-  // duration: z.number().optional(),
-  // created_at: z.string().optional(),
-  // messages: z.array(z.string()).optional(),
-  // contexts: z.array(z.string()).optional(),
-  // organization: z
-  //   .object({
-  //     name: z.string(),
-  //   })
-  //   .optional(),
-  // queued_at: z.string().optional(),
 });
 
 const JobDetailsSchema = z.object({
