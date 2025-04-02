@@ -61,7 +61,7 @@ const getJobLogs = async ({
     jobs.map(async (job) => {
       return await circleci.jobsV1.getJobDetails({
         projectSlug,
-        jobNumber: job.job_number, // TODO: temp
+        jobNumber: job.job_number,
       });
     }),
   );
