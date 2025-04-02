@@ -47,7 +47,14 @@ export class HTTPClient {
       }
       throw new Error('No response received from CircleCI API');
     }
-    return response.json() as Promise<T>;
+
+    return response.text().then((text) => {
+      try {
+        return JSON.parse(text) as T;
+      } catch {
+        return text as unknown as T;
+      }
+    });
   }
 
   /**

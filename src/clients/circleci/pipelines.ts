@@ -70,12 +70,16 @@ export class PipelinesAPI {
         params,
       );
 
-      const result = PaginatedPipelineResponseSchema.parse(rawResult);
+      const result = PaginatedPipelineResponseSchema.safeParse(rawResult);
+
+      if (!result.success) {
+        throw new Error('Failed to parse pipeline response');
+      }
 
       pageCount++;
 
       // Using for...of instead of forEach to allow breaking the loop
-      for (const pipeline of result.items) {
+      for (const pipeline of result.data.items) {
         filteredPipelines.push(pipeline);
         if (findFirst) {
           nextPageToken = null;
@@ -83,7 +87,7 @@ export class PipelinesAPI {
         }
       }
 
-      nextPageToken = result.next_page_token;
+      nextPageToken = result.data.next_page_token;
     } while (nextPageToken);
 
     return filteredPipelines;
@@ -100,6 +104,11 @@ export class PipelinesAPI {
       `/project/${projectSlug}/pipeline/${pipelineNumber}`,
     );
 
-    return Pipeline.parse(rawResult);
+    const parsedResult = Pipeline.safeParse(rawResult);
+    if (!parsedResult.success) {
+      throw new Error('Failed to parse pipeline response');
+    }
+
+    return parsedResult.data;
   }
 }

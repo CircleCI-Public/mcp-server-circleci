@@ -19,7 +19,7 @@ export const testJobLogs: ToolCallback<{
       '\n' +
       log.jobNumber +
       '\n' +
-      log.steps.map((step) => step?.stepName + '\n' + step?.logs).join('\n')
+      log.steps.map((step) => step?.stepName + '\n' + JSON.stringify(step?.logs)).join('\n')
     );
   });
 
