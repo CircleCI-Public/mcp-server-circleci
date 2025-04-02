@@ -39,11 +39,7 @@ export const identifyProjectSlug = async ({
       followedProject.vcs_type === vcs.name,
   );
 
-  if (!project) {
-    return null;
-  }
-
-  return project.slug;
+  return project?.slug;
 };
 
 /**

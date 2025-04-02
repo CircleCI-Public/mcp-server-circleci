@@ -1,9 +1,10 @@
 import { CircleCIClients } from '../../clients/circleci/index.js';
 import { Pipeline } from '../../clients/schemas.js';
 import { CircleCIPrivateClients } from '../../clients/circleci-private/index.js';
-type Params = {
+
+export type GetJobLogsParams = {
   projectSlug: string;
-  branch: string;
+  branch?: string;
   pipelineNumber?: number; // if provided, always use this to fetch the pipeline instead of the branch
 };
 
@@ -15,7 +16,11 @@ const circleciPrivate = new CircleCIPrivateClients({
   token: process.env.CIRCLECI_TOKEN || '',
 });
 
-const getJobLogs = async ({ projectSlug, branch, pipelineNumber }: Params) => {
+const getJobLogs = async ({
+  projectSlug,
+  branch,
+  pipelineNumber,
+}: GetJobLogsParams) => {
   let pipeline: Pipeline | undefined;
 
   if (pipelineNumber) {
@@ -23,13 +28,15 @@ const getJobLogs = async ({ projectSlug, branch, pipelineNumber }: Params) => {
       projectSlug,
       pipelineNumber,
     });
-  } else {
+  } else if (branch) {
     const pipelines = await circleci.pipelines.getPipelinesByBranch({
       projectSlug,
       branch,
     });
 
     pipeline = pipelines[0];
+  } else {
+    throw new Error('Either pipelineNumber or branch must be provided');
   }
 
   if (!pipeline) {
@@ -88,7 +95,6 @@ const getJobLogs = async ({ projectSlug, branch, pipelineNumber }: Params) => {
       );
 
       return {
-        jobNumber: job.build_num,
         jobName: job.workflows.job_name,
         steps: stepLogs.filter(Boolean), // Remove any null entries
       };
