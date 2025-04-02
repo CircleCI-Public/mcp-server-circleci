@@ -62,10 +62,10 @@ const getJobLogs = async ({ projectSlug, branch, pipelineNumber }: Params) => {
     }),
   );
 
-  console.error(
-    'jobsDetails steps',
-    JSON.stringify(jobsDetails[0].steps, null, 2),
-  );
+  // console.error(
+  //   'jobsDetails steps',
+  //   JSON.stringify(jobsDetails[0].steps, null, 2),
+  // );
 
   // const tempJobDetails = [jobsDetails[0]]; // TODO: remove this, just for testing
 
@@ -75,8 +75,10 @@ const getJobLogs = async ({ projectSlug, branch, pipelineNumber }: Params) => {
     jobsDetails.map(async (job) => {
       // Get logs for all steps and their actions
       const stepLogs = await Promise.all(
-        job.steps.flatMap((step) =>
-          step.actions.map(async (action) => {
+        job.steps.flatMap((step) => {
+          console.error('mapping over step', step.name);
+          return step.actions.map(async (action) => {
+            console.error('before try catch in step', step.name);
             try {
               const logs = await circleciPrivate.jobs.getStepOutput({
                 projectSlug,
@@ -89,11 +91,12 @@ const getJobLogs = async ({ projectSlug, branch, pipelineNumber }: Params) => {
                 logs,
               };
             } catch (error) {
+              console.error('error in step', step.name, error);
               // Some steps might not have logs, return null in that case
               return null;
             }
-          }),
-        ),
+          });
+        }),
       );
 
       return {
@@ -104,7 +107,7 @@ const getJobLogs = async ({ projectSlug, branch, pipelineNumber }: Params) => {
     }),
   );
 
-  console.error('allLogs', allLogs);
+  // console.error('allLogs', allLogs);
 
   // Example of an item in allLogs:
   // {
