@@ -1,12 +1,7 @@
-import { Pipeline } from '../schemas.js';
+import { PaginatedPipelineResponseSchema, Pipeline } from '../schemas.js';
 import { HTTPClient } from './httpClient.js';
 import { defaultPaginationOptions } from './index.js';
 import { z } from 'zod';
-
-const PaginatedPipelineResponseSchema = z.object({
-  items: z.array(Pipeline),
-  next_page_token: z.string(),
-});
 
 export class PipelinesAPI {
   protected client: HTTPClient;
@@ -49,17 +44,19 @@ export class PipelinesAPI {
 
     const startTime = Date.now();
     const filteredPipelines: Pipeline[] = [];
-    let nextPageToken: string | undefined = '';
+    let nextPageToken: string | null = null;
     let pageCount = 0;
 
-    while (nextPageToken !== undefined) {
+    do {
+      // Check timeout
       if (Date.now() - startTime > timeoutMs) {
-        nextPageToken = undefined;
+        nextPageToken = null;
         break;
       }
 
+      // Check page limit
       if (pageCount >= maxPages) {
-        nextPageToken = undefined;
+        nextPageToken = null;
         break;
       }
 
@@ -81,15 +78,13 @@ export class PipelinesAPI {
       for (const pipeline of result.items) {
         filteredPipelines.push(pipeline);
         if (findFirst) {
-          nextPageToken = undefined;
+          nextPageToken = null;
           break;
         }
       }
 
-      if (nextPageToken !== undefined) {
-        nextPageToken = result.next_page_token || undefined;
-      }
-    }
+      nextPageToken = result.next_page_token;
+    } while (nextPageToken);
 
     return filteredPipelines;
   }

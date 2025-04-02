@@ -24,81 +24,86 @@ const PipelineSchema = z.object({
   state: z.enum(['created', 'errored', 'setup-pending', 'setup', 'pending']),
   created_at: z.string(),
   trigger: z.object({
-    type: z.enum(['webhook', 'explicit', 'api', 'schedule']),
+    type: z.string(),
     received_at: z.string(),
     actor: z.object({
       login: z.string(),
-      avatar_url: z.string(),
+      avatar_url: z.string().nullable(),
     }),
   }),
   trigger_parameters: z
     .object({
       circleci: z
         .object({
-          event_action: z.string(),
-          event_time: z.string(),
-          provider_actor_id: z.string(),
-          provider_name: z.string(),
-          provider_login: z.string(),
-          actor_id: z.string(),
-          event_type: z.string(),
-          trigger_type: z.string(),
+          event_action: z.string().optional(),
+          event_time: z.string().optional(),
+          provider_actor_id: z.string().optional(),
+          provider_name: z.string().optional(),
+          provider_login: z.string().optional(),
+          actor_id: z.string().optional(),
+          event_type: z.string().optional(),
+          trigger_type: z.string().optional(),
         })
-        .optional(),
+        .optional()
+        .nullable(),
       github_app: z
         .object({
-          web_url: z.string(),
-          commit_author_name: z.string(),
-          owner: z.string(),
-          user_id: z.string(),
-          full_ref: z.string(),
-          user_name: z.string(),
-          pull_request_merged: z.string(),
-          forced: z.string(),
-          user_username: z.string(),
-          branch: z.string(),
-          content_ref: z.string(),
-          repo_id: z.string(),
-          commit_title: z.string(),
-          commit_message: z.string(),
-          total_commits_count: z.string(),
-          repo_url: z.string(),
-          user_avatar: z.string(),
-          pull_request_draft: z.string(),
-          ref: z.string(),
-          repo_name: z.string(),
-          commit_author_email: z.string(),
-          checkout_sha: z.string(),
-          commit_timestamp: z.string(),
-          default_branch: z.string(),
-          repo_full_name: z.string(),
-          commit_sha: z.string(),
+          web_url: z.string().optional(),
+          commit_author_name: z.string().optional(),
+          owner: z.string().optional(),
+          user_id: z.string().optional(),
+          full_ref: z.string().optional(),
+          user_name: z.string().optional(),
+          pull_request_merged: z.string().optional(),
+          forced: z.string().optional(),
+          user_username: z.string().optional(),
+          branch: z.string().optional(),
+          content_ref: z.string().optional(),
+          repo_id: z.string().optional(),
+          commit_title: z.string().optional(),
+          commit_message: z.string().optional(),
+          total_commits_count: z.string().optional(),
+          repo_url: z.string().optional(),
+          user_avatar: z.string().optional(),
+          pull_request_draft: z.string().optional(),
+          ref: z.string().optional(),
+          repo_name: z.string().optional(),
+          commit_author_email: z.string().optional(),
+          checkout_sha: z.string().optional(),
+          commit_timestamp: z.string().optional(),
+          default_branch: z.string().optional(),
+          repo_full_name: z.string().optional(),
+          commit_sha: z.string().optional(),
         })
-        .optional(),
+        .optional()
+        .nullable(),
       git: z
         .object({
-          commit_author_name: z.string(),
-          repo_owner: z.string(),
-          branch: z.string(),
-          commit_message: z.string(),
-          repo_url: z.string(),
-          ref: z.string(),
-          author_avatar_url: z.string(),
-          checkout_url: z.string(),
-          author_login: z.string(),
-          repo_name: z.string(),
-          commit_author_email: z.string(),
-          checkout_sha: z.string(),
-          default_branch: z.string(),
+          commit_author_name: z.string().optional(),
+          repo_owner: z.string().optional(),
+          branch: z.string().optional(),
+          commit_message: z.string().optional(),
+          repo_url: z.string().optional(),
+          ref: z.string().optional(),
+          author_avatar_url: z.string().optional(),
+          checkout_url: z.string().optional(),
+          author_login: z.string().optional(),
+          repo_name: z.string().optional(),
+          commit_author_email: z.string().optional(),
+          checkout_sha: z.string().optional(),
+          default_branch: z.string().optional(),
         })
-        .optional(),
+        .optional()
+        .nullable(),
       webhook: z
         .object({
-          body: z.string(),
+          body: z.string().optional(),
         })
-        .optional(),
+        .optional()
+        .nullable(),
     })
-    .optional(),
+    .optional()
+    .nullable(),
   vcs: z
     .object({
       provider_name: z.string(),
@@ -141,31 +146,13 @@ const WorkflowSchema = z.object({
 });
 
 const JobSchema = z.object({
-  web_url: z.string(),
-  project: z.object({
-    slug: z.string(),
-    name: z.string(),
-    external_url: z.string(),
-  }),
-  parallel_runs: z.array(
-    z.object({
-      index: z.number(),
-      status: z.string(),
-    }),
-  ),
+  job_number: z.number(),
+  stopped_at: z.string(),
   started_at: z.string(),
-  latest_workflow: z
-    .object({
-      id: z.string(),
-      name: z.string(),
-    })
-    .optional(),
   name: z.string(),
-  executor: z.object({
-    type: z.string(),
-    resource_class: z.string(),
-  }),
-  parallelism: z.number(),
+  project_slug: z.string().optional(),
+  type: z.string().optional(),
+  requires: z.record(z.unknown()).optional(),
   status: z.enum([
     'success',
     'running',
@@ -177,19 +164,55 @@ const JobSchema = z.object({
     'canceled',
     'unauthorized',
   ]),
-  number: z.number(),
-  pipeline: z.object({
-    id: z.string(),
-  }),
-  duration: z.number(),
-  created_at: z.string(),
-  messages: z.array(z.string()),
-  contexts: z.array(z.string()),
-  organization: z.object({
-    name: z.string(),
-  }),
-  queued_at: z.string(),
-  stopped_at: z.string(),
+  id: z.string(),
+  dependencies: z.array(z.string()).optional(),
+
+  // Keep optional fields from previous schema that might still be needed
+  // web_url: z.string().optional(),
+  // project: z
+  //   .object({
+  //     slug: z.string(),
+  //     name: z.string(),
+  //     external_url: z.string(),
+  //   })
+  //   .optional(),
+  // parallel_runs: z
+  //   .array(
+  //     z.object({
+  //       index: z.number(),
+  //       status: z.string(),
+  //     }),
+  //   )
+  //   .optional(),
+  // latest_workflow: z
+  //   .object({
+  //     id: z.string(),
+  //     name: z.string(),
+  //   })
+  //   .optional(),
+  // executor: z
+  //   .object({
+  //     type: z.string(),
+  //     resource_class: z.string(),
+  //   })
+  //   .optional(),
+  // parallelism: z.number().optional(),
+  // number: z.number().optional(),
+  // pipeline: z
+  //   .object({
+  //     id: z.string(),
+  //   })
+  //   .optional(),
+  // duration: z.number().optional(),
+  // created_at: z.string().optional(),
+  // messages: z.array(z.string()).optional(),
+  // contexts: z.array(z.string()).optional(),
+  // organization: z
+  //   .object({
+  //     name: z.string(),
+  //   })
+  //   .optional(),
+  // queued_at: z.string().optional(),
 });
 
 const JobDetailsSchema = z.object({
@@ -237,7 +260,13 @@ const JobDetailsSchema = z.object({
   is_first_green_build: z.boolean(),
   job_name: z.string().nullable(),
   lifecycle: z.string(),
-  messages: z.array(z.string()),
+  messages: z.array(
+    z.object({
+      message: z.string(),
+      reason: z.string(),
+      type: z.string(),
+    }),
+  ),
   node: z.string().nullable(),
   oss: z.boolean(),
   outcome: z.string(),
@@ -253,11 +282,13 @@ const JobDetailsSchema = z.object({
     }),
   }),
   platform: z.string(),
-  previous: z.object({
-    build_num: z.number(),
-    build_time_millis: z.number(),
-    status: z.string(),
-  }),
+  previous: z
+    .object({
+      build_num: z.number(),
+      build_time_millis: z.number(),
+      status: z.string(),
+    })
+    .nullable(),
   previous_successful_build: z.object({
     build_num: z.number(),
     build_time_millis: z.number(),
@@ -284,7 +315,7 @@ const JobDetailsSchema = z.object({
           type: z.string(),
           start_time: z.string(),
           truncated: z.boolean(),
-          parallel: z.boolean(),
+          parallel: z.boolean().optional(),
           bash_command: z.string().nullable(),
           background: z.boolean(),
           insignificant: z.boolean(),
@@ -309,7 +340,7 @@ const JobDetailsSchema = z.object({
   usage_queued_at: z.string(),
   user: z.object({
     avatar_url: z.string(),
-    id: z.string(),
+    id: z.union([z.string(), z.number()]),
     is_user: z.boolean(),
     login: z.string(),
     name: z.string(),
@@ -335,6 +366,14 @@ const JobDetailsSchema = z.object({
 // Export the schemas and inferred types with the same names as the original types
 export const Pipeline = PipelineSchema;
 export type Pipeline = z.infer<typeof PipelineSchema>;
+
+export const PaginatedPipelineResponseSchema = z.object({
+  items: z.array(Pipeline),
+  next_page_token: z.string().nullable(),
+});
+export type PaginatedPipelineResponse = z.infer<
+  typeof PaginatedPipelineResponseSchema
+>;
 
 export const Workflow = WorkflowSchema;
 export type Workflow = z.infer<typeof WorkflowSchema>;

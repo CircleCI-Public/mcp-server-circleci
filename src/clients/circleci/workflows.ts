@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 const WorkflowResponseSchema = z.object({
   items: z.array(Workflow),
-  next_page_token: z.string(),
+  next_page_token: z.string().nullable(),
 });
 
 export class WorkflowsAPI {
@@ -42,10 +42,10 @@ export class WorkflowsAPI {
 
     const startTime = Date.now();
     const allWorkflows: Workflow[] = [];
-    let nextPageToken: string | undefined = '';
+    let nextPageToken: string | null = null;
     let pageCount = 0;
 
-    while (nextPageToken !== undefined) {
+    do {
       // Check timeout
       if (Date.now() - startTime > timeoutMs) {
         throw new Error(`Timeout reached after ${timeoutMs}ms`);
@@ -67,8 +67,8 @@ export class WorkflowsAPI {
 
       pageCount++;
       allWorkflows.push(...result.items);
-      nextPageToken = result.next_page_token || undefined;
-    }
+      nextPageToken = result.next_page_token;
+    } while (nextPageToken);
 
     return allWorkflows;
   }

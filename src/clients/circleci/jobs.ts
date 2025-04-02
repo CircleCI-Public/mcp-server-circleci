@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 const WorkflowJobResponseSchema = z.object({
   items: z.array(Job),
-  next_page_token: z.string(),
+  next_page_token: z.string().nullable(),
 });
 
 export class JobsAPI {
@@ -63,10 +63,10 @@ export class JobsAPI {
 
     const startTime = Date.now();
     const allJobs: Job[] = [];
-    let nextPageToken: string | undefined = '';
+    let nextPageToken: string | null = null;
     let pageCount = 0;
 
-    while (nextPageToken !== undefined) {
+    do {
       // Check timeout
       if (Date.now() - startTime > timeoutMs) {
         throw new Error(`Timeout reached after ${timeoutMs}ms`);
@@ -88,8 +88,8 @@ export class JobsAPI {
 
       pageCount++;
       allJobs.push(...result.items);
-      nextPageToken = result.next_page_token || undefined;
-    }
+      nextPageToken = result.next_page_token;
+    } while (nextPageToken);
 
     return allJobs;
   }
