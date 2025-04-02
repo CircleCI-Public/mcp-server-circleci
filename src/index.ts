@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { CCI_HANDLERS, CCI_TOOLS, ToolHandler } from './tools.js';
+import { CCI_HANDLERS, CCI_TOOLS, ToolHandler } from './circleci-tools.js';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const packageJson = JSON.parse(
-  fs.readFileSync(path.join(__dirname, '..', 'package.json'), 'utf8'),
+  fs.readFileSync(path.join(__dirname, '../..', 'package.json'), 'utf8'),
 );
 
 const server = new McpServer(
