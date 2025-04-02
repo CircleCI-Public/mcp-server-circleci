@@ -1,12 +1,9 @@
-// import { CircleCIClients } from './clients/circleci/index.js';
 import { ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { getBuildFailureLogsTool } from './tools/getBuildFailureLogs/tool.js';
 import { getBuildFailureLogs } from './tools/getBuildFailureLogs/handler.js';
-import { testJobLogsTool } from './tools/testJobLogs/tool.js';
-import { testJobLogs } from './tools/testJobLogs/handler.js';
 
 // Define the tools with their configurations
-export const CCI_TOOLS = [getBuildFailureLogsTool, testJobLogsTool];
+export const CCI_TOOLS = [getBuildFailureLogsTool];
 
 // Extract the tool names as a union type
 type CCIToolName = (typeof CCI_TOOLS)[number]['name'];
@@ -20,9 +17,6 @@ type ToolHandlers = {
   [K in CCIToolName]: ToolHandler<K>;
 };
 
-// const circleci = new CircleCIClients(process.env.CIRCLECI_TOKEN ?? '');
-
 export const CCI_HANDLERS = {
   get_build_failure_logs: getBuildFailureLogs,
-  test_job_logs: testJobLogs,
 } satisfies ToolHandlers;

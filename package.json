@@ -16,8 +16,9 @@
   "packageManager": "pnpm@10.7.0",
   "scripts": {
     "build": "rm -rf dist && tsc && shx chmod +x dist/*.js",
-    "watch": "nodemon --watch . --ext ts,json --exec npm run build",
+    "watch": "nodemon --watch . --ext ts,json --exec pnpm run build",
     "inspector": "npx @modelcontextprotocol/inspector node ./dist/index.js",
+    "build:inspector": "pnpm run build && npx @modelcontextprotocol/inspector node ./dist/index.js",
     "tsx": "tsx",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
