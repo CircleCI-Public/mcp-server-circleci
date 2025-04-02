@@ -1,7 +1,6 @@
 import { PaginatedPipelineResponseSchema, Pipeline } from '../schemas.js';
 import { HTTPClient } from './httpClient.js';
 import { defaultPaginationOptions } from './index.js';
-import { z } from 'zod';
 
 export class PipelinesAPI {
   protected client: HTTPClient;
