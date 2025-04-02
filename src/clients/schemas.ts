@@ -1,5 +1,15 @@
 import { z } from 'zod';
 
+const FollowedProjectSchema = z.object({
+  default_branch: z.string().nullable(),
+  id: z.string(),
+  name: z.string(),
+  organization_id: z.string(),
+  organization_name: z.string(),
+  slug: z.string(),
+  vcs_type: z.string(),
+});
+
 const PipelineSchema = z.object({
   id: z.string(),
   errors: z.array(
@@ -334,3 +344,6 @@ export type Job = z.infer<typeof JobSchema>;
 
 export const JobDetails = JobDetailsSchema;
 export type JobDetails = z.infer<typeof JobDetailsSchema>;
+
+export const FollowedProject = FollowedProjectSchema;
+export type FollowedProject = z.infer<typeof FollowedProjectSchema>;
