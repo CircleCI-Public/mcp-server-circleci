@@ -3,9 +3,6 @@ version: 2.1
 orbs:
   node: circleci/node@7.1.0
 
-references:
-  version_js: &version_js 1
-
 commands:
   setup:
     steps:
