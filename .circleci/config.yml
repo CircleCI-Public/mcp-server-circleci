@@ -2,7 +2,6 @@ version: 2.1
 
 orbs:
   node: circleci/node@7.1.0
-  web-ui-orb: cci-internal/web-ui-orb@1.0.0
 
 references:
   version_js: &version_js 1
@@ -11,8 +10,7 @@ commands:
   setup:
     steps:
       - checkout
-      - web-ui-orb/restore-js-deps:
-          cache_version: *version_js
+
   login:
     steps:
       - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
