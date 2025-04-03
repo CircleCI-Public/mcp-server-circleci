@@ -1,7 +1,7 @@
 {
   "name": "@circleci/mcp-server-circleci",
   "version": "0.1.0",
-  "description": "TBD",
+  "description": "A Model Context Protocol (MCP) server implementation for CircleCI, enabling natural language interactions with CircleCI functionality through MCP-enabled clients",
   "private": true,
   "type": "module",
   "access": "public",
