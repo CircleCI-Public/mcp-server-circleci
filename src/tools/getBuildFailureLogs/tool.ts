@@ -5,33 +5,22 @@ export const getBuildFailureLogsTool = {
   description: `
     This tool helps debug CircleCI build failures by retrieving failure logs.
 
-    Input options:
-    1. Direct URLs: User can provide the following URLs
-       - CircleCI failed job URL
-       - CircleCI failed pipeline URL
-    
-    2. Project detection: If the user did not provide the URLs, the tool will try to detect the project by providing the following inputs
-       - Workspace root path
-       - Git remote URL.
-       - Branch name
-       - GitHub organization name
-       - GitHub project name
+    Input options (EXACTLY ONE of these two options must be used):
 
-    The tool will:
-    1. Find the relevant build failure
-    2. Extract failure logs and context
-    3. Return formatted debugging output
+    Option 1 - Direct URL (provide ONE of these):
+    - failedJobURL: The URL of the failed CircleCI job (must be provided by the user)
+    - failedPipelineURL: The URL of the failed CircleCI pipeline (must be provided by the user)
 
-    Example:
-    Input: failedJobURL = "https://app.circleci.com/pipelines/github/org/repo/123/jobs/456"
-    Output: Detailed failure logs with context
+    Option 2 - Project Detection (ALL of these must be provided together):
+    - workspaceRoot: The absolute path to the workspace root
+    - gitRemoteURL: The URL of the git remote repository
+    - branch: The name of the current branch
 
-    Note: Requires either:
-    - A CircleCI job/pipeline URL
-    - OR workspace path + git remote URL + branch name + GitHub organization name + GitHub project name
-    
-    Very Important:
-    - Do not hallucinate. Stick the input schema for the tool call.
+    IMPORTANT:
+    - Never call this tool with incomplete parameters
+    - If using Option 1, the URLs MUST be provided by the user - do not attempt to construct or guess URLs
+    - If using Option 2, ALL THREE parameters (workspaceRoot, gitRemoteURL, branch) must be provided
+    - If neither option can be fully satisfied, ask the user for the missing information before making the tool call
     `,
   inputSchema: getBuildFailureOutputInputSchema,
 };

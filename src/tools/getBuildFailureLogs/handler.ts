@@ -27,10 +27,9 @@ export const getBuildFailureLogs: ToolCallback<{
   let pipelineNumber: number | undefined;
 
   if (failedPipelineURL || failedJobURL) {
-    projectSlug = getProjectSlugFromURL(failedPipelineURL ?? '');
-    pipelineNumber = parseInt(
-      getPipelineNumberFromURL(failedPipelineURL ?? ''),
-    );
+    const failedURL = (failedPipelineURL ?? failedJobURL)!;
+    projectSlug = getProjectSlugFromURL(failedURL);
+    pipelineNumber = parseInt(getPipelineNumberFromURL(failedURL));
   } else if (workspaceRoot && gitRemoteURL && branch) {
     projectSlug = await identifyProjectSlug({
       token,
