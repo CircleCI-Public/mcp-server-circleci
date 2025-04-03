@@ -100,6 +100,7 @@ workflows:
             - build
       - publish-release:
           context: npm-registry
+          context: npm-registry-public
           filters:
             branches:
               only: main
