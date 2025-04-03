@@ -99,6 +99,7 @@ workflows:
           requires:
             - build
       - publish-release:
+          context: npm-registry
           filters:
             branches:
               only: main
