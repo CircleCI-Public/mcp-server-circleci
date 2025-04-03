@@ -2,6 +2,20 @@ version: 2.1
 
 orbs:
   node: circleci/node@7.1.0
+  web-ui-orb: cci-internal/web-ui-orb@1.0.0
+
+references:
+  version_js: &version_js 1
+
+commands:
+  setup:
+    steps:
+      - checkout
+      - web-ui-orb/restore-js-deps:
+          cache_version: *version_js
+  login:
+    steps:
+      - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
 
 executors:
   node-executor:
@@ -53,6 +67,31 @@ jobs:
       - run:
           name: Type Check
           command: pnpm typecheck
+  publish-release:
+    executor: node-executor
+    steps:
+      - setup
+      - node/install-packages:
+          pkg-manager: pnpm
+          cache-path: node_modules
+          override-ci-command: pnpm install
+      - attach_workspace:
+          at: .
+      - login
+      - run:
+          name: Publish npm Package
+          command: |
+            name="$(jq --raw-output .name package.json)"
+            version="$(jq --raw-output .version package.json)"
+            full_identifier="$name@$version"
+            echo "Checking for published version..."
+            if [ $(pnpm view $full_identifier --json 2>&1 | jq -s '.[0].type == "error" or .[0].data.dist == null') == "true" ]
+            then
+              echo "Publishing $full_identifier…"
+              pnpm publish
+            else
+              echo "$full_identifier already published. Doing nothing."
+            fi
 
 workflows:
   build-and-test:
@@ -64,3 +103,11 @@ workflows:
       - lint:
           requires:
             - build
+      - publish-release:
+          filters:
+            branches:
+              only: main
+          requires:
+            - build
+            - lint
+            - test
