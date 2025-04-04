@@ -25,8 +25,11 @@
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --write \"**/*.{ts,js,json}\"",
     "test": "vitest",
-    "test:watch": "vitest watch",
-    "test:coverage": "vitest run --coverage"
+    "test:run": "vitest run",
+    "prepublishOnly": "pnpm run build && pnpm run test:run",
+    "bump:patch": "pnpm version patch --no-git-tag-version",
+    "bump:minor": "pnpm version minor --no-git-tag-version",
+    "bump:major": "pnpm version major --no-git-tag-version"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "1.8.0",

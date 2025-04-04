@@ -1,7 +1,7 @@
 # CircleCI MCP Server
 
 [![GitHub](https://img.shields.io/github/license/CircleCI-Public/mcp-server-circleci)](https://github.com/CircleCI-Public/mcp-server-circleci/blob/main/LICENSE)
-[![CircleCI](https://img.shields.io/circleci/build/gh/CircleCI-Public/mcp-server-circleci/main?logo=circleci&token=5fcb5715c180e9f7d3a076d95779cd88f75d2093)](https://app.circleci.com/pipelines/github/CircleCI-Public/mcp-server-circleci)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/CircleCI-Public/mcp-server-circleci/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/CircleCI-Public/mcp-server-circleci/tree/main)
 [![npm](https://img.shields.io/npm/v/@circleci/mcp-server-circleci?logo=npm)](https://www.npmjs.com/package/@circleci/mcp-server-circleci)
 
 Model Context Protocol (MCP) is a [new, standardized protocol](https://modelcontextprotocol.io/introduction) for managing context between large language models (LLMs) and external systems. In this repository, we provide an MCP Server for [CircleCI](https://circleci.com).
@@ -45,10 +45,11 @@ See the guide below for more information on using MCP servers with cursor: https
 ## Supported Tools
 
 - `get_build_failure_logs`
-  
+
   Retrieves detailed failure logs from CircleCI builds. This tool can be used in two ways:
 
   1. Using CircleCI URLs:
+
      - Provide a failed job URL or pipeline URL directly
      - Example: "Get logs from https://app.circleci.com/pipelines/github/org/repo/123"
 
@@ -60,11 +61,13 @@ See the guide below for more information on using MCP servers with cursor: https
      - Example: "Find the latest failed pipeline on my current branch"
 
   The tool returns formatted logs including:
+
   - Job names
   - Step-by-step execution details
   - Failure messages and context
 
   This is particularly useful for:
+
   - Debugging failed builds
   - Analyzing test failures
   - Investigating deployment issues
@@ -75,12 +78,14 @@ See the guide below for more information on using MCP servers with cursor: https
 ## Getting Started
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/CircleCI-Public/mcp-server-circleci.git
    cd mcp-server-circleci
    ```
 
 2. Install dependencies:
+
    ```bash
    pnpm install
    ```
@@ -95,11 +100,13 @@ See the guide below for more information on using MCP servers with cursor: https
 The easiest way to iterate on the MCP Server is using the MCP inspector. You can learn more about the MCP inspector at https://modelcontextprotocol.io/docs/tools/inspector
 
 1. Start the development server:
+
    ```bash
    pnpm watch # Keep this running in one terminal
    ```
 
 2. In a separate terminal, launch the inspector:
+
    ```bash
    pnpm inspector
    ```
@@ -111,6 +118,7 @@ The easiest way to iterate on the MCP Server is using the MCP inspector. You can
 ## Testing
 
 - Run the test suite:
+
   ```bash
   pnpm test
   ```

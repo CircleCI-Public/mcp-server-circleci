@@ -45,7 +45,7 @@ jobs:
           override-ci-command: pnpm install
       - run:
           name: Run Tests
-          command: pnpm test
+          command: pnpm test:run
 
   lint:
     executor: node-executor
@@ -62,6 +62,7 @@ jobs:
       - run:
           name: Type Check
           command: pnpm typecheck
+
   publish-release:
     executor: node-executor
     steps:
@@ -83,7 +84,7 @@ jobs:
             if [ $(pnpm view $full_identifier --json 2>&1 | jq -s '.[0].type == "error" or .[0].data.dist == null') == "true" ]
             then
               echo "Publishing $full_identifier…"
-              pnpm publish
+              pnpm publish --no-git-checks
             else
               echo "$full_identifier already published. Doing nothing."
             fi
