@@ -95,9 +95,6 @@ workflows:
             - build
       - publish-release:
           context: npm-registry-public
-          filters:
-            branches:
-              only: main
           requires:
             - build
             - lint
