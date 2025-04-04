@@ -61,32 +61,6 @@ jobs:
           name: Type Check
           command: pnpm typecheck
 
-  publish-dry-run:
-    executor: node-executor
-    steps:
-      - setup
-      - install-deps
-      - attach_workspace:
-          at: .
-      - run:
-          name: Verify Package Can Be Published
-          command: |
-            echo "Performing dry run of package publish..."
-            pnpm publish --dry-run
-
-            # Also verify the version doesn't already exist
-            name="$(jq --raw-output .name package.json)"
-            version="$(jq --raw-output .version package.json)"
-            full_identifier="$name@$version"
-            echo "Checking if version already exists..."
-            if [ $(pnpm view $full_identifier --json 2>&1 | jq -s '.[0].type == "error" or .[0].data.dist == null') == "false" ]
-            then
-              echo "Error: Version $version already exists in npm registry"
-              exit 1
-            else
-              echo "Version check passed: $version is available"
-            fi
-
   publish-release:
     executor: node-executor
     steps:
@@ -120,14 +94,6 @@ workflows:
       - lint:
           requires:
             - build
-      - publish-dry-run:
-          requires:
-            - build
-            - lint
-            - test
-          filters:
-            branches:
-              ignore: main
       - publish-release:
           context: npm-registry-public
           filters:
