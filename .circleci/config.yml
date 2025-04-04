@@ -10,7 +10,7 @@ commands:
 
   login:
     steps:
-      - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+      - run: echo "//registry.npmjs.org/:_authToken=$NPM_ACCESS_TOKEN" >> ~/.npmrc
 
   install-deps:
     steps:
