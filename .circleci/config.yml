@@ -12,6 +12,13 @@ commands:
     steps:
       - run: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
 
+  install-deps:
+    steps:
+      - node/install-packages:
+          pkg-manager: pnpm
+          cache-path: node_modules
+          override-ci-command: pnpm install
+
 executors:
   node-executor:
     docker:
@@ -22,10 +29,7 @@ jobs:
     executor: node-executor
     steps:
       - checkout
-      - node/install-packages:
-          pkg-manager: pnpm
-          cache-path: node_modules
-          override-ci-command: pnpm install
+      - install-deps
       - run:
           name: Build
           command: pnpm build
@@ -39,10 +43,7 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - node/install-packages:
-          pkg-manager: pnpm
-          cache-path: node_modules
-          override-ci-command: pnpm install
+      - install-deps
       - run:
           name: Run Tests
           command: pnpm test:run
@@ -52,10 +53,7 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - node/install-packages:
-          pkg-manager: pnpm
-          cache-path: node_modules
-          override-ci-command: pnpm install
+      - install-deps
       - run:
           name: Run Linting
           command: pnpm lint
@@ -63,14 +61,37 @@ jobs:
           name: Type Check
           command: pnpm typecheck
 
+  publish-dry-run:
+    executor: node-executor
+    steps:
+      - setup
+      - install-deps
+      - attach_workspace:
+          at: .
+      - run:
+          name: Verify Package Can Be Published
+          command: |
+            echo "Performing dry run of package publish..."
+            pnpm publish --dry-run
+
+            # Also verify the version doesn't already exist
+            name="$(jq --raw-output .name package.json)"
+            version="$(jq --raw-output .version package.json)"
+            full_identifier="$name@$version"
+            echo "Checking if version already exists..."
+            if [ $(pnpm view $full_identifier --json 2>&1 | jq -s '.[0].type == "error" or .[0].data.dist == null') == "false" ]
+            then
+              echo "Error: Version $version already exists in npm registry"
+              exit 1
+            else
+              echo "Version check passed: $version is available"
+            fi
+
   publish-release:
     executor: node-executor
     steps:
       - setup
-      - node/install-packages:
-          pkg-manager: pnpm
-          cache-path: node_modules
-          override-ci-command: pnpm install
+      - install-deps
       - attach_workspace:
           at: .
       - login
@@ -99,6 +120,14 @@ workflows:
       - lint:
           requires:
             - build
+      - publish-dry-run:
+          requires:
+            - build
+            - lint
+            - test
+          filters:
+            branches:
+              ignore: main
       - publish-release:
           context: npm-registry-public
           filters:
