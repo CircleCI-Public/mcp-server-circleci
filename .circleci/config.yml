@@ -76,7 +76,7 @@ jobs:
             version="$(jq --raw-output .version package.json)"
             full_identifier="$name@$version"
             echo "Checking for published version..."
-            if [ $(pnpm view $full_identifier --json 2>&1 | jq -s '.[0].type == "error" or .[0].data.dist == null') == "true" ]; then
+            if ! pnpm view $full_identifier --json > /dev/null 2>&1; then
               echo "Publishing $full_identifier…"
               pnpm publish --no-git-checks
             else
