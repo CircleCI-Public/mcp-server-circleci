@@ -1,11 +1,16 @@
 {
   "name": "@circleci/mcp-server-circleci",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A Model Context Protocol (MCP) server implementation for CircleCI, enabling natural language interactions with CircleCI functionality through MCP-enabled clients",
-  "private": false,
   "type": "module",
   "access": "public",
   "license": "Apache-2.0",
+  "homepage": "https://github.com/CircleCI-Public/mcp-server-circleci/",
+  "bugs": "https://github.com/CircleCI-Public/mcp-server-circleci/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CircleCI-Public/mcp-server-circleci.git"
+  },
   "bin": {
     "mcp-server-circleci": "./dist/index.js"
   },

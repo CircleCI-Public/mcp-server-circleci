@@ -43,3 +43,9 @@ Initial release of the CircleCI MCP Server, enabling natural language interactio
 - Secure handling of CircleCI API tokens
 - Masked sensitive data in log outputs
 - Proper error handling to prevent information leakage
+
+## [0.1.1] - 2024-04-04
+
+### Fixed
+
+- Non functional fixes
