@@ -75,14 +75,14 @@ jobs:
             name="$(jq --raw-output .name package.json)"
             version="$(jq --raw-output .version package.json)"
             full_identifier="$name@$version"
-            echo "Checking for published version..."
-            if [ $(pnpm view $full_identifier --json 2>&1 | jq -s '.[0].type == "error" or .[0].data.dist == null') == "true" ]
-            then
-              echo "Publishing $full_identifier…"
-              pnpm publish --no-git-checks
-            else
-              echo "$full_identifier already published. Doing nothing."
-            fi
+            # echo "Checking for published version..."
+            # if [ $(pnpm view $full_identifier --json 2>&1 | jq -s '.[0].type == "error" or .[0].data.dist == null') == "true" ]
+            # then
+            echo "Publishing $full_identifier…"
+            pnpm publish --no-git-checks
+            # else
+            #   echo "$full_identifier already published. Doing nothing."
+            # fi
 
 workflows:
   build-and-test:
