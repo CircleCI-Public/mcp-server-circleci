@@ -40,6 +40,18 @@ const JobDetailsSchema = z.object({
   }),
 });
 
+const FlakyTestSchema = z.object({
+  flaky_tests: z.array(
+    z.object({
+      job_number: z.number(),
+    }),
+  ),
+  total_flaky_tests: z.number(),
+});
+
+export const FlakyTest = FlakyTestSchema;
+export type FlakyTest = z.infer<typeof FlakyTestSchema>;
+
 // Export the schemas and inferred types with the same names as the original types
 export const Pipeline = PipelineSchema;
 export type Pipeline = z.infer<typeof PipelineSchema>;

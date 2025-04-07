@@ -61,3 +61,25 @@ export const getProjectSlugFromURL = (url: string) => {
   const parts = url.split('/');
   return `${parts[4]}/${parts[5]}/${parts[6]}`;
 };
+
+/**
+ * Get the project slug from the URL
+ * @param {string} url - eg: https://app.circleci.com/pipelines/gh/organization/project
+ * @returns {string} project slug - eg: gh/organization/project
+ */
+export const getProjectSlugFromProjectURL = (url: string) => {
+  const parts = url.split('/');
+  const pipelineIndex = parts.indexOf('pipelines');
+  if (pipelineIndex === -1) {
+    throw new Error('Invalid CircleCI project URL format');
+  }
+  const vcs = parts[pipelineIndex + 1];
+  const org = parts[pipelineIndex + 2];
+  const project = parts[pipelineIndex + 3];
+
+  if (!vcs || !org || !project) {
+    throw new Error('Unable to extract project information from URL');
+  }
+
+  return `${vcs}/${org}/${project}`;
+};

@@ -1,6 +1,7 @@
 import { HTTPClient } from './httpClient.js';
 import { JobsAPI } from './jobs.js';
 import { JobsV1API } from './jobsV1.js';
+import { InsightsAPI } from './insights.js';
 import { PipelinesAPI } from './pipelines.js';
 import { WorkflowsAPI } from './workflows.js';
 
@@ -82,7 +83,7 @@ export class CircleCIClients {
   public pipelines: PipelinesAPI;
   public workflows: WorkflowsAPI;
   public jobsV1: JobsV1API;
-
+  public insights: InsightsAPI;
   constructor({
     token,
     v2httpClient = defaultV2HTTPClient({
@@ -101,5 +102,6 @@ export class CircleCIClients {
     this.pipelines = new PipelinesAPI(v2httpClient);
     this.workflows = new WorkflowsAPI(v2httpClient);
     this.jobsV1 = new JobsV1API(v1httpClient);
+    this.insights = new InsightsAPI(v2httpClient);
   }
 }

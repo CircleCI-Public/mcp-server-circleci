@@ -1,23 +1,16 @@
 import { ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js';
 import {
-  getPipelineNumberFromURL,
-  getProjectSlugFromURL,
+  getProjectSlugFromProjectURL,
   identifyProjectSlug,
 } from '../../lib/project-detection/index.js';
-import { getBuildFailureOutputInputSchema } from './inputSchema.js';
-import getPipelineJobLogs from '../../lib/pipeline-job-logs/getPipelineJobLogs.js';
+import { getFlakyTestLogsInputSchema } from './inputSchema.js';
+import getFlakyTests from '../../lib/flaky-tests/getFlakyTests.js';
 import { formatJobLogs } from '../../lib/getJobLogs.js';
 
-export const getBuildFailureLogs: ToolCallback<{
-  params: typeof getBuildFailureOutputInputSchema;
+export const getFlakyTestLogs: ToolCallback<{
+  params: typeof getFlakyTestLogsInputSchema;
 }> = async (args) => {
-  const {
-    workspaceRoot,
-    gitRemoteURL,
-    branch,
-    failedPipelineURL,
-    failedJobURL,
-  } = args.params;
+  const { workspaceRoot, gitRemoteURL, projectURL } = args.params;
 
   if (!process.env.CIRCLECI_TOKEN) {
     throw new Error('CIRCLECI_TOKEN is not set');
@@ -25,13 +18,10 @@ export const getBuildFailureLogs: ToolCallback<{
 
   const token = process.env.CIRCLECI_TOKEN;
   let projectSlug: string | null | undefined;
-  let pipelineNumber: number | undefined;
 
-  if (failedPipelineURL || failedJobURL) {
-    const failedURL = (failedPipelineURL ?? failedJobURL)!;
-    projectSlug = getProjectSlugFromURL(failedURL);
-    pipelineNumber = parseInt(getPipelineNumberFromURL(failedURL));
-  } else if (workspaceRoot && gitRemoteURL && branch) {
+  if (projectURL) {
+    projectSlug = getProjectSlugFromProjectURL(projectURL);
+  } else if (workspaceRoot && gitRemoteURL) {
     projectSlug = await identifyProjectSlug({
       token,
       gitRemoteURL,
@@ -59,17 +49,14 @@ export const getBuildFailureLogs: ToolCallback<{
 
           Project slug: ${projectSlug}
           Git remote URL: ${gitRemoteURL}
-          Branch: ${branch}
           `,
         },
       ],
     };
   }
 
-  const logs = await getPipelineJobLogs({
+  const logs = await getFlakyTests({
     projectSlug,
-    branch,
-    pipelineNumber,
   });
 
   return formatJobLogs(logs);
