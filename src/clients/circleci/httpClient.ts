@@ -2,8 +2,10 @@ export class HTTPClient {
   protected baseURL: string;
   protected headers: HeadersInit;
 
-  constructor(baseURL: string, headers?: HeadersInit) {
-    this.baseURL = baseURL;
+  constructor(apiPath: string, headers?: HeadersInit) {
+    this.baseURL =
+      (process.env.CIRCLECI_BASE_URL || 'https://circleci.com') + apiPath;
+
     if (headers) {
       this.headers = headers;
     } else {

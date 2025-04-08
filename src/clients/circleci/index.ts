@@ -42,21 +42,13 @@ export function createCircleCIHeaders({
  * @param options.baseURL Base URL for the CircleCI API v2
  * @returns HTTP client for CircleCI API v2
  */
-const defaultV2HTTPClient = (options: { token: string; baseURL?: string }) => {
+const defaultV2HTTPClient = (options: { token: string }) => {
   if (!options.token) {
     throw new Error('Token is required');
   }
-  let baseURL = options.baseURL || process.env.CIRCLECI_BASE_URL;
-  if (!baseURL) {
-    throw new Error('Base URL is required');
-  }
-
-  // Remove trailing slash from baseURL
-  baseURL = baseURL.replace(/\/$/, '');
-  baseURL = `${baseURL}/api/v2`;
 
   const headers = createCircleCIHeaders({ token: options.token });
-  return new HTTPClient(baseURL, headers);
+  return new HTTPClient('/api/v2', headers);
 };
 
 /**
@@ -70,17 +62,9 @@ const defaultV1HTTPClient = (options: { token: string; baseURL?: string }) => {
   if (!options.token) {
     throw new Error('Token is required');
   }
-  let baseURL = options.baseURL || process.env.CIRCLECI_BASE_URL;
-  if (!baseURL) {
-    throw new Error('Base URL is required');
-  }
-
-  // Remove trailing slash from baseURL
-  baseURL = baseURL.replace(/\/$/, '');
-  baseURL = `${baseURL}/api/v1.1`;
 
   const headers = createCircleCIHeaders({ token: options.token });
-  return new HTTPClient(baseURL, headers);
+  return new HTTPClient('/api/v1.1', headers);
 };
 
 /**
@@ -90,6 +74,9 @@ const defaultV1HTTPClient = (options: { token: string; baseURL?: string }) => {
  * @param options.baseURL Base URL for the CircleCI API v2
  */
 export class CircleCIClients {
+  protected apiPathV2 = '/api/v2';
+  protected apiPathV1 = '/api/v1.1';
+
   public jobs: JobsAPI;
   public pipelines: PipelinesAPI;
   public workflows: WorkflowsAPI;
@@ -97,14 +84,11 @@ export class CircleCIClients {
 
   constructor({
     token,
-    baseURL,
     v2httpClient = defaultV2HTTPClient({
       token,
-      baseURL,
     }),
     v1httpClient = defaultV1HTTPClient({
       token,
-      baseURL,
     }),
   }: {
     token: string;

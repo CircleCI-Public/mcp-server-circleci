@@ -10,25 +10,13 @@ import { MeAPI } from './me.js';
  * @param options.baseURL Base URL for the CircleCI API private
  * @returns HTTP client for CircleCI API private
  */
-const defaultPrivateHTTPClient = (options: {
-  token: string;
-  baseURL?: string;
-}) => {
+const defaultPrivateHTTPClient = (options: { token: string }) => {
   if (!options.token) {
     throw new Error('Token is required');
   }
 
-  let baseURL = options.baseURL || process.env.CIRCLECI_BASE_URL;
-  if (!baseURL) {
-    throw new Error('Base URL is required');
-  }
-
-  // Remove trailing slash from baseURL
-  baseURL = baseURL.replace(/\/$/, '');
-  baseURL = `${baseURL}/api/private`;
-
   return new HTTPClient(
-    baseURL,
+    '/api/private',
     createCircleCIHeaders({ token: options.token }),
   );
 };
@@ -38,14 +26,11 @@ export class CircleCIPrivateClients {
   public jobs: JobsPrivate;
   constructor({
     token,
-    baseURL,
     privateHTTPClient = defaultPrivateHTTPClient({
       token,
-      baseURL,
     }),
   }: {
     token: string;
-    baseURL?: string;
     privateHTTPClient?: HTTPClient;
   }) {
     this.me = new MeAPI(privateHTTPClient);

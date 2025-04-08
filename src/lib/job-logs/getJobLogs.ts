@@ -4,25 +4,21 @@ import { CircleCIPrivateClients } from '../../clients/circleci-private/index.js'
 
 export type GetJobLogsParams = {
   projectSlug: string;
-  baseURL?: string;
   branch?: string;
   pipelineNumber?: number; // if provided, always use this to fetch the pipeline instead of the branch
 };
 
 const getJobLogs = async ({
   projectSlug,
-  baseURL,
   branch,
   pipelineNumber,
 }: GetJobLogsParams) => {
   const circleci = new CircleCIClients({
     token: process.env.CIRCLECI_TOKEN || '',
-    baseURL,
   });
 
   const circleciPrivate = new CircleCIPrivateClients({
     token: process.env.CIRCLECI_TOKEN || '',
-    baseURL,
   });
 
   let pipeline: Pipeline | undefined;
