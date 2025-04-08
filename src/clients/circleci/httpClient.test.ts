@@ -3,11 +3,12 @@ import { expect, vi, describe, it, beforeEach, afterEach } from 'vitest';
 
 describe('HTTPClient', () => {
   let client: HTTPClient;
-  const baseURL = 'https://api.example.com';
+  const apiPath = '/api/v2';
   const headers = { 'Content-Type': 'application/json' };
+  const baseURL = 'https://circleci.com' + apiPath;
 
   beforeEach(() => {
-    client = new HTTPClient(baseURL, headers);
+    client = new HTTPClient(apiPath, headers);
     global.fetch = vi.fn();
   });
 
