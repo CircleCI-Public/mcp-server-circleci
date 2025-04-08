@@ -17,7 +17,7 @@ const WorkflowSchema = z.object({
 });
 
 const JobSchema = z.object({
-  job_number: z.number(),
+  job_number: z.number().optional(),
   id: z.string(),
 });
 
