@@ -76,18 +76,32 @@ export const getBuildFailureLogs: ToolCallback<{
       {
         type: 'text' as const,
         text: logs
-          .map(
-            (log) =>
-              log.jobName +
-              '\n' +
-              log.steps
-                .map(
-                  (step) => step?.stepName + '\n' + JSON.stringify(step?.logs),
-                )
-                .join('\n'),
-          )
+          .map((log) => `Job: ${log.jobName}\n` + logStepsText(log))
           .join('\n'),
       },
     ],
   };
+};
+
+type JobLog = {
+  jobName: string;
+  steps: ({
+    stepName: string;
+    logs: {
+      output: string;
+      error: string;
+    };
+  } | null)[];
+};
+
+const logStepsText = (log: JobLog) => {
+  if (log.steps.length === 0) {
+    return 'No failed steps found.';
+  }
+  return log.steps
+    .map(
+      (step) =>
+        `Step: ${step?.stepName}\n` + `Logs: ${JSON.stringify(step?.logs)}`,
+    )
+    .join('\n');
 };

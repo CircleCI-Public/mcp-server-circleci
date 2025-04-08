@@ -58,12 +58,17 @@ const getJobLogs = async ({
   ).flat();
 
   const jobsDetails = await Promise.all(
-    jobs.map(async (job) => {
-      return await circleci.jobsV1.getJobDetails({
-        projectSlug,
-        jobNumber: job.job_number,
-      });
-    }),
+    jobs
+      .filter(
+        (job): job is typeof job & { job_number: number } =>
+          job.job_number != null,
+      )
+      .map(async (job) => {
+        return await circleci.jobsV1.getJobDetails({
+          projectSlug,
+          jobNumber: job.job_number,
+        });
+      }),
   );
 
   const allLogs = await Promise.all(

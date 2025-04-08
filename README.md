@@ -9,6 +9,9 @@ Model Context Protocol (MCP) is a [new, standardized protocol](https://modelcont
 This lets you use Cursor IDE, or any MCP Client, to use natural language to accomplish things with CircleCI, e.g.:
 
 - `Find the latest failed pipeline on my branch and get logs`
+https://github.com/CircleCI-Public/mcp-server-circleci/wiki#circleci-mcp-server-with-cursor-ide
+
+https://github.com/user-attachments/assets/3c765985-8827-442a-a8dc-5069e01edb74
 
 ## Requirements
 
@@ -17,8 +20,6 @@ This lets you use Cursor IDE, or any MCP Client, to use natural language to acco
 - CircleCI API token - you can generate one through the CircleCI. [Learn more](https://circleci.com/docs/managing-api-tokens/) or [click here](https://app.circleci.com/settings/user/tokens) for quick access.
 
 ## Installation
-
-Note: The package is not yet published to npm. These installation instructions will apply once that has been done.
 
 ### Cursor
 
