@@ -22,6 +22,8 @@ export const getBuildFailureLogs: ToolCallback<{
     throw new Error('CIRCLECI_TOKEN is not set');
   }
 
+  const baseURL = process.env.CIRCLECI_BASE_URL;
+
   const token = process.env.CIRCLECI_TOKEN;
   let projectSlug: string | null | undefined;
   let pipelineNumber: number | undefined;
@@ -67,6 +69,7 @@ export const getBuildFailureLogs: ToolCallback<{
 
   const logs = await getJobLogs({
     projectSlug,
+    baseURL,
     branch,
     pipelineNumber,
   });

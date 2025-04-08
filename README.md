@@ -9,7 +9,7 @@ Model Context Protocol (MCP) is a [new, standardized protocol](https://modelcont
 This lets you use Cursor IDE, or any MCP Client, to use natural language to accomplish things with CircleCI, e.g.:
 
 - `Find the latest failed pipeline on my branch and get logs`
-https://github.com/CircleCI-Public/mcp-server-circleci/wiki#circleci-mcp-server-with-cursor-ide
+  https://github.com/CircleCI-Public/mcp-server-circleci/wiki#circleci-mcp-server-with-cursor-ide
 
 https://github.com/user-attachments/assets/3c765985-8827-442a-a8dc-5069e01edb74
 
@@ -32,7 +32,8 @@ Add the following to your cursor MCP config:
       "command": "npx",
       "args": ["-y", "@circleci/mcp-server-circleci"],
       "env": {
-        "CIRCLECI_TOKEN": "your-circleci-token"
+        "CIRCLECI_TOKEN": "your-circleci-token",
+        "CIRCLECI_BASE_URL": "https://circleci.com"
       }
     }
   }
@@ -115,6 +116,7 @@ The easiest way to iterate on the MCP Server is using the MCP inspector. You can
 3. Configure the environment:
    - Add your `CIRCLECI_TOKEN` to the Environment Variables section in the inspector UI
    - The token needs read access to your CircleCI projects
+   - Optionally you can set your CircleCI Base URL. Defaults to `https//circleci.com`
 
 ## Testing
 

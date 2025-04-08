@@ -37,30 +37,58 @@ export function createCircleCIHeaders({
 
 /**
  * Creates a default HTTP client for the CircleCI API v2
- * @param token CircleCI API token
+ * @param options Configuration parameters
+ * @param options.token CircleCI API token
+ * @param options.baseURL Base URL for the CircleCI API v2
  * @returns HTTP client for CircleCI API v2
  */
-const defaultV2HTTPClient = (token: string) => {
-  if (!token) {
+const defaultV2HTTPClient = (options: { token: string; baseURL?: string }) => {
+  if (!options.token) {
     throw new Error('Token is required');
   }
-  const headers = createCircleCIHeaders({ token });
-  return new HTTPClient('https://circleci.com/api/v2', headers);
+  let baseURL = options.baseURL || process.env.CIRCLECI_BASE_URL;
+  if (!baseURL) {
+    throw new Error('Base URL is required');
+  }
+
+  // Remove trailing slash from baseURL
+  baseURL = baseURL.replace(/\/$/, '');
+  baseURL = `${baseURL}/api/v2`;
+
+  const headers = createCircleCIHeaders({ token: options.token });
+  return new HTTPClient(baseURL, headers);
 };
 
 /**
  * Creates a default HTTP client for the CircleCI API v1
- * @param token CircleCI API token
+ * @param options Configuration parameters
+ * @param options.token CircleCI API token
+ * @param options.baseURL Base URL for the CircleCI API v1
  * @returns HTTP client for CircleCI API v1
  */
-const defaultV1HTTPClient = (token: string) => {
-  if (!token) {
+const defaultV1HTTPClient = (options: { token: string; baseURL?: string }) => {
+  if (!options.token) {
     throw new Error('Token is required');
   }
-  const headers = createCircleCIHeaders({ token });
-  return new HTTPClient('https://circleci.com/api/v1.1', headers);
+  let baseURL = options.baseURL || process.env.CIRCLECI_BASE_URL;
+  if (!baseURL) {
+    throw new Error('Base URL is required');
+  }
+
+  // Remove trailing slash from baseURL
+  baseURL = baseURL.replace(/\/$/, '');
+  baseURL = `${baseURL}/api/v1.1`;
+
+  const headers = createCircleCIHeaders({ token: options.token });
+  return new HTTPClient(baseURL, headers);
 };
 
+/**
+ * Creates a default HTTP client for the CircleCI API v2
+ * @param options Configuration parameters
+ * @param options.token CircleCI API token
+ * @param options.baseURL Base URL for the CircleCI API v2
+ */
 export class CircleCIClients {
   public jobs: JobsAPI;
   public pipelines: PipelinesAPI;
@@ -69,10 +97,18 @@ export class CircleCIClients {
 
   constructor({
     token,
-    v2httpClient = defaultV2HTTPClient(token),
-    v1httpClient = defaultV1HTTPClient(token),
+    baseURL,
+    v2httpClient = defaultV2HTTPClient({
+      token,
+      baseURL,
+    }),
+    v1httpClient = defaultV1HTTPClient({
+      token,
+      baseURL,
+    }),
   }: {
     token: string;
+    baseURL?: string;
     v2httpClient?: HTTPClient;
     v1httpClient?: HTTPClient;
   }) {
