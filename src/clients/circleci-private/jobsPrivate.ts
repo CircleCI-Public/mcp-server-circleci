@@ -10,17 +10,6 @@ type JobErrorResponse = z.infer<typeof JobErrorResponseSchema>;
 
 export class JobsPrivate {
   protected client: HTTPClient;
-  private static requestCount = 0;
-  private static readonly BATCH_SIZE = 1;
-  private static readonly BATCH_DELAY = 100; // milliseconds
-
-  private static async checkRateLimit() {
-    this.requestCount++;
-    if (this.requestCount >= this.BATCH_SIZE) {
-      await new Promise((resolve) => setTimeout(resolve, this.BATCH_DELAY));
-      this.requestCount = 0;
-    }
-  }
 
   constructor(client: HTTPClient) {
     this.client = client;
@@ -45,15 +34,11 @@ export class JobsPrivate {
     taskIndex: number;
     stepId: number;
   }) {
-    await JobsPrivate.checkRateLimit();
-
     // /api/private/output/raw/:vcs/:user/:prj/:num/output/:task_index/:step_id
     const outputResult = await this.client.get<JobOutputResponse>(
       `/output/raw/${projectSlug}/${jobNumber}/output/${taskIndex}/${stepId}`,
     );
     const parsedOutput = JobOutputResponseSchema.safeParse(outputResult);
-
-    await JobsPrivate.checkRateLimit();
 
     // /api/private/output/raw/:vcs/:user/:prj/:num/error/:task_index/:step_id
     const errorResult = await this.client.get<JobErrorResponse>(
