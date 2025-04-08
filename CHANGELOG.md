@@ -5,26 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.5] - 2024-04-04
+## [0.1.5] - 2025-04-08
 
 ### Added
 
 - Support for configurable CircleCI base URL through `CIRCLECI_BASE_URL` environment variable
 
-## [0.1.4] - 2024-04-04
+## [0.1.4] - 2025-04-08
 
 ### Fixed
 
 - Handle missing job numbers in CircleCI API responses by making job_number optional in schema
 - Skip jobs without job numbers when fetching job logs instead of failing
 
-## [0.1.3] - 2024-04-04
+## [0.1.3] - 2025-04-04
 
 ### Added
 
 - Improved schema validation and output formatting for job information
 
-## [0.1.2] - 2024-04-04
+## [0.1.2] - 2025-04-04
 
 ### Fixed
 
@@ -36,13 +36,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated documentation around package publishing
 - Removed note about package not being published
 
-## [0.1.1] - 2024-04-04
+## [0.1.1] - 2025-04-04
 
 ### Fixed
 
 - Non functional fixes
 
-## [0.1.0] - 2024-04-04
+## [0.1.0] - 2025-04-04
 
 Initial release of the CircleCI MCP Server, enabling natural language interactions with CircleCI functionality through MCP-enabled clients.
 
