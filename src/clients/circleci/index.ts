@@ -30,6 +30,7 @@ export function createCircleCIHeaders({
   Object.assign(headers, {
     'Circle-Token': token,
     'Content-Type': 'application/json',
+    'User-Agent': 'CircleCI-MCP-Server/0.1',
   });
 
   return headers;
@@ -47,7 +48,9 @@ const defaultV2HTTPClient = (options: { token: string }) => {
     throw new Error('Token is required');
   }
 
-  const headers = createCircleCIHeaders({ token: options.token });
+  const headers = createCircleCIHeaders({
+    token: options.token,
+  });
   return new HTTPClient('/api/v2', headers);
 };
 
