@@ -4,7 +4,10 @@ import {
   identifyProjectSlug,
 } from '../../lib/project-detection/index.js';
 import { getFlakyTestLogsInputSchema } from './inputSchema.js';
-import getFlakyTests from '../../lib/flaky-tests/getFlakyTests.js';
+import getFlakyTests, {
+  formatFlakyTests,
+} from '../../lib/flaky-tests/getFlakyTests.js';
+import mcpErrorOutput from '../../lib/mcpErrorOutput.js';
 
 export const getFlakyTestLogs: ToolCallback<{
   params: typeof getFlakyTestLogsInputSchema;
@@ -26,45 +29,23 @@ export const getFlakyTestLogs: ToolCallback<{
       gitRemoteURL,
     });
   } else {
-    return {
-      isError: true,
-      content: [
-        {
-          type: 'text' as const,
-          text: 'No inputs provided. Ask the user to provide the inputs user can provide based on the tool description.',
-        },
-      ],
-    };
+    return mcpErrorOutput(
+      'No inputs provided. Ask the user to provide the inputs user can provide based on the tool description.',
+    );
   }
 
   if (!projectSlug) {
-    return {
-      isError: true,
-      content: [
-        {
-          type: 'text' as const,
-          text: `
+    return mcpErrorOutput(`
           Project not found. Ask the user to provide the inputs user can provide based on the tool description.
 
           Project slug: ${projectSlug}
           Git remote URL: ${gitRemoteURL}
-          `,
-        },
-      ],
-    };
+          `);
   }
 
   const tests = await getFlakyTests({
     projectSlug,
   });
 
-  return {
-    isError: false,
-    content: [
-      {
-        type: 'text' as const,
-        text: tests.map((test) => test.message).join('\n'),
-      },
-    ],
-  };
+  return formatFlakyTests(tests);
 };

@@ -65,8 +65,6 @@ export class TestsAPI {
         params,
       );
 
-      console.error('rawResult tests\n', rawResult);
-
       // Validate the response against our TestResponse schema
       const result = TestResponseSchema.parse(rawResult);
 

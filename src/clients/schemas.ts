@@ -52,8 +52,8 @@ const FlakyTestSchema = z.object({
 const TestSchema = z.object({
   message: z.string(),
   source: z.string(),
-  run_time: z.string(),
-  file: z.string(),
+  run_time: z.union([z.string(), z.number()]),
+  file: z.string().optional(),
   result: z.string(),
   name: z.string(),
   classname: z.string(),

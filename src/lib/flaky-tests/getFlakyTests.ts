@@ -1,4 +1,5 @@
 import { CircleCIClients } from '../../clients/circleci/index.js';
+import { Test } from '../../clients/schemas.js';
 
 const circleci = new CircleCIClients({
   token: process.env.CIRCLECI_TOKEN || '',
@@ -25,7 +26,23 @@ const getFlakyTests = async ({ projectSlug }: { projectSlug: string }) => {
 
   const testsArrays = await Promise.all(testsPromises);
 
-  return testsArrays.flat();
+  return testsArrays.flat().filter((test) => test.result === 'failure');
+};
+
+export const formatFlakyTests = (tests: Test[]) => {
+  return {
+    content: [
+      {
+        type: 'text' as const,
+        text: tests
+          .map(
+            (test) =>
+              `=====\nTest name: ${test.name}\nResult: ${test.result}\nRun time: ${test.run_time}\nMessage: ${test.message}`,
+          )
+          .join('\n'),
+      },
+    ],
+  };
 };
 
 export default getFlakyTests;
