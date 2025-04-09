@@ -48,9 +48,7 @@ const defaultV2HTTPClient = (options: { token: string }) => {
     throw new Error('Token is required');
   }
 
-  const headers = createCircleCIHeaders({
-    token: options.token,
-  });
+  const headers = createCircleCIHeaders({ token: options.token });
   return new HTTPClient('/api/v2', headers);
 };
 
