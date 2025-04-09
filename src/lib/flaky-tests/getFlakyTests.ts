@@ -1,5 +1,4 @@
 import { CircleCIClients } from '../../clients/circleci/index.js';
-import getJobLogs from '../getJobLogs.js';
 
 const circleci = new CircleCIClients({
   token: process.env.CIRCLECI_TOKEN || '',
@@ -16,11 +15,17 @@ const getFlakyTests = async ({ projectSlug }: { projectSlug: string }) => {
 
   const jobNumbers = flakyTests.flaky_tests.map((test) => test.job_number);
 
-  return await getJobLogs({
-    projectSlug,
-    jobNumbers,
-    failedStepsOnly: false,
+  const testsPromises = jobNumbers.map(async (jobNumber) => {
+    const tests = await circleci.tests.getJobTests({
+      projectSlug,
+      jobNumber,
+    });
+    return tests;
   });
+
+  const testsArrays = await Promise.all(testsPromises);
+
+  return testsArrays.flat();
 };
 
 export default getFlakyTests;

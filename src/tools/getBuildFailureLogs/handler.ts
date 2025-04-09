@@ -6,7 +6,7 @@ import {
 } from '../../lib/project-detection/index.js';
 import { getBuildFailureOutputInputSchema } from './inputSchema.js';
 import getPipelineJobLogs from '../../lib/pipeline-job-logs/getPipelineJobLogs.js';
-import { formatJobLogs } from '../../lib/getJobLogs.js';
+import { formatJobLogs } from '../../lib/pipeline-job-logs/getJobLogs.js';
 
 export const getBuildFailureLogs: ToolCallback<{
   params: typeof getBuildFailureOutputInputSchema;

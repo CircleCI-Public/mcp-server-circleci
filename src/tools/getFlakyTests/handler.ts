@@ -5,7 +5,6 @@ import {
 } from '../../lib/project-detection/index.js';
 import { getFlakyTestLogsInputSchema } from './inputSchema.js';
 import getFlakyTests from '../../lib/flaky-tests/getFlakyTests.js';
-import { formatJobLogs } from '../../lib/getJobLogs.js';
 
 export const getFlakyTestLogs: ToolCallback<{
   params: typeof getFlakyTestLogsInputSchema;
@@ -55,9 +54,17 @@ export const getFlakyTestLogs: ToolCallback<{
     };
   }
 
-  const logs = await getFlakyTests({
+  const tests = await getFlakyTests({
     projectSlug,
   });
 
-  return formatJobLogs(logs);
+  return {
+    isError: false,
+    content: [
+      {
+        type: 'text' as const,
+        text: tests.map((test) => test.message).join('\n'),
+      },
+    ],
+  };
 };

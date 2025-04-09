@@ -49,6 +49,27 @@ const FlakyTestSchema = z.object({
   total_flaky_tests: z.number(),
 });
 
+const TestSchema = z.object({
+  message: z.string(),
+  source: z.string(),
+  run_time: z.string(),
+  file: z.string(),
+  result: z.string(),
+  name: z.string(),
+  classname: z.string(),
+});
+
+const PaginatedTestResponseSchema = z.object({
+  items: z.array(TestSchema),
+  next_page_token: z.string().nullable(),
+});
+
+export const Test = TestSchema;
+export type Test = z.infer<typeof TestSchema>;
+
+export const PaginatedTestResponse = PaginatedTestResponseSchema;
+export type PaginatedTestResponse = z.infer<typeof PaginatedTestResponseSchema>;
+
 export const FlakyTest = FlakyTestSchema;
 export type FlakyTest = z.infer<typeof FlakyTestSchema>;
 

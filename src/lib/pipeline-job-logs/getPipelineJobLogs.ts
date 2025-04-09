@@ -1,6 +1,6 @@
 import { CircleCIClients } from '../../clients/circleci/index.js';
 import { Pipeline } from '../../clients/schemas.js';
-import getJobLogs from '../getJobLogs.js';
+import getJobLogs from './getJobLogs.js';
 
 export type GetPipelineJobLogsParams = {
   projectSlug: string;

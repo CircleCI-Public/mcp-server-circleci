@@ -1,5 +1,5 @@
-import { CircleCIPrivateClients } from '../clients/circleci-private/index.js';
-import { CircleCIClients } from '../clients/circleci/index.js';
+import { CircleCIPrivateClients } from '../../clients/circleci-private/index.js';
+import { CircleCIClients } from '../../clients/circleci/index.js';
 
 const circleci = new CircleCIClients({
   token: process.env.CIRCLECI_TOKEN || '',
@@ -50,13 +50,6 @@ const getJobLogs = async ({
     }),
   );
 
-  const jobDetailsCount = jobsDetails.length;
-  const jobStepsCount = jobsDetails.reduce(
-    (acc, job) => acc + job.steps.length,
-    0,
-  );
-  let getStepOutputCallCount = 0;
-
   const allLogs = await Promise.all(
     jobsDetails.map(async (job) => {
       // Get logs for all steps and their actions
@@ -68,7 +61,6 @@ const getJobLogs = async ({
           }
           return actions.map(async (action) => {
             try {
-              getStepOutputCallCount++;
               const logs = await circleciPrivate.jobs.getStepOutput({
                 projectSlug,
                 jobNumber: job.build_num,
@@ -93,10 +85,6 @@ const getJobLogs = async ({
         steps: stepLogs.filter(Boolean), // Remove any null entries
       };
     }),
-  );
-
-  console.error(
-    `Total getStepOutput API calls: ${getStepOutputCallCount} - ${jobDetailsCount} jobs - ${jobStepsCount} steps`,
   );
 
   return allLogs;
