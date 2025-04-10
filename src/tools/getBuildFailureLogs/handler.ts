@@ -2,6 +2,7 @@ import { ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js';
 import {
   getPipelineNumberFromURL,
   getProjectSlugFromURL,
+  getBranchFromURL,
   identifyProjectSlug,
 } from '../../lib/project-detection/index.js';
 import { getBuildFailureOutputInputSchema } from './inputSchema.js';
@@ -19,12 +20,14 @@ export const getBuildFailureLogs: ToolCallback<{
   }
 
   const token = process.env.CIRCLECI_TOKEN;
-  let projectSlug: string | null | undefined;
+  let projectSlug: string | undefined;
   let pipelineNumber: number | undefined;
+  let branchFromURL: string | undefined;
 
   if (projectURL) {
     projectSlug = getProjectSlugFromURL(projectURL);
     pipelineNumber = getPipelineNumberFromURL(projectURL);
+    branchFromURL = getBranchFromURL(projectURL);
   } else if (workspaceRoot && gitRemoteURL && branch) {
     projectSlug = await identifyProjectSlug({
       token,
@@ -48,7 +51,7 @@ export const getBuildFailureLogs: ToolCallback<{
 
   const logs = await getPipelineJobLogs({
     projectSlug,
-    branch,
+    branch: branchFromURL || branch,
     pipelineNumber,
   });
 

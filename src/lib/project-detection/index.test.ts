@@ -1,4 +1,8 @@
-import { getPipelineNumberFromURL, getProjectSlugFromURL } from './index.js';
+import {
+  getPipelineNumberFromURL,
+  getProjectSlugFromURL,
+  getBranchFromURL,
+} from './index.js';
 import { describe, it, expect } from 'vitest';
 
 describe('getPipelineNumberFromURL', () => {
@@ -93,5 +97,38 @@ describe('getProjectSlugFromURL', () => {
     expect(() =>
       getProjectSlugFromURL('https://app.circleci.com/pipelines/gh'),
     ).toThrow('Unable to extract project information from URL');
+  });
+});
+
+describe('getBranchFromURL', () => {
+  it.each([
+    // URL with branch parameter
+    {
+      url: 'https://app.circleci.com/pipelines/gh/organization/project?branch=feature-branch',
+      expected: 'feature-branch',
+    },
+    // URL with branch parameter and other params
+    {
+      url: 'https://app.circleci.com/pipelines/gh/organization/project?branch=fix%2Fbug-123&filter=mine',
+      expected: 'fix/bug-123',
+    },
+    // URL without branch parameter
+    {
+      url: 'https://app.circleci.com/pipelines/gh/organization/project',
+      expected: undefined,
+    },
+    // URL with other parameters but no branch
+    {
+      url: 'https://app.circleci.com/pipelines/gh/organization/project?filter=mine',
+      expected: undefined,
+    },
+  ])('extracts branch $expected from URL', ({ url, expected }) => {
+    expect(getBranchFromURL(url)).toBe(expected);
+  });
+
+  it('throws error for invalid CircleCI URL format', () => {
+    expect(() => getBranchFromURL('not-a-url')).toThrow(
+      'Invalid CircleCI URL format',
+    );
   });
 });

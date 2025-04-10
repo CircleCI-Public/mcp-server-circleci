@@ -20,7 +20,7 @@ export const identifyProjectSlug = async ({
 
   const parsedGitURL = gitUrlParse(gitRemoteURL);
   if (!parsedGitURL?.host) {
-    return null;
+    return undefined;
   }
 
   const vcs = getVCSFromHost(parsedGitURL.host);
@@ -105,4 +105,27 @@ export const getProjectSlugFromURL = (url: string) => {
   }
 
   return `${vcs}/${org}/${project}`;
+};
+
+/**
+ * Get the branch name from the URL's query parameters
+ * @param {string} url - CircleCI pipeline URL
+ * @returns {string | undefined} The branch name if present in the URL
+ * @example
+ * // URL with branch parameter
+ * getBranchFromURL('https://app.circleci.com/pipelines/gh/organization/project?branch=feature-branch')
+ * // returns 'feature-branch'
+ *
+ * @example
+ * // URL without branch parameter
+ * getBranchFromURL('https://app.circleci.com/pipelines/gh/organization/project')
+ * // returns undefined
+ */
+export const getBranchFromURL = (url: string): string | undefined => {
+  try {
+    const urlObj = new URL(url);
+    return urlObj.searchParams.get('branch') || undefined;
+  } catch {
+    throw new Error('Invalid CircleCI URL format');
+  }
 };
