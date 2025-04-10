@@ -1,14 +1,6 @@
 import { CircleCIPrivateClients } from '../../clients/circleci-private/index.js';
 import { CircleCIClients } from '../../clients/circleci/index.js';
 
-const circleci = new CircleCIClients({
-  token: process.env.CIRCLECI_TOKEN || '',
-});
-
-const circleciPrivate = new CircleCIPrivateClients({
-  token: process.env.CIRCLECI_TOKEN || '',
-});
-
 export type GetJobLogsParams = {
   projectSlug: string;
   jobNumbers: number[];
@@ -41,6 +33,14 @@ const getJobLogs = async ({
   jobNumbers,
   failedStepsOnly = true,
 }: GetJobLogsParams): Promise<JobWithStepLogs[]> => {
+  const circleci = new CircleCIClients({
+    token: process.env.CIRCLECI_TOKEN || '',
+  });
+
+  const circleciPrivate = new CircleCIPrivateClients({
+    token: process.env.CIRCLECI_TOKEN || '',
+  });
+
   const jobsDetails = await Promise.all(
     jobNumbers.map(async (jobNumber) => {
       return await circleci.jobsV1.getJobDetails({
