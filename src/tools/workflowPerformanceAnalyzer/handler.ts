@@ -1,4 +1,4 @@
-import { WorkflowPerformanceAnalyzerInputSchema } from './inputSchema.js';
+import { workflowPerformanceAnalyzerInputSchema } from './inputSchema.js';
 import { CircleCIClients } from '../../clients/circleci/index.js';
 import { ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js';
 
@@ -15,7 +15,7 @@ type WorkflowMetrics = {
 };
 
 export const workflowPerformanceAnalyzer: ToolCallback<{
-  params: typeof WorkflowPerformanceAnalyzerInputSchema;
+  params: typeof workflowPerformanceAnalyzerInputSchema;
 }> = async (args) => {
   const circleci = new CircleCIClients({
     token: process.env.CIRCLECI_TOKEN || '',
@@ -23,7 +23,7 @@ export const workflowPerformanceAnalyzer: ToolCallback<{
 
   if (!args.params.projectSlug) {
     return {
-      content: [{ type: 'text', text: 'Project slug is required' }],
+      content: [{ type: 'text' as const, text: 'Project slug is required' }],
     };
   }
 
@@ -88,7 +88,7 @@ export const workflowPerformanceAnalyzer: ToolCallback<{
     return {
       content: [
         {
-          type: 'text',
+          type: 'text' as const,
           text: JSON.stringify(response, null, 2),
         },
       ],
@@ -97,7 +97,7 @@ export const workflowPerformanceAnalyzer: ToolCallback<{
     return {
       content: [
         {
-          type: 'text',
+          type: 'text' as const,
           text: `Error: ${error instanceof Error ? error.message : 'Failed to analyze workflow performance'}`,
         },
       ],

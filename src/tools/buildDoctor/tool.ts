@@ -1,7 +1,7 @@
-import { workflowPerformanceAnalyzerInputSchema } from './inputSchema.js';
+import { buildDoctorInputSchema } from './inputSchema.js';
 
-export const workflowPerformanceAnalyzerTool = {
-  name: 'workflow_performance_analyzer' as const,
+export const buildDoctorTool = {
+  name: 'build_doctor' as const,
   description: `
     This tool analyzes CircleCI workflow performance metrics to identify bottlenecks and optimization opportunities.
 
@@ -18,5 +18,5 @@ export const workflowPerformanceAnalyzerTool = {
     - Identification of slowest jobs
     - Recommendations for optimization
     `,
-  inputSchema: workflowPerformanceAnalyzerInputSchema,
+  inputSchema: buildDoctorInputSchema,
 };

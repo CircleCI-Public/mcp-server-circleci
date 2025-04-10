@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const WorkflowPerformanceAnalyzerInputSchema = z.object({
+export const workflowPerformanceAnalyzerInputSchema = z.object({
   projectSlug: z
     .string()
     .optional()
