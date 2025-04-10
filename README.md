@@ -75,6 +75,30 @@ See the guide below for more information on using MCP servers with cursor: https
   - Investigating deployment issues
   - Quick access to build logs without leaving your IDE
 
+- `find_flaky_tests`
+
+  Identifies flaky tests in your CircleCI project by analyzing test execution history. This tool can be used in two ways:
+
+  1. Using CircleCI Project URL:
+     - Provide the project URL directly from CircleCI
+     - Example: "Find flaky tests in https://app.circleci.com/pipelines/github/org/repo"
+
+  2. Using Local Project Context:
+     - Works from your local workspace by providing:
+       - Workspace root path
+       - Git remote URL
+     - Example: "Find flaky tests in my current project"
+
+  The tool returns detailed information about flaky tests, including:
+
+  - Test names and file locations
+  - Failure messages and contexts
+
+  This helps you:
+  - Identify unreliable tests in your test suite
+  - Get detailed context about test failures
+  - Make data-driven decisions about test improvements
+
 # Development
 
 ## Getting Started
