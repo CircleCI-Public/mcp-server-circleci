@@ -56,7 +56,7 @@ export const identifyProjectSlug = async ({
  * getPipelineNumberFromURL('https://app.circleci.com/pipelines/circleci/GM1mbrQEWnNbzLKEnotDo4/5gh9pgQgohHwicwomY5nYQ/123/workflows/abc123de-f456-78gh-90ij-klmnopqrstuv')
  * // returns 123
  */
-export const getPipelineNumberFromURL = (url: string): number => {
+export const getPipelineNumberFromURL = (url: string): number | undefined => {
   const parts = url.split('/');
   const pipelineIndex = parts.indexOf('pipelines');
   if (pipelineIndex === -1) {
@@ -65,7 +65,7 @@ export const getPipelineNumberFromURL = (url: string): number => {
   const pipelineNumber = parts[pipelineIndex + 4];
 
   if (!pipelineNumber) {
-    throw new Error('Unable to extract pipeline number from URL');
+    return undefined;
   }
 
   const parsedNumber = Number(pipelineNumber);

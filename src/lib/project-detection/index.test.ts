@@ -13,8 +13,27 @@ describe('getPipelineNumberFromURL', () => {
       url: 'https://app.circleci.com/pipelines/circleci/GM1mbrQEWnNbzLKEnotDo4/5gh9pgQgohHwicwomY5nYQ/123/workflows/abc123de-f456-78gh-90ij-klmnopqrstuv',
       expected: 123,
     },
+    // Project URL (no pipeline number)
+    {
+      url: 'https://app.circleci.com/pipelines/gh/organization/project',
+      expected: undefined,
+    },
   ])('extracts pipeline number $expected from URL', ({ url, expected }) => {
     expect(getPipelineNumberFromURL(url)).toBe(expected);
+  });
+
+  it('throws error for invalid CircleCI URL format', () => {
+    expect(() =>
+      getPipelineNumberFromURL('https://app.circleci.com/invalid/url'),
+    ).toThrow('Invalid CircleCI URL format');
+  });
+
+  it('throws error when pipeline number is not a valid number', () => {
+    expect(() =>
+      getPipelineNumberFromURL(
+        'https://app.circleci.com/pipelines/gh/organization/project/abc/workflows/abc123de-f456-78gh-90ij-klmnopqrstuv',
+      ),
+    ).toThrow('Pipeline number in URL is not a valid number');
   });
 });
 
