@@ -86,12 +86,13 @@ export const getPipelineNumberFromURL = (url: string): number | undefined => {
  * // returns 'gh/organization/project'
  *
  * @example
- * // Simple project URL
- * getProjectSlugFromURL('https://app.circleci.com/pipelines/gh/organization/project')
+ * // Simple project URL with query parameters
+ * getProjectSlugFromURL('https://app.circleci.com/pipelines/gh/organization/project?branch=main')
  * // returns 'gh/organization/project'
  */
 export const getProjectSlugFromURL = (url: string) => {
-  const parts = url.split('/');
+  const urlWithoutQuery = url.split('?')[0];
+  const parts = urlWithoutQuery.split('/');
   const pipelineIndex = parts.indexOf('pipelines');
   if (pipelineIndex === -1) {
     throw new Error('Invalid CircleCI URL format');

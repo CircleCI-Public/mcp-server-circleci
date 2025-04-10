@@ -83,6 +83,11 @@ describe('getProjectSlugFromURL', () => {
       url: 'https://app.circleci.com/pipelines/circleci/GM1mbrQEWnNbzLKEnotDo4/5gh9pgQgohHwicwomY5nYQ',
       expected: 'circleci/GM1mbrQEWnNbzLKEnotDo4/5gh9pgQgohHwicwomY5nYQ',
     },
+    // Project URL with query parameters
+    {
+      url: 'https://app.circleci.com/pipelines/github/CircleCI-Public/hungry-panda?branch=splitting',
+      expected: 'github/CircleCI-Public/hungry-panda',
+    },
   ])('extracts project slug $expected from URL', ({ url, expected }) => {
     expect(getProjectSlugFromURL(url)).toBe(expected);
   });
