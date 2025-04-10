@@ -1,6 +1,6 @@
 import { ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js';
 import {
-  getProjectSlugFromProjectURL,
+  getProjectSlugFromURL,
   identifyProjectSlug,
 } from '../../lib/project-detection/index.js';
 import { getFlakyTestLogsInputSchema } from './inputSchema.js';
@@ -22,7 +22,7 @@ export const getFlakyTestLogs: ToolCallback<{
   let projectSlug: string | null | undefined;
 
   if (projectURL) {
-    projectSlug = getProjectSlugFromProjectURL(projectURL);
+    projectSlug = getProjectSlugFromURL(projectURL);
   } else if (workspaceRoot && gitRemoteURL) {
     projectSlug = await identifyProjectSlug({
       token,

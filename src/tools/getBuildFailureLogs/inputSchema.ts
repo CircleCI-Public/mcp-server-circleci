@@ -24,16 +24,14 @@ export const getBuildFailureOutputInputSchema = z.object({
         'For example: "feature/my-branch", "bugfix/123", "main", "master" etc.',
     )
     .optional(),
-  failedPipelineURL: z
+  projectURL: z
     .string()
     .describe(
-      'The URL of the failed CircleCI pipeline. This should be a link to the pipeline in the CircleCI web app.',
-    )
-    .optional(),
-  failedJobURL: z
-    .string()
-    .describe(
-      'The URL of the failed CircleCI job. This should be a link to the job in the CircleCI web app.',
+      'The URL of the CircleCI project. Can be any of these formats:\n' +
+        '- Project URL: https://app.circleci.com/pipelines/gh/organization/project\n' +
+        '- Pipeline URL: https://app.circleci.com/pipelines/gh/organization/project/123\n' +
+        '- Workflow URL: https://app.circleci.com/pipelines/gh/organization/project/123/workflows/abc-def\n' +
+        '- Job URL: https://app.circleci.com/pipelines/gh/organization/project/123/workflows/abc-def/jobs/xyz',
     )
     .optional(),
 });
