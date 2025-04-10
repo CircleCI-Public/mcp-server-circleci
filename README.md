@@ -77,7 +77,9 @@ See the guide below for more information on using MCP servers with cursor: https
 
 - `find_flaky_tests`
 
-  Identifies flaky tests in your CircleCI project by analyzing test execution history. This tool can be used in two ways:
+  Identifies flaky tests in your CircleCI project by analyzing test execution history. This leverages the flaky test detection feature described here: https://circleci.com/blog/introducing-test-insights-with-flaky-test-detection/#flaky-test-detection
+  
+  This tool can be used in two ways:
 
   1. Using CircleCI Project URL:
      - Provide the project URL directly from CircleCI
