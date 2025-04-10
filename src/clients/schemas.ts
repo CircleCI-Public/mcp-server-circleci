@@ -1,5 +1,52 @@
 import { z } from 'zod';
 
+const WorkflowMetricsSchema = z.object({
+  name: z.string(),
+  metrics: z.object({
+    total_runs: z.number(),
+    successful_runs: z.number(),
+    mttr: z.number(),
+    total_credits_used: z.number(),
+    failed_runs: z.number(),
+    success_rate: z.number(),
+    duration_metrics: z.object({
+      min: z.number(),
+      mean: z.number(),
+      median: z.number(),
+      p95: z.number(),
+      max: z.number(),
+      standard_deviation: z.number(),
+    }),
+    total_recoveries: z.number(),
+    throughput: z.number(),
+  }),
+  window_start: z.string(),
+  window_end: z.string(),
+  project_id: z.string().nullable(),
+});
+
+const JobMetricsSchema = z.object({
+  name: z.string(),
+  metrics: z.object({
+    total_runs: z.number(),
+    failed_runs: z.number(),
+    successful_runs: z.number(),
+    duration_metrics: z.object({
+      min: z.number(),
+      mean: z.number(),
+      median: z.number(),
+      p95: z.number(),
+      max: z.number(),
+      standard_deviation: z.number(),
+    }),
+    success_rate: z.number(),
+    total_credits_used: z.number(),
+    throughput: z.number(),
+  }),
+  window_start: z.string(),
+  window_end: z.string(),
+});
+
 const FollowedProjectSchema = z.object({
   name: z.string(),
   slug: z.string(),
@@ -95,3 +142,9 @@ export type JobDetails = z.infer<typeof JobDetailsSchema>;
 
 export const FollowedProject = FollowedProjectSchema;
 export type FollowedProject = z.infer<typeof FollowedProjectSchema>;
+
+export const WorkflowMetrics = WorkflowMetricsSchema;
+export type WorkflowMetrics = z.infer<typeof WorkflowMetricsSchema>;
+
+export const JobMetrics = JobMetricsSchema;
+export type JobMetrics = z.infer<typeof JobMetricsSchema>;
