@@ -19,31 +19,7 @@ type ToolHandlers = {
   [K in CCIToolName]: ToolHandler<K>;
 };
 
-// Higher-order function to wrap handlers with error handling
-// Ensures any thrown errors are handled in an MCP friendly manner
-const withErrorHandling = <T extends CCIToolName>(
-  handler: ToolHandler<T>,
-): ToolHandler<T> => {
-  return async (args, server) => {
-    try {
-      return await handler(args, server);
-    } catch (error) {
-      console.error('Tool execution failed:', error);
-
-      return {
-        isError: true,
-        content: [
-          {
-            type: 'text' as const,
-            text: `Error executing tool: ${error instanceof Error ? error.message : 'An unknown error occurred'}. Please check your inputs and try again.`,
-          },
-        ],
-      };
-    }
-  };
-};
-
 export const CCI_HANDLERS = {
-  get_build_failure_logs: withErrorHandling(getBuildFailureLogs),
-  find_flaky_tests: withErrorHandling(getFlakyTestLogs),
+  get_build_failure_logs: getBuildFailureLogs,
+  find_flaky_tests: getFlakyTestLogs,
 } satisfies ToolHandlers;
