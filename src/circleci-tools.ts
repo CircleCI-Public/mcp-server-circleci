@@ -45,5 +45,5 @@ const withErrorHandling = <T extends CCIToolName>(
 
 export const CCI_HANDLERS = {
   get_build_failure_logs: withErrorHandling(getBuildFailureLogs),
-  get_flaky_test_logs: withErrorHandling(getFlakyTestLogs),
+  find_flaky_tests: withErrorHandling(getFlakyTestLogs),
 } satisfies ToolHandlers;

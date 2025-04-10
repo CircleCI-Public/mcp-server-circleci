@@ -1,7 +1,7 @@
 import { getFlakyTestLogsInputSchema } from './inputSchema.js';
 
 export const getFlakyTestLogsTool = {
-  name: 'get_flaky_test_logs' as const,
+  name: 'find_flaky_tests' as const,
   description: `
     This tool retrieves information about flaky tests in a CircleCI project. 
     
