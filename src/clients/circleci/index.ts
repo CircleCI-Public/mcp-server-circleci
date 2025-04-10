@@ -1,9 +1,10 @@
 import { HTTPClient } from './httpClient.js';
 import { JobsAPI } from './jobs.js';
 import { JobsV1API } from './jobsV1.js';
+import { InsightsAPI } from './insights.js';
 import { PipelinesAPI } from './pipelines.js';
 import { WorkflowsAPI } from './workflows.js';
-
+import { TestsAPI } from './tests.js';
 export type TCircleCIClient = InstanceType<typeof CircleCIClients>;
 
 export const defaultPaginationOptions = {
@@ -82,6 +83,8 @@ export class CircleCIClients {
   public pipelines: PipelinesAPI;
   public workflows: WorkflowsAPI;
   public jobsV1: JobsV1API;
+  public insights: InsightsAPI;
+  public tests: TestsAPI;
 
   constructor({
     token,
@@ -101,5 +104,7 @@ export class CircleCIClients {
     this.pipelines = new PipelinesAPI(v2httpClient);
     this.workflows = new WorkflowsAPI(v2httpClient);
     this.jobsV1 = new JobsV1API(v1httpClient);
+    this.insights = new InsightsAPI(v2httpClient);
+    this.tests = new TestsAPI(v2httpClient);
   }
 }

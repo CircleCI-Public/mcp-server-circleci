@@ -5,7 +5,8 @@ import {
   identifyProjectSlug,
 } from '../../lib/project-detection/index.js';
 import { getBuildFailureOutputInputSchema } from './inputSchema.js';
-import getJobLogs from '../../lib/job-logs/getJobLogs.js';
+import getPipelineJobLogs from '../../lib/pipeline-job-logs/getPipelineJobLogs.js';
+import { formatJobLogs } from '../../lib/pipeline-job-logs/getJobLogs.js';
 
 export const getBuildFailureLogs: ToolCallback<{
   params: typeof getBuildFailureOutputInputSchema;
@@ -65,43 +66,11 @@ export const getBuildFailureLogs: ToolCallback<{
     };
   }
 
-  const logs = await getJobLogs({
+  const logs = await getPipelineJobLogs({
     projectSlug,
     branch,
     pipelineNumber,
   });
 
-  return {
-    content: [
-      {
-        type: 'text' as const,
-        text: logs
-          .map((log) => `Job: ${log.jobName}\n` + logStepsText(log))
-          .join('\n'),
-      },
-    ],
-  };
-};
-
-type JobLog = {
-  jobName: string;
-  steps: ({
-    stepName: string;
-    logs: {
-      output: string;
-      error: string;
-    };
-  } | null)[];
-};
-
-const logStepsText = (log: JobLog) => {
-  if (log.steps.length === 0) {
-    return 'No failed steps found.';
-  }
-  return log.steps
-    .map(
-      (step) =>
-        `Step: ${step?.stepName}\n` + `Logs: ${JSON.stringify(step?.logs)}`,
-    )
-    .join('\n');
+  return formatJobLogs(logs);
 };

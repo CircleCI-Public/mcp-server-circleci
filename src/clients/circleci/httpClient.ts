@@ -44,7 +44,7 @@ export class HTTPClient {
       const errorData = await response.json().catch(() => ({}));
       if (response.status >= 400 && response.status < 600) {
         throw new Error(
-          `CircleCI API Error: ${response.status} - ${errorData.message || response.statusText}`,
+          `CircleCI API Error: ${response.status} \nURL: ${response.url} \nMessage: ${errorData.message || response.statusText}`,
         );
       }
       throw new Error('No response received from CircleCI API');
