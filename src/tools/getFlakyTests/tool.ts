@@ -3,7 +3,9 @@ import { getFlakyTestLogsInputSchema } from './inputSchema.js';
 export const getFlakyTestLogsTool = {
   name: 'get_flaky_test_logs' as const,
   description: `
-    This tool helps find flaky tests in a CircleCI project.
+    This tool retrieves information about flaky tests in a CircleCI project. 
+    
+    The agent receiving this output MUST analyze the flaky test data and implement appropriate fixes based on the specific issues identified.
 
     Input options (EXACTLY ONE of these two options must be used):
 

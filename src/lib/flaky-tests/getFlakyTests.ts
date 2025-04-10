@@ -35,10 +35,17 @@ export const formatFlakyTests = (tests: Test[]) => {
       {
         type: 'text' as const,
         text: tests
-          .map(
-            (test) =>
-              `=====\nTest name: ${test.name}\nResult: ${test.result}\nRun time: ${test.run_time}\nMessage: ${test.message}`,
-          )
+          .map((test) => {
+            const fields = [
+              test.file && `File Name: ${test.file}`,
+              test.classname && `Classname: ${test.classname}`,
+              test.name && `Test name: ${test.name}`,
+              test.result && `Result: ${test.result}`,
+              test.run_time && `Run time: ${test.run_time}`,
+              test.message && `Message: ${test.message}`,
+            ].filter(Boolean);
+            return `=====\n${fields.join('\n')}`;
+          })
           .join('\n'),
       },
     ],
