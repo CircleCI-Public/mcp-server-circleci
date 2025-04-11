@@ -1,11 +1,11 @@
 import { CircleCIClients } from '../../clients/circleci/index.js';
 import { Test } from '../../clients/schemas.js';
 
-const circleci = new CircleCIClients({
-  token: process.env.CIRCLECI_TOKEN || '',
-});
-
 const getFlakyTests = async ({ projectSlug }: { projectSlug: string }) => {
+  const circleci = new CircleCIClients({
+    token: process.env.CIRCLECI_TOKEN || '',
+  });
+
   const flakyTests = await circleci.insights.getProjectFlakyTests({
     projectSlug,
   });
