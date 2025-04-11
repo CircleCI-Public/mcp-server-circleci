@@ -69,6 +69,20 @@ This will create a configuration file at:
 - macOS: ~/Library/Application Support/Claude/claude_desktop_config.json
 - Windows: %APPDATA%\Claude\claude_desktop_config.json
 
+See the guide below for more information on using MCP servers with Claude Desktop:
+https://modelcontextprotocol.io/quickstart/user
+
+### Claude Code
+
+After installing Claude Code, run the following command:
+
+```bash
+claude mcp add circleci-mcp-server -e CIRCLECI_TOKEN=your-circleci-token -- npx -y @circleci/mcp-server-circleci
+```
+
+See the guide below for more information on using MCP servers with Claude Code:
+https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/tutorials#set-up-model-context-protocol-mcp
+
 ### VS Code
 
 Add the MCP server to your settings.json under `mcp -> servers`:
