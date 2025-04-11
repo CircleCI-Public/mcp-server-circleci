@@ -33,14 +33,81 @@ Add the following to your cursor MCP config:
       "args": ["-y", "@circleci/mcp-server-circleci"],
       "env": {
         "CIRCLECI_TOKEN": "your-circleci-token",
-        "CIRCLECI_BASE_URL": "https://circleci.com"
+        "CIRCLECI_BASE_URL": "https://circleci.com" // Optional - required for on-prem customers only
       }
     }
   }
 }
 ```
 
-See the guide below for more information on using MCP servers with cursor: https://docs.cursor.com/context/model-context-protocol#configuring-mcp-servers
+See the guide below for more information on using MCP servers with cursor:
+https://docs.cursor.com/context/model-context-protocol#configuring-mcp-servers
+
+### Claude Desktop
+
+Add the following to your claude_desktop_config.json:
+
+```json
+{
+  "mcpServers": {
+    "circleci-mcp-server": {
+      "command": "npx",
+      "args": ["-y", "@circleci/mcp-server-circleci"],
+      "env": {
+        "CIRCLECI_TOKEN": "your-circleci-token",
+        "CIRCLECI_BASE_URL": "https://circleci.com" // Optional - required for on-prem customers only
+      }
+    }
+  }
+}
+```
+
+To find/create this file, first open your claude desktop settings. Then click on "Developer" in the left-hand bar of the Settings pane, and then click on "Edit Config"
+
+This will create a configuration file at:
+
+- macOS: ~/Library/Application Support/Claude/claude_desktop_config.json
+- Windows: %APPDATA%\Claude\claude_desktop_config.json
+
+### VS Code
+
+Add the MCP server to your settings.json under `mcp -> servers`:
+
+```json
+"circleci-mcp-server": {
+  "command": "npx",
+  "args": ["-y", "@circleci/mcp-server-circleci"],
+  "env": {
+    "CIRCLECI_TOKEN": "your-circleci-token",
+    "CIRCLECI_BASE_URL": "https://circleci.com" // Optional - required for on-prem customers only
+  }
+}
+```
+
+See the guide below for more information on using MCP servers with VS Code:
+https://code.visualstudio.com/docs/copilot/chat/mcp-servers
+
+### Windsurf
+
+Add the following to your windsurf mcp_config.json:
+
+```json
+{
+  "mcpServers": {
+    "circleci-mcp-server": {
+      "command": "npx",
+      "args": ["-y", "@circleci/mcp-server-circleci"],
+      "env": {
+        "CIRCLECI_TOKEN": "your-circleci-token",
+        "CIRCLECI_BASE_URL": "https://circleci.com" // Optional - required for on-prem customers only
+      }
+    }
+  }
+}
+```
+
+See the guide below for more information on using MCP servers with windsurf:
+https://docs.windsurf.com/windsurf/mcp
 
 # Features
 
