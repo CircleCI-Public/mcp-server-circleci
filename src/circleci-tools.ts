@@ -7,6 +7,8 @@ import { projectWorkflowMetricsTool } from './tools/getProjectWorkflowMetrics/to
 import { projectWorkflowMetrics } from './tools/getProjectWorkflowMetrics/handler.js';
 import { projectWorkflowJobMetricsTool } from './tools/getProjectWorkflowJobMetrics/tool.js';
 import { projectWorkflowJobMetrics } from './tools/getProjectWorkflowJobMetrics/handler.js';
+import { projectWorkflowTestMetricsTool } from './tools/getProjectWorkflowTestMetrics/tool.js';
+import { projectWorkflowTestMetrics } from './tools/getProjectWorkflowTestMetrics/handler.js';
 
 // Define the tools with their configurations
 export const CCI_TOOLS = [
@@ -14,6 +16,7 @@ export const CCI_TOOLS = [
   getFlakyTestLogsTool,
   projectWorkflowMetricsTool,
   projectWorkflowJobMetricsTool,
+  projectWorkflowTestMetricsTool,
 ];
 
 // Extract the tool names as a union type
@@ -33,4 +36,5 @@ export const CCI_HANDLERS = {
   find_flaky_tests: getFlakyTestLogs,
   get_project_workflow_metrics: projectWorkflowMetrics,
   get_project_workflow_job_metrics: projectWorkflowJobMetrics,
+  get_project_workflow_test_metrics: projectWorkflowTestMetrics,
 } satisfies ToolHandlers;

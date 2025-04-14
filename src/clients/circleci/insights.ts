@@ -1,4 +1,9 @@
-import { FlakyTest, JobMetrics, WorkflowMetrics } from '../schemas.js';
+import {
+  FlakyTest,
+  JobMetrics,
+  WorkflowMetrics,
+  WorkflowTestMetrics,
+} from '../schemas.js';
 import { HTTPClient } from './httpClient.js';
 import { defaultPaginationOptions } from './index.js';
 import { z } from 'zod';
@@ -43,6 +48,53 @@ export class InsightsAPI {
     }
 
     return parsedResult.data;
+  }
+
+  /**
+   * Get test metrics for a project workflow
+   * @param params Configuration parameters
+   * @param params.projectSlug The project slug (e.g., "gh/CircleCI-Public/api-preview-docs")
+   * @param params.workflowName The name of the workflow
+   * @param params.options Optional configuration for filtering
+   * @param params.options.allBranches Whether to retrieve data for all branches combined
+   * @param params.options.branch The name of a specific branch to analyze
+   * @returns Workflow test metrics
+   * @throws Error if failed to parse workflow test metrics response
+   */
+  async getWorkflowTestMetrics({
+    projectSlug,
+    workflowName,
+    options = {},
+  }: {
+    projectSlug: string;
+    workflowName: string;
+    options?: {
+      allBranches?: boolean;
+      branch?: string;
+    };
+  }): Promise<WorkflowTestMetrics> {
+    const params: Record<string, string | boolean> = {};
+
+    // Add branch filtering params - either all-branches or specific branch
+    if (options.allBranches) {
+      params['all-branches'] = true;
+    } else if (options.branch) {
+      params.branch = options.branch;
+    }
+
+    const rawResult = await this.client.get<unknown>(
+      `/insights/${projectSlug}/workflows/${workflowName}/test-metrics`,
+      params,
+    );
+
+    // Validate the response against our WorkflowTestMetrics schema
+    const result = WorkflowTestMetrics.safeParse(rawResult);
+
+    if (!result.success) {
+      throw new Error('Failed to parse workflow test metrics response');
+    }
+
+    return result.data;
   }
 
   /**

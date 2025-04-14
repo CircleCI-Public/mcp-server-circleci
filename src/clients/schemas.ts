@@ -47,6 +47,51 @@ const JobMetricsSchema = z.object({
   window_end: z.string(),
 });
 
+const WorkflowTestMetricsSchema = z.object({
+  average_test_count: z.number(),
+  most_failed_tests: z.array(
+    z.object({
+      test_name: z.string(),
+      classname: z.string().optional(),
+      file: z.string().optional(),
+      source: z.string().optional(),
+      pipeline_number: z.number().optional(),
+      workflow_id: z.string().optional(),
+      job_number: z.number().optional(),
+      job_name: z.string().optional(),
+      fail_rate: z.number(),
+    }),
+  ),
+  most_failed_tests_extra: z.number(),
+  slowest_tests: z.array(
+    z.object({
+      test_name: z.string(),
+      classname: z.string().optional(),
+      file: z.string().optional(),
+      source: z.string().optional(),
+      pipeline_number: z.number().optional(),
+      workflow_id: z.string().optional(),
+      job_number: z.number().optional(),
+      job_name: z.string().optional(),
+      duration: z.number(),
+    }),
+  ),
+  slowest_tests_extra: z.number(),
+  total_test_runs: z.number(),
+  test_runs: z.array(
+    z.object({
+      pipeline_number: z.number(),
+      workflow_id: z.string(),
+      success_rate: z.number(),
+      tests_count: z.number(),
+      tests_failed: z.number(),
+      tests_success: z.number(),
+      tests_skipped: z.number().optional(),
+      tests_walltime: z.number().optional(),
+    }),
+  ),
+});
+
 const FollowedProjectSchema = z.object({
   name: z.string(),
   slug: z.string(),
@@ -148,3 +193,6 @@ export type WorkflowMetrics = z.infer<typeof WorkflowMetricsSchema>;
 
 export const JobMetrics = JobMetricsSchema;
 export type JobMetrics = z.infer<typeof JobMetricsSchema>;
+
+export const WorkflowTestMetrics = WorkflowTestMetricsSchema;
+export type WorkflowTestMetrics = z.infer<typeof WorkflowTestMetricsSchema>;
