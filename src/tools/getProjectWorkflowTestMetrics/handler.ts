@@ -115,10 +115,15 @@ function formatTestMetrics(metrics: WorkflowTestMetrics): string {
   if (metrics.most_failed_tests.length === 0) {
     result += 'No failing tests found.\n\n';
   } else {
-    result += '| Test Name | Class Name | Failure Rate |\n';
-    result += '|-----------|------------|-------------|\n';
+    result +=
+      '| Test Name | Class Name | File | Job Name | Failure Rate | Flaky |\n';
+    result +=
+      '|-----------|------------|------|----------|--------------|--------|\n';
     metrics.most_failed_tests.forEach((test) => {
-      result += `| ${test.test_name} | ${test.classname || 'N/A'} | ${(test.fail_rate * 100).toFixed(2)}% |\n`;
+      const failureRate = test.failed_runs
+        ? ((test.failed_runs / test.total_runs) * 100).toFixed(2)
+        : 'N/A';
+      result += `| ${test.test_name} | ${test.classname || 'N/A'} | ${test.file || 'N/A'} | ${test.job_name} | ${failureRate}% | ${test.flaky ? '✓' : '-'} |\n`;
     });
 
     if (metrics.most_failed_tests_extra > 0) {
@@ -132,10 +137,12 @@ function formatTestMetrics(metrics: WorkflowTestMetrics): string {
   if (metrics.slowest_tests.length === 0) {
     result += 'No test duration data available.\n\n';
   } else {
-    result += '| Test Name | Class Name | Duration |\n';
-    result += '|-----------|------------|----------|\n';
+    result +=
+      '| Test Name | Class Name | File | Job Name | P95 Duration | Total Runs |\n';
+    result +=
+      '|-----------|------------|------|----------|--------------|------------|\n';
     metrics.slowest_tests.forEach((test) => {
-      result += `| ${test.test_name} | ${test.classname || 'N/A'} | ${formatDuration(test.duration)} |\n`;
+      result += `| ${test.test_name} | ${test.classname || 'N/A'} | ${test.file || 'N/A'} | ${test.job_name} | ${test.p95_duration ? formatDuration(test.p95_duration) : 'N/A'} | ${test.total_runs} |\n`;
     });
 
     if (metrics.slowest_tests_extra > 0) {
@@ -146,12 +153,16 @@ function formatTestMetrics(metrics: WorkflowTestMetrics): string {
 
   // Test runs summary
   result += '## Recent Test Runs\n\n';
-  result +=
-    '| Pipeline # | Success Rate | Tests Count | Failed | Passed | Skipped | Wall Time |\n';
-  result +=
-    '|------------|--------------|-------------|--------|--------|---------|----------|\n';
+  result += '| Pipeline # | Success Rate | Test Counts |\n';
+  result += '|------------|--------------|-------------|\n';
   metrics.test_runs.forEach((run) => {
-    result += `| ${run.pipeline_number} | ${(run.success_rate * 100).toFixed(2)}% | ${run.tests_count} | ${run.tests_failed} | ${run.tests_success} | ${run.tests_skipped || 0} | ${run.tests_walltime ? formatDuration(run.tests_walltime) : 'N/A'} |\n`;
+    const successRate = run.success_rate
+      ? (run.success_rate * 100).toFixed(2)
+      : 'N/A';
+    const testCounts = Object.entries(run.test_counts as Record<string, number>)
+      .map(([key, value]) => `${key}: ${value}`)
+      .join(', ');
+    result += `| ${run.pipeline_number} | ${successRate}% | ${testCounts} |\n`;
   });
 
   return result;

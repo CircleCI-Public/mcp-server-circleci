@@ -91,7 +91,11 @@ export class InsightsAPI {
     const result = WorkflowTestMetrics.safeParse(rawResult);
 
     if (!result.success) {
-      throw new Error('Failed to parse workflow test metrics response');
+      throw new Error(
+        `Failed to parse workflow test metrics response: ${result.error.issues
+          .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
+          .join(', ')}`,
+      );
     }
 
     return result.data;
