@@ -22,7 +22,7 @@ export class ConfigValidateAPI {
   }): Promise<ConfigValidate> {
     const rawResult = await this.client.post<unknown>(
       `/compile-config-with-defaults`,
-      { config_yaml: JSON.stringify({ config_yaml: config }) },
+      { config_yaml: config },
     );
 
     console.error('rawResult', rawResult);

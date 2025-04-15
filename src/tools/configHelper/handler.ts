@@ -7,24 +7,27 @@ export const configHelper: ToolCallback<{
 }> = async (args) => {
   const { configFile } = args.params;
 
-  console.error(configFile);
-
   const circleci = getCircleCIClient();
-
-  // verify the config file is valid
-  // const config = yaml.parse(configFile);
-  // then validate on cci api
   const configValidate = await circleci.configValidate.validateConfig({
     config: configFile,
   });
 
-  console.error(configValidate);
+  if (configValidate.valid) {
+    return {
+      content: [
+        {
+          type: 'text',
+          text: 'Your config is valid!',
+        },
+      ],
+    };
+  }
 
   return {
     content: [
       {
         type: 'text',
-        text: 'Hello, world!',
+        text: `There are some issues with your config: ${configValidate.errors.map((error) => error.message).join('\n')}`,
       },
     ],
   };

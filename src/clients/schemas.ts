@@ -63,10 +63,13 @@ const PaginatedTestResponseSchema = z.object({
   next_page_token: z.string().nullable(),
 });
 
-// TODO: will need to update this schema to match the actual response
 const ConfigValidateSchema = z.object({
-  errors: z.array(z.string()),
-  warnings: z.array(z.string()),
+  valid: z.boolean(),
+  errors: z.array(
+    z.object({
+      message: z.string(),
+    }),
+  ),
 });
 
 export const Test = TestSchema;
