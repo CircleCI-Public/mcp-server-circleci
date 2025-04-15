@@ -2,9 +2,21 @@ export class HTTPClient {
   protected baseURL: string;
   protected headers: HeadersInit;
 
-  constructor(apiPath: string, headers?: HeadersInit) {
+  constructor(
+    apiPath: string,
+    options?: {
+      headers?: HeadersInit;
+      useAPISubdomain?: boolean;
+    },
+  ) {
+    const { headers, useAPISubdomain = true } = options || {};
     this.baseURL =
-      (process.env.CIRCLECI_BASE_URL || 'https://api.circleci.com') + apiPath; // TODO: this is a hack to get the baseURL to work, needs to be configurable on a per-client basis
+      (process.env.CIRCLECI_BASE_URL || 'https://circleci.com') + apiPath; // TODO: this is a hack to get the baseURL to work, needs to be configurable on a per-client basis
+
+    if (useAPISubdomain) {
+      // as api as a subdomain of the baseURL, find `https://` and replace it with `https://api.`
+      this.baseURL = this.baseURL.replace('https://', 'https://api.');
+    }
 
     if (headers) {
       this.headers = headers;

@@ -51,7 +51,7 @@ const defaultV2HTTPClient = (options: { token: string }) => {
   }
 
   const headers = createCircleCIHeaders({ token: options.token });
-  return new HTTPClient('/api/v2', headers);
+  return new HTTPClient('/api/v2', { headers });
 };
 
 /**
@@ -67,7 +67,19 @@ const defaultV1HTTPClient = (options: { token: string; baseURL?: string }) => {
   }
 
   const headers = createCircleCIHeaders({ token: options.token });
-  return new HTTPClient('/api/v1.1', headers);
+  return new HTTPClient('/api/v1.1', { headers });
+};
+
+const defaultApiSubdomainV2HTTPClient = (options: {
+  token: string;
+  baseURL?: string;
+}) => {
+  if (!options.token) {
+    throw new Error('Token is required');
+  }
+
+  const headers = createCircleCIHeaders({ token: options.token });
+  return new HTTPClient('/api/v2', { headers, useAPISubdomain: true });
 };
 
 /**
@@ -95,11 +107,15 @@ export class CircleCIClients {
     v1httpClient = defaultV1HTTPClient({
       token,
     }),
+    apiSubdomainV2httpClient = defaultApiSubdomainV2HTTPClient({
+      token,
+    }),
   }: {
     token: string;
     baseURL?: string;
     v2httpClient?: HTTPClient;
     v1httpClient?: HTTPClient;
+    apiSubdomainV2httpClient?: HTTPClient;
   }) {
     this.jobs = new JobsAPI(v2httpClient);
     this.pipelines = new PipelinesAPI(v2httpClient);
@@ -107,6 +123,6 @@ export class CircleCIClients {
     this.jobsV1 = new JobsV1API(v1httpClient);
     this.insights = new InsightsAPI(v2httpClient);
     this.tests = new TestsAPI(v2httpClient);
-    this.configValidate = new ConfigValidateAPI(v2httpClient); // needs to have a baseURL of api.circleci.com
+    this.configValidate = new ConfigValidateAPI(apiSubdomainV2httpClient); // needs to have a baseURL of api.circleci.com
   }
 }

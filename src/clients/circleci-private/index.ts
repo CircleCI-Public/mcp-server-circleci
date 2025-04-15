@@ -15,10 +15,9 @@ const defaultPrivateHTTPClient = (options: { token: string }) => {
     throw new Error('Token is required');
   }
 
-  return new HTTPClient(
-    '/api/private',
-    createCircleCIHeaders({ token: options.token }),
-  );
+  return new HTTPClient('/api/private', {
+    headers: createCircleCIHeaders({ token: options.token }),
+  });
 };
 
 export class CircleCIPrivateClients {
