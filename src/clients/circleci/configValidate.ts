@@ -25,6 +25,7 @@ export class ConfigValidateAPI {
       { config_yaml: config },
     );
 
+    console.error(rawResult);
     const parsedResult = ConfigValidate.safeParse(rawResult);
 
     if (!parsedResult.success) {

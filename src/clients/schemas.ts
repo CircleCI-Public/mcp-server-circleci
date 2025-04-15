@@ -65,11 +65,15 @@ const PaginatedTestResponseSchema = z.object({
 
 const ConfigValidateSchema = z.object({
   valid: z.boolean(),
-  errors: z.array(
-    z.object({
-      message: z.string(),
-    }),
-  ),
+  errors: z
+    .array(
+      z.object({
+        message: z.string(),
+      }),
+    )
+    .nullable(),
+  'output-yaml': z.string(),
+  'source-yaml': z.string(),
 });
 
 export const Test = TestSchema;

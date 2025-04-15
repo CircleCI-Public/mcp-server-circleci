@@ -27,7 +27,7 @@ export const configHelper: ToolCallback<{
     content: [
       {
         type: 'text',
-        text: `There are some issues with your config: ${configValidate.errors.map((error) => error.message).join('\n')}`,
+        text: `There are some issues with your config: ${configValidate.errors?.map((error) => error.message).join('\n') ?? 'Unknown error'}`,
       },
     ],
   };
