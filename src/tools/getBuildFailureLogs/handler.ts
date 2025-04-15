@@ -15,11 +15,6 @@ export const getBuildFailureLogs: ToolCallback<{
 }> = async (args) => {
   const { workspaceRoot, gitRemoteURL, branch, projectURL } = args.params;
 
-  if (!process.env.CIRCLECI_TOKEN) {
-    throw new Error('CIRCLECI_TOKEN is not set');
-  }
-
-  const token = process.env.CIRCLECI_TOKEN;
   let projectSlug: string | undefined;
   let pipelineNumber: number | undefined;
   let branchFromURL: string | undefined;
@@ -30,7 +25,6 @@ export const getBuildFailureLogs: ToolCallback<{
     branchFromURL = getBranchFromURL(projectURL);
   } else if (workspaceRoot && gitRemoteURL && branch) {
     projectSlug = await identifyProjectSlug({
-      token,
       gitRemoteURL,
     });
   } else {

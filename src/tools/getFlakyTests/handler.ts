@@ -14,18 +14,12 @@ export const getFlakyTestLogs: ToolCallback<{
 }> = async (args) => {
   const { workspaceRoot, gitRemoteURL, projectURL } = args.params;
 
-  if (!process.env.CIRCLECI_TOKEN) {
-    throw new Error('CIRCLECI_TOKEN is not set');
-  }
-
-  const token = process.env.CIRCLECI_TOKEN;
   let projectSlug: string | null | undefined;
 
   if (projectURL) {
     projectSlug = getProjectSlugFromURL(projectURL);
   } else if (workspaceRoot && gitRemoteURL) {
     projectSlug = await identifyProjectSlug({
-      token,
       gitRemoteURL,
     });
   } else {

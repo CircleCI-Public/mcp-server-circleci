@@ -1,4 +1,4 @@
-import { CircleCIPrivateClients } from '../../clients/circleci-private/index.js';
+import { getCircleCIPrivateClient } from '../../clients/client.js';
 import { getVCSFromHost } from './vcsTool.js';
 import gitUrlParse from 'parse-github-url';
 
@@ -8,15 +8,11 @@ import gitUrlParse from 'parse-github-url';
  * @returns {string} project slug - eg: gh/organization/project
  */
 export const identifyProjectSlug = async ({
-  token,
   gitRemoteURL,
 }: {
-  token: string;
   gitRemoteURL: string;
 }) => {
-  const cciPrivateClients = new CircleCIPrivateClients({
-    token,
-  });
+  const cciPrivateClients = getCircleCIPrivateClient();
 
   const parsedGitURL = gitUrlParse(gitRemoteURL);
   if (!parsedGitURL?.host) {

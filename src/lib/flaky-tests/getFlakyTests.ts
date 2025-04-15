@@ -1,11 +1,8 @@
-import { CircleCIClients } from '../../clients/circleci/index.js';
+import { getCircleCIClient } from '../../clients/client.js';
 import { Test } from '../../clients/schemas.js';
 
-const circleci = new CircleCIClients({
-  token: process.env.CIRCLECI_TOKEN || '',
-});
-
 const getFlakyTests = async ({ projectSlug }: { projectSlug: string }) => {
+  const circleci = getCircleCIClient();
   const flakyTests = await circleci.insights.getProjectFlakyTests({
     projectSlug,
   });
@@ -30,6 +27,12 @@ const getFlakyTests = async ({ projectSlug }: { projectSlug: string }) => {
 };
 
 export const formatFlakyTests = (tests: Test[]) => {
+  if (tests.length === 0) {
+    return {
+      content: [{ type: 'text' as const, text: 'No flaky tests found' }],
+    };
+  }
+
   return {
     content: [
       {

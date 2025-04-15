@@ -1,4 +1,4 @@
-import { CircleCIClients } from '../../clients/circleci/index.js';
+import { getCircleCIClient } from '../../clients/client.js';
 import { Pipeline } from '../../clients/schemas.js';
 import getJobLogs from './getJobLogs.js';
 
@@ -13,9 +13,7 @@ const getPipelineJobLogs = async ({
   branch,
   pipelineNumber,
 }: GetPipelineJobLogsParams) => {
-  const circleci = new CircleCIClients({
-    token: process.env.CIRCLECI_TOKEN || '',
-  });
+  const circleci = getCircleCIClient();
   let pipeline: Pipeline | undefined;
 
   if (pipelineNumber) {

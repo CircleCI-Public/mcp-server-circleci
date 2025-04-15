@@ -1,5 +1,5 @@
-import { CircleCIPrivateClients } from '../../clients/circleci-private/index.js';
-import { CircleCIClients } from '../../clients/circleci/index.js';
+import { getCircleCIPrivateClient } from '../../clients/client.js';
+import { getCircleCIClient } from '../../clients/client.js';
 
 export type GetJobLogsParams = {
   projectSlug: string;
@@ -33,13 +33,8 @@ const getJobLogs = async ({
   jobNumbers,
   failedStepsOnly = true,
 }: GetJobLogsParams): Promise<JobWithStepLogs[]> => {
-  const circleci = new CircleCIClients({
-    token: process.env.CIRCLECI_TOKEN || '',
-  });
-
-  const circleciPrivate = new CircleCIPrivateClients({
-    token: process.env.CIRCLECI_TOKEN || '',
-  });
+  const circleci = getCircleCIClient();
+  const circleciPrivate = getCircleCIPrivateClient();
 
   const jobsDetails = await Promise.all(
     jobNumbers.map(async (jobNumber) => {
