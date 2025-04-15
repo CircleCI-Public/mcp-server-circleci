@@ -5,6 +5,7 @@ import { InsightsAPI } from './insights.js';
 import { PipelinesAPI } from './pipelines.js';
 import { WorkflowsAPI } from './workflows.js';
 import { TestsAPI } from './tests.js';
+import { ConfigValidateAPI } from './configValidate.js';
 export type TCircleCIClient = InstanceType<typeof CircleCIClients>;
 
 export const defaultPaginationOptions = {
@@ -85,7 +86,7 @@ export class CircleCIClients {
   public jobsV1: JobsV1API;
   public insights: InsightsAPI;
   public tests: TestsAPI;
-
+  public configValidate: ConfigValidateAPI;
   constructor({
     token,
     v2httpClient = defaultV2HTTPClient({
@@ -106,5 +107,6 @@ export class CircleCIClients {
     this.jobsV1 = new JobsV1API(v1httpClient);
     this.insights = new InsightsAPI(v2httpClient);
     this.tests = new TestsAPI(v2httpClient);
+    this.configValidate = new ConfigValidateAPI(v2httpClient); // needs to have a baseURL of api.circleci.com
   }
 }

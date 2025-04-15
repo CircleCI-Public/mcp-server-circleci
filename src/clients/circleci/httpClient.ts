@@ -4,7 +4,7 @@ export class HTTPClient {
 
   constructor(apiPath: string, headers?: HeadersInit) {
     this.baseURL =
-      (process.env.CIRCLECI_BASE_URL || 'https://circleci.com') + apiPath;
+      (process.env.CIRCLECI_BASE_URL || 'https://api.circleci.com') + apiPath; // TODO: this is a hack to get the baseURL to work, needs to be configurable on a per-client basis
 
     if (headers) {
       this.headers = headers;

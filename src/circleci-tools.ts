@@ -3,9 +3,15 @@ import { getBuildFailureLogsTool } from './tools/getBuildFailureLogs/tool.js';
 import { getBuildFailureLogs } from './tools/getBuildFailureLogs/handler.js';
 import { getFlakyTestLogsTool } from './tools/getFlakyTests/tool.js';
 import { getFlakyTestLogs } from './tools/getFlakyTests/handler.js';
+import { configHelper } from './tools/configHelper/handler.js';
+import { configHelperTool } from './tools/configHelper/tool.js';
 
 // Define the tools with their configurations
-export const CCI_TOOLS = [getBuildFailureLogsTool, getFlakyTestLogsTool];
+export const CCI_TOOLS = [
+  getBuildFailureLogsTool,
+  getFlakyTestLogsTool,
+  configHelperTool,
+];
 
 // Extract the tool names as a union type
 type CCIToolName = (typeof CCI_TOOLS)[number]['name'];
@@ -22,4 +28,5 @@ type ToolHandlers = {
 export const CCI_HANDLERS = {
   get_build_failure_logs: getBuildFailureLogs,
   find_flaky_tests: getFlakyTestLogs,
+  config_helper: configHelper,
 } satisfies ToolHandlers;
