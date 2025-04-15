@@ -9,7 +9,7 @@ export class HTTPClient {
       useAPISubdomain?: boolean;
     },
   ) {
-    const { headers, useAPISubdomain = true } = options || {};
+    const { headers, useAPISubdomain = false } = options || {};
     this.baseURL =
       (process.env.CIRCLECI_BASE_URL || 'https://circleci.com') + apiPath; // TODO: this is a hack to get the baseURL to work, needs to be configurable on a per-client basis
 

@@ -11,7 +11,7 @@ describe('HTTPClient', () => {
   beforeEach(() => {
     // Clear any environment variables before each test
     delete process.env.CIRCLECI_BASE_URL;
-    client = new HTTPClient(apiPath, headers);
+    client = new HTTPClient(apiPath, { headers });
     global.fetch = vi.fn();
   });
 
@@ -30,7 +30,7 @@ describe('HTTPClient', () => {
     it('should use CIRCLECI_BASE_URL when set', () => {
       const customBaseURL = 'https://custom-circleci.example.com';
       process.env.CIRCLECI_BASE_URL = customBaseURL;
-      const customClient = new HTTPClient(apiPath, headers);
+      const customClient = new HTTPClient(apiPath, { headers });
       const url = (customClient as any).buildURL('/test');
       expect(url.toString()).toBe(`${customBaseURL}${apiPath}/test`);
     });
