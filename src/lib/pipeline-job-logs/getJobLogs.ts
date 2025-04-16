@@ -1,5 +1,6 @@
 import { getCircleCIPrivateClient } from '../../clients/client.js';
 import { getCircleCIClient } from '../../clients/client.js';
+import { batchPromises } from '../batchPromises/index.js';
 
 export type GetJobLogsParams = {
   projectSlug: string;
@@ -36,13 +37,18 @@ const getJobLogs = async ({
   const circleci = getCircleCIClient();
   const circleciPrivate = getCircleCIPrivateClient();
 
-  const jobsDetails = await Promise.all(
-    jobNumbers.map(async (jobNumber) => {
-      return await circleci.jobsV1.getJobDetails({
-        projectSlug,
-        jobNumber,
-      });
-    }),
+  const jobsDetails = await batchPromises(
+    jobNumbers.map(
+      (jobNumber) => () =>
+        circleci.jobsV1.getJobDetails({
+          projectSlug,
+          jobNumber,
+        }),
+    ),
+    {
+      maxConcurrent: 20,
+      delayMs: 1000,
+    },
   );
 
   const allLogs = await Promise.all(
