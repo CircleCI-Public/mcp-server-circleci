@@ -3,7 +3,7 @@ import { configHelperInputSchema } from './inputSchema.js';
 export const configHelperTool = {
   name: 'config_helper' as const,
   description: `
-  This tool helps analyze and validate CircleCI configuration files.
+  This tool helps analyze and validate and fix CircleCI configuration files.
 
   Parameters:
   - params: An object containing:
@@ -17,6 +17,10 @@ export const configHelperTool = {
   }
 
   Note: The configFile content should be provided as a properly escaped string with newlines represented as \n.
+
+  Tool output instructions:
+    - If the config is invalid, the tool will return the errors and the original config. Use the errors to fix the config.
+    - If the config is valid, do nothing.
   `,
   inputSchema: configHelperInputSchema,
 };
