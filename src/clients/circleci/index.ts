@@ -44,13 +44,19 @@ export function createCircleCIHeaders({
  * @param options.token CircleCI API token
  * @returns HTTP client for CircleCI API v2
  */
-const defaultV2HTTPClient = (options: { token: string }) => {
+const defaultV2HTTPClient = (options: {
+  token: string;
+  useAPISubdomain?: boolean;
+}) => {
   if (!options.token) {
     throw new Error('Token is required');
   }
 
   const headers = createCircleCIHeaders({ token: options.token });
-  return new HTTPClient('/api/v2', { headers });
+  return new HTTPClient('/api/v2', {
+    headers,
+    useAPISubdomain: options.useAPISubdomain,
+  });
 };
 
 /**
@@ -59,22 +65,19 @@ const defaultV2HTTPClient = (options: { token: string }) => {
  * @param options.token CircleCI API token
  * @returns HTTP client for CircleCI API v1
  */
-const defaultV1HTTPClient = (options: { token: string }) => {
+const defaultV1HTTPClient = (options: {
+  token: string;
+  useAPISubdomain?: boolean;
+}) => {
   if (!options.token) {
     throw new Error('Token is required');
   }
 
   const headers = createCircleCIHeaders({ token: options.token });
-  return new HTTPClient('/api/v1.1', { headers });
-};
-
-const defaultApiSubdomainV2HTTPClient = (options: { token: string }) => {
-  if (!options.token) {
-    throw new Error('Token is required');
-  }
-
-  const headers = createCircleCIHeaders({ token: options.token });
-  return new HTTPClient('/api/v2', { headers, useAPISubdomain: true });
+  return new HTTPClient('/api/v1.1', {
+    headers,
+    useAPISubdomain: options.useAPISubdomain,
+  });
 };
 
 /**
@@ -101,8 +104,9 @@ export class CircleCIClients {
     v1httpClient = defaultV1HTTPClient({
       token,
     }),
-    apiSubdomainV2httpClient = defaultApiSubdomainV2HTTPClient({
+    apiSubdomainV2httpClient = defaultV2HTTPClient({
       token,
+      useAPISubdomain: true,
     }),
   }: {
     token: string;
