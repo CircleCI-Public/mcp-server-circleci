@@ -159,10 +159,11 @@ https://docs.windsurf.com/windsurf/mcp
 - `find_flaky_tests`
 
   Identifies flaky tests in your CircleCI project by analyzing test execution history. This leverages the flaky test detection feature described here: https://circleci.com/blog/introducing-test-insights-with-flaky-test-detection/#flaky-test-detection
-  
+
   This tool can be used in two ways:
 
   1. Using CircleCI Project URL:
+
      - Provide the project URL directly from CircleCI
      - Example: "Find flaky tests in https://app.circleci.com/pipelines/github/org/repo"
 
@@ -178,9 +179,30 @@ https://docs.windsurf.com/windsurf/mcp
   - Failure messages and contexts
 
   This helps you:
+
   - Identify unreliable tests in your test suite
   - Get detailed context about test failures
   - Make data-driven decisions about test improvements
+
+- `config_helper`
+
+  Assists with CircleCI configuration tasks by providing guidance and validation. This tool helps you:
+
+  1. Validate CircleCI Config:
+     - Checks your .circleci/config.yml for syntax and semantic errors
+     - Example: "Validate my CircleCI config"
+
+  The tool provides:
+
+  - Detailed validation results
+  - Configuration recommendations
+
+  This helps you:
+
+  - Catch configuration errors before pushing
+  - Learn CircleCI configuration best practices
+  - Troubleshoot configuration issues
+  - Implement CircleCI features correctly
 
 # Development
 
