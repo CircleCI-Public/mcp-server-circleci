@@ -2,6 +2,7 @@ import { getCircleCIPrivateClient } from '../../clients/client.js';
 import { getCircleCIClient } from '../../clients/client.js';
 import { rateLimitedRequests } from '../rateLimitedRequests/index.js';
 import { JobDetails } from '../../clients/schemas.js';
+import outputTextTruncated, { SEPARATOR } from '../outputTextTruncated.js';
 
 export type GetJobLogsParams = {
   projectSlug: string;
@@ -120,16 +121,10 @@ export function formatJobLogs(jobStepLogs: JobWithStepLogs[]) {
       ],
     };
   }
-  return {
-    content: [
-      {
-        type: 'text' as const,
-        text: jobStepLogs
-          .map((log) => `=====\nJob: ${log.jobName}\n` + formatSteps(log))
-          .join('\n'),
-      },
-    ],
-  };
+  const outputText = jobStepLogs
+    .map((log) => `${SEPARATOR}Job: ${log.jobName}\n` + formatSteps(log))
+    .join('\n');
+  return outputTextTruncated(outputText);
 }
 
 const formatSteps = (jobStepLog: JobWithStepLogs) => {
