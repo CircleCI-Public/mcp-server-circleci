@@ -1,5 +1,6 @@
 import { getCircleCIClient } from '../../clients/client.js';
 import { Test } from '../../clients/schemas.js';
+import { rateLimitedRequests } from '../rateLimitedRequests/index.js';
 
 const getFlakyTests = async ({ projectSlug }: { projectSlug: string }) => {
   const circleci = getCircleCIClient();
@@ -13,15 +14,26 @@ const getFlakyTests = async ({ projectSlug }: { projectSlug: string }) => {
 
   const jobNumbers = flakyTests.flaky_tests.map((test) => test.job_number);
 
-  const testsPromises = jobNumbers.map(async (jobNumber) => {
-    const tests = await circleci.tests.getJobTests({
-      projectSlug,
-      jobNumber,
-    });
-    return tests;
-  });
-
-  const testsArrays = await Promise.all(testsPromises);
+  const testsArrays = await rateLimitedRequests(
+    jobNumbers.map((jobNumber) => async () => {
+      try {
+        const tests = await circleci.tests.getJobTests({
+          projectSlug,
+          jobNumber,
+        });
+        return tests;
+      } catch (error) {
+        if (error instanceof Error && error.message.includes('404')) {
+          console.error(`Job ${jobNumber} not found:`, error);
+          return [];
+        } else if (error instanceof Error && error.message.includes('429')) {
+          console.error(`Rate limited for job request ${jobNumber}:`, error);
+          return [];
+        }
+        throw error;
+      }
+    }),
+  );
 
   return testsArrays.flat().filter((test) => test.result === 'failure');
 };
