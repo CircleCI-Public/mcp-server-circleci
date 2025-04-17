@@ -5,7 +5,7 @@ export const SEPARATOR = '<<<MCP_OUTPUT_SEPARATOR>>>\n';
 const outputTextTruncated = (outputText: string) => {
   if (outputText.length > MAX_LENGTH) {
     const truncationNotice =
-      '<MCPTruncationWarning>⚠️ Output has been truncated due to length. Showing last entries up to size limit.\n\n</MCPTruncationWarning>';
+      '<MCPTruncationWarning>⚠️ Output has been truncated due to length. Showing last entries up to size limit.</MCPTruncationWarning>\n\n';
 
     const entries = outputText.split(SEPARATOR);
 

@@ -24,6 +24,7 @@ export const getBuildFailureLogsTool = {
     - If using Option 1, the URLs MUST be provided by the user - do not attempt to construct or guess URLs
     - If using Option 2, ALL THREE parameters (workspaceRoot, gitRemoteURL, branch) must be provided
     - If neither option can be fully satisfied, ask the user for the missing information before making the tool call
+    - When the output is truncated due to length, inform the user that they are seeing the most recent entries up to the size limit and that earlier logs have been omitted
     `,
   inputSchema: getBuildFailureOutputInputSchema,
 };
