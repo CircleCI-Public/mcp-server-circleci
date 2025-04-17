@@ -1,0 +1,25 @@
+refactor: replace batchPromises with rateLimitedRequests                                                
+                                                                                                         
+ - Remove `batchPromises` utility and associated tests.                                                  
+ - Implement `rateLimitedRequests` for handling API rate limits.                                         
+ - Update `getJobLogs` to use `rateLimitedRequests` instead of `batchPromises`.                          
+ - Add tests for `rateLimitedRequests` to ensure proper functionality.                                   
+ - Handle 404 and 429 HTTP errors gracefully in `getJobLogs`.                                            
+ - Include progress and batch completion callbacks in `rateLimitedRequests`.
+   
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# On branch fix/32-circleci-rate-limit-handling
+# Your branch is up to date with 'origin/fix/32-circleci-rate-limit-handling'.
+#
+# Changes to be committed:
+#	deleted:    src/lib/batchPromises/batchPromises.test.ts
+#	deleted:    src/lib/batchPromises/index.ts
+#	modified:   src/lib/pipeline-job-logs/getJobLogs.ts
+#	new file:   src/lib/rateLimitedRequests/index.test.ts
+#	new file:   src/lib/rateLimitedRequests/index.ts
+#
+# Changes not staged for commit:
+#	modified:   src/lib/rateLimitedRequests/index.test.ts
+#
