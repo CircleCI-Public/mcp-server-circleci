@@ -7,6 +7,13 @@ export const getFlakyTestLogsTool = {
     
     The agent receiving this output MUST analyze the flaky test data and implement appropriate fixes based on the specific issues identified.
 
+    CRITICAL REQUIREMENTS:
+    1. Truncation Handling (HIGHEST PRIORITY):
+       - ALWAYS check for <MCPTruncationWarning> in the output
+       - When present, you MUST start your response with:
+         "WARNING: The logs have been truncated. Only showing the most recent entries. Earlier build failures may not be visible."
+       - Only proceed with log analysis after acknowledging the truncation
+
     Input options (EXACTLY ONE of these two options must be used):
 
     Option 1 - Direct URL (provide ONE of these):
@@ -20,7 +27,7 @@ export const getFlakyTestLogsTool = {
     - workspaceRoot: The absolute path to the workspace root
     - gitRemoteURL: The URL of the git remote repository
 
-    IMPORTANT:
+    Additional Requirements:
     - Never call this tool with incomplete parameters
     - If using Option 1, the URLs MUST be provided by the user - do not attempt to construct or guess URLs
     - If using Option 2, BOTH parameters (workspaceRoot, gitRemoteURL) must be provided

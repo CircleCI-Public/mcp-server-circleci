@@ -5,10 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.10] - 2025-04-17
+
+### Fixed
+
+- Fixed rate limiting issues when fetching job logs and flaky tests (#32)
+  - Implemented `rateLimitedRequests` utility for controlled API request batching
+  - Added configurable batch size and interval controls
+  - Improved error handling for rate-limited responses
+  - Added progress tracking for batch operations
+  - Applied rate limiting fix to both job logs and flaky test detection
+  - Enhanced reliability of test results retrieval
+
+### Improvements
+
+- Enhanced HTTP client configuration flexibility
+  - Configurable base URL through environment variables
+  - Better support for different CircleCI deployment scenarios
+  - Streamlined client initialization process
+- Added output text truncation
+  - Prevents response overload by limiting output size
+  - Includes clear warning when content is truncated
+  - Preserves most recent and relevant information
+
 ## [0.1.9] - 2025-04-16
 
 ### Added
 
+- Added support for API subdomain configuration in CircleCI client
+  - New `useAPISubdomain` option in HTTP client configuration
+  - Automatic subdomain handling for API-specific endpoints
+  - Improved support for CircleCI enterprise and on-premise installations
 - Added `config_helper` tool to assist with CircleCI configuration tasks
   - Support for validating .circleci/config.yml files
   - Integration with CircleCI Config Validation API
