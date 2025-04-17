@@ -1,4 +1,4 @@
-const MAX_LENGTH = 100000;
+const MAX_LENGTH = 500000;
 
 export const SEPARATOR = '<<<MCP_OUTPUT_SEPARATOR>>>\n';
 
@@ -6,7 +6,6 @@ const outputTextTruncated = (outputText: string) => {
   if (outputText.length > MAX_LENGTH) {
     const truncationNotice = `<MCPTruncationWarning>
 ⚠️ TRUNCATED OUTPUT WARNING ⚠️
-- Original length: ${outputText.length} characters
 - Showing only most recent entries
 </MCPTruncationWarning>\n\n`;
 
