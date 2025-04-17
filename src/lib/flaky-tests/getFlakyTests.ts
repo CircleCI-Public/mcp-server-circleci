@@ -1,6 +1,7 @@
 import { getCircleCIClient } from '../../clients/client.js';
 import { Test } from '../../clients/schemas.js';
 import { rateLimitedRequests } from '../rateLimitedRequests/index.js';
+import outputTextTruncated, { SEPARATOR } from '../outputTextTruncated.js';
 
 const getFlakyTests = async ({ projectSlug }: { projectSlug: string }) => {
   const circleci = getCircleCIClient();
@@ -45,26 +46,21 @@ export const formatFlakyTests = (tests: Test[]) => {
     };
   }
 
-  return {
-    content: [
-      {
-        type: 'text' as const,
-        text: tests
-          .map((test) => {
-            const fields = [
-              test.file && `File Name: ${test.file}`,
-              test.classname && `Classname: ${test.classname}`,
-              test.name && `Test name: ${test.name}`,
-              test.result && `Result: ${test.result}`,
-              test.run_time && `Run time: ${test.run_time}`,
-              test.message && `Message: ${test.message}`,
-            ].filter(Boolean);
-            return `=====\n${fields.join('\n')}`;
-          })
-          .join('\n'),
-      },
-    ],
-  };
+  const outputText = tests
+    .map((test) => {
+      const fields = [
+        test.file && `File Name: ${test.file}`,
+        test.classname && `Classname: ${test.classname}`,
+        test.name && `Test name: ${test.name}`,
+        test.result && `Result: ${test.result}`,
+        test.run_time && `Run time: ${test.run_time}`,
+        test.message && `Message: ${test.message}`,
+      ].filter(Boolean);
+      return `${SEPARATOR}${fields.join('\n')}`;
+    })
+    .join('\n');
+
+  return outputTextTruncated(outputText);
 };
 
 export default getFlakyTests;
