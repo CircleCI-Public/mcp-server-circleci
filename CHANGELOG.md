@@ -7,13 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.10] - 2025-04-17
 
-### Added
-
-- Added support for API subdomain configuration in CircleCI client
-  - New `useAPISubdomain` option in HTTP client configuration
-  - Automatic subdomain handling for API-specific endpoints
-  - Improved support for CircleCI enterprise and on-premise installations
-
 ### Fixed
 
 - Fixed rate limiting issues when fetching job logs and flaky tests (#32)
@@ -35,6 +28,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added support for API subdomain configuration in CircleCI client
+  - New `useAPISubdomain` option in HTTP client configuration
+  - Automatic subdomain handling for API-specific endpoints
+  - Improved support for CircleCI enterprise and on-premise installations
 - Added `config_helper` tool to assist with CircleCI configuration tasks
   - Support for validating .circleci/config.yml files
   - Integration with CircleCI Config Validation API
