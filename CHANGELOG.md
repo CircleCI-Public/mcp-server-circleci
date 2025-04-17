@@ -23,6 +23,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Configurable base URL through environment variables
   - Better support for different CircleCI deployment scenarios
   - Streamlined client initialization process
+- Added output text truncation
+  - Prevents response overload by limiting output size
+  - Includes clear warning when content is truncated
+  - Preserves most recent and relevant information
 
 ## [0.1.9] - 2025-04-16
 
