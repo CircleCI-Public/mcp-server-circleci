@@ -5,6 +5,13 @@ export const getBuildFailureLogsTool = {
   description: `
     This tool helps debug CircleCI build failures by retrieving failure logs.
 
+    CRITICAL REQUIREMENTS:
+    1. Truncation Handling (HIGHEST PRIORITY):
+       - ALWAYS check for <MCPTruncationWarning> in the output
+       - When present, you MUST start your response with:
+         "WARNING: The logs have been truncated. Only showing the most recent entries. Earlier build failures may not be visible."
+       - Only proceed with log analysis after acknowledging the truncation
+
     Input options (EXACTLY ONE of these two options must be used):
 
     Option 1 - Direct URL (provide ONE of these):
@@ -19,12 +26,11 @@ export const getBuildFailureLogsTool = {
     - gitRemoteURL: The URL of the git remote repository
     - branch: The name of the current branch
 
-    IMPORTANT:
+    Additional Requirements:
     - Never call this tool with incomplete parameters
     - If using Option 1, the URLs MUST be provided by the user - do not attempt to construct or guess URLs
     - If using Option 2, ALL THREE parameters (workspaceRoot, gitRemoteURL, branch) must be provided
     - If neither option can be fully satisfied, ask the user for the missing information before making the tool call
-    - When the output is truncated due to length, inform the user that they are seeing the most recent entries up to the size limit and that earlier logs have been omitted
     `,
   inputSchema: getBuildFailureOutputInputSchema,
 };
