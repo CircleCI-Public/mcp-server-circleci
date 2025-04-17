@@ -23,6 +23,9 @@ type BatchResult = {
   results: any[];
 };
 
+const RATE_LIMIT_INTERVAL = 2000;
+const RATE_LIMIT_MAX_REQUESTS = 40;
+
 const ifAllItemsArePopulated = (
   batchState: BatchState,
   startIndex: number,
@@ -119,8 +122,8 @@ const onBatchFinish = (
 
 export const rateLimitedRequests = async <T>(
   requests: (() => Promise<T>)[],
-  maxRequests = 20,
-  interval = 1000,
+  maxRequests = RATE_LIMIT_MAX_REQUESTS,
+  interval = RATE_LIMIT_INTERVAL,
   options?: BatchOptions,
 ): Promise<T[]> => {
   const batchState: BatchState = {
