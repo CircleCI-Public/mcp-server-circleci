@@ -2,6 +2,7 @@ import { HTTPClient } from '../circleci/httpClient.js';
 import { createCircleCIHeaders } from '../circleci/index.js';
 import { JobsPrivate } from './jobsPrivate.js';
 import { MeAPI } from './me.js';
+import { getBaseURL } from '../circleci/index.js';
 
 /**
  * Creates a default HTTP client for the CircleCI API private
@@ -15,7 +16,9 @@ const defaultPrivateHTTPClient = (options: { token: string }) => {
     throw new Error('Token is required');
   }
 
-  return new HTTPClient('/api/private', {
+  const baseURL = getBaseURL(true);
+
+  return new HTTPClient(baseURL, '/api/private', {
     headers: createCircleCIHeaders({ token: options.token }),
   });
 };

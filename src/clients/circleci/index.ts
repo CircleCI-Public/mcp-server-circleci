@@ -8,6 +8,16 @@ import { TestsAPI } from './tests.js';
 import { ConfigValidateAPI } from './configValidate.js';
 export type TCircleCIClient = InstanceType<typeof CircleCIClients>;
 
+export const getBaseURL = (useAPISubdomain = false) => {
+  let baseURL = process.env.CIRCLECI_BASE_URL || 'https://circleci.com';
+
+  if (useAPISubdomain) {
+    baseURL = baseURL.replace('https://', 'https://api.');
+  }
+
+  return baseURL;
+};
+
 export const defaultPaginationOptions = {
   maxPages: 5,
   timeoutMs: 10000,
@@ -52,10 +62,10 @@ const defaultV2HTTPClient = (options: {
     throw new Error('Token is required');
   }
 
+  const baseURL = getBaseURL(options.useAPISubdomain);
   const headers = createCircleCIHeaders({ token: options.token });
-  return new HTTPClient('/api/v2', {
+  return new HTTPClient(baseURL, '/api/v2', {
     headers,
-    useAPISubdomain: options.useAPISubdomain,
   });
 };
 
@@ -73,10 +83,10 @@ const defaultV1HTTPClient = (options: {
     throw new Error('Token is required');
   }
 
+  const baseURL = getBaseURL(options.useAPISubdomain);
   const headers = createCircleCIHeaders({ token: options.token });
-  return new HTTPClient('/api/v1.1', {
+  return new HTTPClient(baseURL, '/api/v1.1', {
     headers,
-    useAPISubdomain: options.useAPISubdomain,
   });
 };
 
