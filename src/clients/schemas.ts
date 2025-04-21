@@ -1,5 +1,35 @@
 import { z } from 'zod';
 
+type ContextSchema = {
+  [k: string]: 'string' | 'number' | 'boolean' | 'date' | ContextSchema;
+};
+
+const contextSchemaSchema: z.ZodSchema<ContextSchema> = z.lazy(() =>
+  z
+    .record(
+      z.union([
+        contextSchemaSchema,
+        z
+          .enum(['string', 'number', 'boolean', 'date'])
+          .describe('a primitive data type: string, number, boolean, or date'),
+      ]),
+    )
+    .describe(
+      'a schema structure, mapping keys to a primitive type (string, number, boolean, or date) or recursively to a nested schema',
+    ),
+);
+
+const promptObjectSchema = z
+  .object({
+    template: z.string().describe('a mustache template string'),
+    contextSchema: contextSchemaSchema.describe(
+      'an arbitrarily nested map of variable names from the mustache template to primitive types (string, number, or boolean)',
+    ),
+  })
+  .describe(
+    'a complete prompt template with a template string and a context schema',
+  );
+
 const FollowedProjectSchema = z.object({
   name: z.string(),
   slug: z.string(),
@@ -111,3 +141,6 @@ export type JobDetails = z.infer<typeof JobDetailsSchema>;
 
 export const FollowedProject = FollowedProjectSchema;
 export type FollowedProject = z.infer<typeof FollowedProjectSchema>;
+
+export const PromptObject = promptObjectSchema;
+export type PromptObject = z.infer<typeof PromptObject>;
