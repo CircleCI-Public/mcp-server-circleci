@@ -1,4 +1,5 @@
 import { HTTPClient } from '../circleci/httpClient.js';
+import { CircletAPI } from './circlet.js';
 
 /**
  * Creates a default HTTP client for the CircleCI API private
@@ -8,7 +9,7 @@ import { HTTPClient } from '../circleci/httpClient.js';
  * @returns HTTP client for CircleCI API private
  */
 const defaultV1HTTPClient = () => {
-  return new HTTPClient('/api/v1');
+  return new HTTPClient('https://circlet.ai', '/api/v1');
 };
 
 export class CircletClient {
@@ -18,7 +19,7 @@ export class CircletClient {
     httpClient = defaultV1HTTPClient(),
   }: {
     httpClient?: HTTPClient;
-  }) {
+  } = {}) {
     this.circlet = new CircletAPI(httpClient);
   }
 }
