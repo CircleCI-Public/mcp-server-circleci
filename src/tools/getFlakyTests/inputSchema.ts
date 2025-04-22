@@ -1,6 +1,16 @@
 import { z } from 'zod';
 
 export const getFlakyTestLogsInputSchema = z.object({
+  mcpConfig: z
+    .object({
+      projectSlug: z
+        .string()
+        .describe('The slug of the project to get logs for.'),
+    })
+    .describe(
+      'The MCP config for the project. Located at .circleci/mcp_config.json',
+    )
+    .optional(),
   workspaceRoot: z
     .string()
     .describe(

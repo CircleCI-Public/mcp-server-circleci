@@ -12,25 +12,33 @@ export const getBuildFailureLogsTool = {
          "WARNING: The logs have been truncated. Only showing the most recent entries. Earlier build failures may not be visible."
        - Only proceed with log analysis after acknowledging the truncation
 
-    Input options (EXACTLY ONE of these two options must be used):
+    Input options (in order of preference):
 
-    Option 1 - Direct URL (provide ONE of these):
-    - projectURL: The URL of the CircleCI project in any of these formats:
-      * Project URL: https://app.circleci.com/pipelines/gh/organization/project
-      * Pipeline URL: https://app.circleci.com/pipelines/gh/organization/project/123
-      * Workflow URL: https://app.circleci.com/pipelines/gh/organization/project/123/workflows/abc-def
-      * Job URL: https://app.circleci.com/pipelines/gh/organization/project/123/workflows/abc-def/jobs/xyz
+    Preferred Option - MCP Config:
+    If .circleci/mcp_config.json exists (containing projectSlug), provide ONE of:
+    - pipelineNumber: The pipeline number to fetch logs from
+    - branch: The name of the branch to fetch logs from
 
-    Option 2 - Project Detection (ALL of these must be provided together):
+    Fallback Option 1 - Direct URL:
+    If mcp_config.json is not available, provide ONE of these URLs:
+    - Project URL: https://app.circleci.com/pipelines/gh/organization/project
+    - Pipeline URL: https://app.circleci.com/pipelines/gh/organization/project/123
+    - Workflow URL: https://app.circleci.com/pipelines/gh/organization/project/123/workflows/abc-def
+    - Job URL: https://app.circleci.com/pipelines/gh/organization/project/123/workflows/abc-def/jobs/xyz
+
+    Fallback Option 2 - Project Detection:
+    If neither mcp_config.json nor URLs are available, provide ALL of these:
     - workspaceRoot: The absolute path to the workspace root
     - gitRemoteURL: The URL of the git remote repository
     - branch: The name of the current branch
 
     Additional Requirements:
     - Never call this tool with incomplete parameters
-    - If using Option 1, the URLs MUST be provided by the user - do not attempt to construct or guess URLs
-    - If using Option 2, ALL THREE parameters (workspaceRoot, gitRemoteURL, branch) must be provided
-    - If neither option can be fully satisfied, ask the user for the missing information before making the tool call
+    - First check for mcp_config.json and use it if available
+    - If mcp_config.json is not available, prefer direct URLs over project detection
+    - URLs MUST be provided by the user - do not attempt to construct or guess URLs
+    - For project detection, ALL THREE parameters must be provided
+    - If no option can be fully satisfied, ask the user for the missing information before making the tool call
     `,
   inputSchema: getBuildFailureOutputInputSchema,
 };
