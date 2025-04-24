@@ -1,5 +1,8 @@
 import { getCircleCIPrivateClient } from '../../clients/client.js';
 import { getCircleCIClient } from '../../clients/client.js';
+import { rateLimitedRequests } from '../rateLimitedRequests/index.js';
+import { JobDetails } from '../../clients/schemas.js';
+import outputTextTruncated, { SEPARATOR } from '../outputTextTruncated.js';
 
 export type GetJobLogsParams = {
   projectSlug: string;
@@ -36,14 +39,29 @@ const getJobLogs = async ({
   const circleci = getCircleCIClient();
   const circleciPrivate = getCircleCIPrivateClient();
 
-  const jobsDetails = await Promise.all(
-    jobNumbers.map(async (jobNumber) => {
-      return await circleci.jobsV1.getJobDetails({
-        projectSlug,
-        jobNumber,
-      });
-    }),
-  );
+  const jobsDetails = (
+    await rateLimitedRequests(
+      jobNumbers.map((jobNumber) => async () => {
+        try {
+          return await circleci.jobsV1.getJobDetails({
+            projectSlug,
+            jobNumber,
+          });
+        } catch (error) {
+          if (error instanceof Error && error.message.includes('404')) {
+            console.error(`Job ${jobNumber} not found:`, error);
+            // some jobs might not be found, return null in that case
+            return null;
+          } else if (error instanceof Error && error.message.includes('429')) {
+            console.error(`Rate limited for job request ${jobNumber}:`, error);
+            // some requests might be rate limited, return null in that case
+            return null;
+          }
+          throw error;
+        }
+      }),
+    )
+  ).filter((job): job is JobDetails => job !== null);
 
   const allLogs = await Promise.all(
     jobsDetails.map(async (job) => {
@@ -103,16 +121,10 @@ export function formatJobLogs(jobStepLogs: JobWithStepLogs[]) {
       ],
     };
   }
-  return {
-    content: [
-      {
-        type: 'text' as const,
-        text: jobStepLogs
-          .map((log) => `=====\nJob: ${log.jobName}\n` + formatSteps(log))
-          .join('\n'),
-      },
-    ],
-  };
+  const outputText = jobStepLogs
+    .map((log) => `${SEPARATOR}Job: ${log.jobName}\n` + formatSteps(log))
+    .join('\n');
+  return outputTextTruncated(outputText);
 }
 
 const formatSteps = (jobStepLog: JobWithStepLogs) => {

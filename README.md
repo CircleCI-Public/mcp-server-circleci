@@ -21,6 +21,14 @@ https://github.com/user-attachments/assets/3c765985-8827-442a-a8dc-5069e01edb74
 
 ## Installation
 
+### Installing via Smithery
+
+To install CircleCI MCP Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@CircleCI-Public/mcp-server-circleci):
+
+```bash
+npx -y @smithery/cli install @CircleCI-Public/mcp-server-circleci --client claude
+```
+
 ### Cursor
 
 Add the following to your cursor MCP config:
