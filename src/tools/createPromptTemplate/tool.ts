@@ -3,6 +3,7 @@ import { createPromptTemplateInputSchema } from './inputSchema.js';
 export const createPromptTemplateTool = {
   name: 'create_prompt_template' as const,
   description: `
+  This tool is part of a toolchain to iterate on a prompt template.
   This tool helps create a prompt template based on feature requirements for an AI assistant.
 
   Parameters:
