@@ -7,6 +7,8 @@ import { configHelper } from './tools/configHelper/handler.js';
 import { configHelperTool } from './tools/configHelper/tool.js';
 import { createPromptTemplate } from './tools/createPromptTemplate/handler.js';
 import { createPromptTemplateTool } from './tools/createPromptTemplate/tool.js';
+import { generateTestsForPromptTemplateTool } from './tools/generateTestsForPromptTemplate/tool.js';
+import { generateTestsForPromptTemplate } from './tools/generateTestsForPromptTemplate/handler.js';
 
 // Define the tools with their configurations
 export const CCI_TOOLS = [
@@ -14,6 +16,7 @@ export const CCI_TOOLS = [
   getFlakyTestLogsTool,
   configHelperTool,
   createPromptTemplateTool,
+  generateTestsForPromptTemplateTool,
 ];
 
 // Extract the tool names as a union type
@@ -33,4 +36,5 @@ export const CCI_HANDLERS = {
   find_flaky_tests: getFlakyTestLogs,
   config_helper: configHelper,
   create_prompt_template: createPromptTemplate,
+  generate_tests_for_prompt_template: generateTestsForPromptTemplate,
 } satisfies ToolHandlers;
