@@ -21,6 +21,9 @@ export const createPromptTemplateTool = {
   Tool output instructions:
     - The tool will return a {{template}} that reformulates the user's prompt into a more structured format.
     - It will also provide a {{contextSchema}} that defines the expected parameters for the template.
+
+  Using the template and contextSchema, you can generate a script calling the OpenAI API to generate a response.
+  Use the stack from the current repository to generate the script.
   `,
   inputSchema: createPromptTemplateInputSchema,
 };
