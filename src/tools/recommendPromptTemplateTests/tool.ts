@@ -1,7 +1,7 @@
-import { generateTestsForPromptTemplateInputSchema } from './inputSchema.js';
+import { recommendPromptTemplateTestsInputSchema } from './inputSchema.js';
 
-export const generateTestsForPromptTemplateTool = {
-  name: 'generate_tests_for_prompt_template' as const,
+export const recommendPromptTemplateTestsTool = {
+  name: 'recommend_prompt_template_tests' as const,
   description: `
   - This tool is part of a tool chain to generate and provide test cases for a prompt template.
   - This tool generates recommended tests for a given prompt template.
@@ -27,5 +27,5 @@ export const generateTestsForPromptTemplateTool = {
   Tool output instructions:
     - The tool will return an array of {{recommendedTests}} that can be used to test the prompt template.
   `,
-  inputSchema: generateTestsForPromptTemplateInputSchema,
+  inputSchema: recommendPromptTemplateTestsInputSchema,
 };

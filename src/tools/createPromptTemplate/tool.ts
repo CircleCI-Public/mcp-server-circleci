@@ -1,3 +1,4 @@
+import { recommendPromptTemplateTestsTool } from '../recommendPromptTemplateTests/tool.js';
 import { createPromptTemplateInputSchema } from './inputSchema.js';
 
 const templateTag = '{{template}}';
@@ -28,15 +29,7 @@ export const createPromptTemplateTool = {
   Tool output instructions:
   - The tool will return a ${templateTag} that reformulates the user's prompt into a more structured format.
   - It will also provide a ${contextSchemaTag} that defines the expected parameters for the template.
-  - The tool output -- both the ${templateTag} and ${contextSchemaTag} -- will also be used to generate a list of recommended tests that can be used to test the prompt template.
+  - The tool output -- both the ${templateTag} and ${contextSchemaTag} -- will also be used as input to the \`${recommendPromptTemplateTestsTool.name}\` tool to generate a list of recommended tests that can be used to test the prompt template.
   `,
   inputSchema: createPromptTemplateInputSchema,
 };
-
-export const saveScriptToFile = `
-  - Using the ${templateTag} and ${contextSchemaTag}, the tool also generates a script that can be used to call the OpenAI API to generate a response from the model.
-    - The script should be written in the language of the current repository.
-    - The script should be documented with a description of what it does, and how it works.
-    - The script should be formatted using the user's preferred conventions.
-    - The script should only be written to a single file.
-`;

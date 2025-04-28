@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const generateTestsForPromptTemplateInputSchema = z.object({
+export const recommendPromptTemplateTestsInputSchema = z.object({
   template: z
     .string()
     .describe(

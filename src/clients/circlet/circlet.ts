@@ -41,7 +41,7 @@ export class CircletAPI {
     return parsedResult.data.workbench;
   }
 
-  async generateTestsForPromptTemplate({
+  async recommendPromptTemplateTests({
     template,
     contextSchema,
   }: {
