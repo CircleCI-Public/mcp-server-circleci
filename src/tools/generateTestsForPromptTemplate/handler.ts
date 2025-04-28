@@ -17,7 +17,7 @@ export const generateTestsForPromptTemplate: ToolCallback<{
     content: [
       {
         type: 'text',
-        text: `The recommended tests are: ${result.join('\n')}`,
+        text: `recommendedTests: ${JSON.stringify(result, null, 2)}`,
       },
     ],
   };

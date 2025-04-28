@@ -14,7 +14,8 @@ export const createPromptTemplate: ToolCallback<{
     content: [
       {
         type: 'text',
-        text: `The prompt template is: ${promptObject.template}. Context Schema: ${JSON.stringify(promptObject.contextSchema)}`,
+        text: `promptTemplate: ${promptObject.template}
+contextSchema: ${JSON.stringify(promptObject.contextSchema, null, 2)}`,
       },
     ],
   };
