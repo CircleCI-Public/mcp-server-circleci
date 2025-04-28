@@ -8,12 +8,17 @@ export const generateTestsForPromptTemplateTool = {
 
   Parameters:
   - params: object
-    - prompt: string (the prompt template to be tested)
+    - promptTemplate: string (the prompt template to be tested)
+    - contextSchema: object (the context schema that defines the expected input parameters for the prompt template)
 
   Example usage:
   {
     "params": {
-      "prompt": "The user wants a bedtime story about {{topic}} for a person of age {{age}} years old. Please craft a captivating tale that captivates their imagination and provides a delightful bedtime experience."
+      "promptTemplate": "The user wants a bedtime story about {{topic}} for a person of age {{age}} years old. Please craft a captivating tale that captivates their imagination and provides a delightful bedtime experience.",
+      "contextSchema": {
+        "topic": "string",
+        "age": "number"
+      }
     }
   }
 
