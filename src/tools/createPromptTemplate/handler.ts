@@ -2,7 +2,6 @@ import { ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { createPromptTemplateInputSchema } from './inputSchema.js';
 import { CircletClient } from '../../clients/circlet/index.js';
 import { recommendPromptTemplateTestsTool } from '../recommendPromptTemplateTests/tool.js';
-import { createPromptTemplateTool } from './tool.js';
 
 export const createPromptTemplate: ToolCallback<{
   params: typeof createPromptTemplateInputSchema;
