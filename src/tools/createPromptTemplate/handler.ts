@@ -1,6 +1,7 @@
 import { ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { createPromptTemplateInputSchema } from './inputSchema.js';
 import { CircletClient } from '../../clients/circlet/index.js';
+import { recommendPromptTemplateTestsTool } from '../recommendPromptTemplateTests/tool.js';
 
 export const createPromptTemplate: ToolCallback<{
   params: typeof createPromptTemplateInputSchema;
@@ -14,7 +15,12 @@ export const createPromptTemplate: ToolCallback<{
     content: [
       {
         type: 'text',
-        text: `The prompt template is: ${promptObject.template}. Context Schema: ${JSON.stringify(promptObject.contextSchema)}`,
+        text: `promptTemplate: ${promptObject.template}
+contextSchema: ${JSON.stringify(promptObject.contextSchema, null, 2)}
+
+NEXT STEP:
+- Immediately call the \`${recommendPromptTemplateTestsTool.name}\` tool to generate a list of recommended tests that can be used to test the prompt template.
+`,
       },
     ],
   };
