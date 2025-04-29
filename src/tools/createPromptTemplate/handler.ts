@@ -21,14 +21,6 @@ contextSchema: ${JSON.stringify(promptObject.contextSchema, null, 2)}
 
 NEXT STEP:
 - Immediately call the \`${recommendPromptTemplateTestsTool.name}\` tool to generate a list of recommended tests that can be used to test the prompt template.
-
-FINALLY, AFTER TESTS ARE RECOMMENDED:
-- Using the \`promptTemplate\` and \`contextSchema\` from the \`${createPromptTemplateTool.name}\` tool and the \`recommendedTests\` from the \`${recommendPromptTemplateTestsTool.name}\` tool, generate a single file containing the prompt template, context schema, and recommended tests in a simple JSON format.
-
-RULES FOR SAVING FILES:
-- The file should be written in the language of the current repository.
-- The file should be documented with a README description of what it does, and how it works.
-- The file should be formatted using the user's preferred conventions.
 `,
       },
     ],

@@ -20,7 +20,14 @@ export const recommendPromptTemplateTests: ToolCallback<{
         text: `recommendedTests: ${JSON.stringify(result, null, 2)}
 
 NEXT STEP:
-- Immediately save the \`recommendedTests\` to a file containing the tests in a simple JSON format.
+- Immediately save the \`promptTemplate\`, \`contextSchema\`, and \`recommendedTests\` to a single file containing the prompt template, context schema, and tests in a simple structured format (e.g. JSON, YAML, or whatever is most appropriate for the language of the current repository).
+
+RULES FOR SAVING FILES:
+- Files should be written in the preferred language of the current repository.
+- The file should be documented with a README description of what it does, and how it works.
+- The file should be formatted using the user's preferred conventions.
+- The file should be saved in the '.circleci/ai/prompts' directory.
+- The file should be named in the format 'prompt_<relevant-name>.json' (e.g. 'prompt_bedtime-story-generator.json', 'prompt_plant-care-assistant.json', 'prompt_customer-support-chatbot.json', etc.)
 `,
       },
     ],
