@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.11] - 2025-04-18
+
+### Added
+
+- Added `create_prompt_template` tool to help generate structured prompt templates
+
+  - Converts feature requirements into optimized prompt templates
+  - Generates context schema for input parameters
+  - Enables building robust AI-powered features
+  - Integrates with prompt template testing workflow
+
+- Added `recommend_prompt_template_tests` tool for prompt template validation
+  - Creates diverse test scenarios based on templates
+  - Generates test cases with varied parameter combinations
+  - Helps identify edge cases and potential issues
+  - Ensures consistent AI responses across inputs
+
 ## [0.1.10] - 2025-04-17
 
 ### Fixed
