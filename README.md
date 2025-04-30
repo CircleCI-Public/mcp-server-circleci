@@ -21,14 +21,6 @@ https://github.com/user-attachments/assets/3c765985-8827-442a-a8dc-5069e01edb74
 
 ## Installation
 
-### Installing via Smithery
-
-To install CircleCI MCP Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@CircleCI-Public/mcp-server-circleci):
-
-```bash
-npx -y @smithery/cli install @CircleCI-Public/mcp-server-circleci --client claude
-```
-
 ### Cursor
 
 Add the following to your cursor MCP config:
@@ -50,6 +42,38 @@ Add the following to your cursor MCP config:
 
 See the guide below for more information on using MCP servers with cursor:
 https://docs.cursor.com/context/model-context-protocol#configuring-mcp-servers
+
+### VS Code
+
+To install CircleCI MCP Server for VS Code in `.vscode/mcp.json`
+
+```json
+{
+  // 💡 Inputs are prompted on first server start, then stored securely by VS Code.
+  "inputs": [
+    {
+      "type": "promptString",
+      "id": "circleci-token",
+      "description": "CircleCI API Token",
+      "password": true
+    }
+  ],
+  "servers": {
+    // https://github.com/ppl-ai/modelcontextprotocol/
+    "circleci-mcp-server": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@circleci/mcp-server-circleci"],
+      "env": {
+        "CIRCLECI_TOKEN": "${input:circleci-token}"
+      }
+    }
+  }
+}
+```
+
+See the guide below for more information on using MCP servers with VS Code:
+https://code.visualstudio.com/docs/copilot/chat/mcp-servers
 
 ### Claude Desktop
 
@@ -91,24 +115,6 @@ claude mcp add circleci-mcp-server -e CIRCLECI_TOKEN=your-circleci-token -- npx 
 See the guide below for more information on using MCP servers with Claude Code:
 https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/tutorials#set-up-model-context-protocol-mcp
 
-### VS Code
-
-Add the MCP server to your settings.json under `mcp -> servers`:
-
-```json
-"circleci-mcp-server": {
-  "command": "npx",
-  "args": ["-y", "@circleci/mcp-server-circleci"],
-  "env": {
-    "CIRCLECI_TOKEN": "your-circleci-token",
-    "CIRCLECI_BASE_URL": "https://circleci.com" // Optional - required for on-prem customers only
-  }
-}
-```
-
-See the guide below for more information on using MCP servers with VS Code:
-https://code.visualstudio.com/docs/copilot/chat/mcp-servers
-
 ### Windsurf
 
 Add the following to your windsurf mcp_config.json:
@@ -126,6 +132,14 @@ Add the following to your windsurf mcp_config.json:
     }
   }
 }
+```
+
+### Installing via Smithery
+
+To install CircleCI MCP Server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@CircleCI-Public/mcp-server-circleci):
+
+```bash
+npx -y @smithery/cli install @CircleCI-Public/mcp-server-circleci --client claude
 ```
 
 See the guide below for more information on using MCP servers with windsurf:
@@ -211,6 +225,45 @@ https://docs.windsurf.com/windsurf/mcp
   - Learn CircleCI configuration best practices
   - Troubleshoot configuration issues
   - Implement CircleCI features correctly
+
+- `create_prompt_template`
+
+  Helps generate structured prompt templates for AI-enabled applications based on feature requirements. This tool:
+
+  1. Converts Feature Requirements to Structured Prompts:
+     - Transforms user requirements into optimized prompt templates
+     - Example: "Create a prompt template for generating bedtime stories by age and topic"
+
+  The tool provides:
+
+  - A structured prompt template
+  - A context schema defining required input parameters
+
+  This helps you:
+
+  - Create effective prompts for AI applications
+  - Standardize input parameters for consistent results
+  - Build robust AI-powered features
+
+- `recommend_prompt_template_tests`
+
+  Generates test cases for prompt templates to ensure they produce expected results. This tool:
+
+  1. Provides Test Cases for Prompt Templates:
+     - Creates diverse test scenarios based on your prompt template and context schema
+     - Example: "Generate tests for my bedtime story prompt template"
+
+  The tool provides:
+
+  - An array of recommended test cases
+  - Various parameter combinations to test template robustness
+
+  This helps you:
+
+  - Validate prompt template functionality
+  - Ensure consistent AI responses across inputs
+  - Identify edge cases and potential issues
+  - Improve overall AI application quality
 
 # Development
 
