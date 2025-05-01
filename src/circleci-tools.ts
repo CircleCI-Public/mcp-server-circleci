@@ -5,12 +5,17 @@ import { getFlakyTestLogsTool } from './tools/getFlakyTests/tool.js';
 import { getFlakyTestLogs } from './tools/getFlakyTests/handler.js';
 import { configHelper } from './tools/configHelper/handler.js';
 import { configHelperTool } from './tools/configHelper/tool.js';
-
+import { createSandboxTool } from './tools/createSandbox/tool.js';
+import { createSandbox } from './tools/createSandbox/handler.js';
+import { runSandboxCommandTool } from './tools/runSandboxCommand/tool.js';
+import { runSandboxCommand } from './tools/runSandboxCommand/handler.js';
 // Define the tools with their configurations
 export const CCI_TOOLS = [
   getBuildFailureLogsTool,
   getFlakyTestLogsTool,
   configHelperTool,
+  createSandboxTool,
+  runSandboxCommandTool,
 ];
 
 // Extract the tool names as a union type
@@ -29,4 +34,6 @@ export const CCI_HANDLERS = {
   get_build_failure_logs: getBuildFailureLogs,
   find_flaky_tests: getFlakyTestLogs,
   config_helper: configHelper,
+  create_sandbox: createSandbox,
+  run_sandbox_command: runSandboxCommand,
 } satisfies ToolHandlers;
