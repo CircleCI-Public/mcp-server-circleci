@@ -2,11 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { runPipeline } from './handler.js';
 import * as projectDetection from '../../lib/project-detection/index.js';
 
-// Mock dependencies
-vi.mock('../../lib/project-detection/index.js');
-vi.mock('../../lib/flaky-tests/getFlakyTests.js');
-
-describe('getFlakyTestLogs handler', () => {
+describe('runPipeline handler', () => {
   beforeEach(() => {
     vi.resetAllMocks();
   });
