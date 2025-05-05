@@ -25,11 +25,11 @@ export const identifyProjectSlug = async ({
   }
 
   const followedProjects = await cciPrivateClients.me.getFollowedProjects();
-  if (!followedProjects.success) {
+  if (!followedProjects) {
     throw new Error('Failed to get followed projects');
   }
 
-  const project = followedProjects.data.items.find(
+  const project = followedProjects.find(
     (followedProject) =>
       followedProject.name === parsedGitURL.name &&
       followedProject.vcs_type === vcs.name,
