@@ -1,4 +1,10 @@
-import { PaginatedPipelineResponseSchema, Pipeline } from '../schemas.js';
+import { generateClassicDefinitionId } from '../../lib/generateClassicDefinitionId.js';
+import { getCircleCIClient } from '../client.js';
+import {
+  PaginatedPipelineResponseSchema,
+  Pipeline,
+  RunPipelineResponse,
+} from '../schemas.js';
 import { HTTPClient } from './httpClient.js';
 import { defaultPaginationOptions } from './index.js';
 
@@ -104,6 +110,51 @@ export class PipelinesAPI {
     );
 
     const parsedResult = Pipeline.safeParse(rawResult);
+    if (!parsedResult.success) {
+      throw new Error('Failed to parse pipeline response');
+    }
+
+    return parsedResult.data;
+  }
+
+  async runPipeline({
+    projectSlug,
+    branch,
+  }: {
+    projectSlug: string;
+    branch: string;
+  }): Promise<RunPipelineResponse> {
+    // detect if classic or standalone project
+    const isClassic = !projectSlug.startsWith('circleci/');
+
+    // fetch projectId
+    const circleci = getCircleCIClient();
+    const { id: projectId } = await circleci.projects.getProject({
+      projectSlug,
+    });
+
+    // if classic, generate definition id from projectId:
+    const definitionId = isClassic
+      ? generateClassicDefinitionId(projectId)
+      : 'something'; // TODO: this needs to be the configSource.publicId
+
+    // if standalone fetch config sources from /private/soc/project/${projectId}/config-sources - this is a bff, so how can we get it here?
+    // definition id is selectedStandaloneConfigSource.publicId - but how do we know which one?
+
+    const rawResult = await this.client.post<unknown>(
+      `/project/${projectSlug}/pipeline/run`,
+      {
+        definition_id: definitionId,
+        config: {
+          branch,
+        },
+        checkout: {
+          branch,
+        },
+      },
+    );
+
+    const parsedResult = RunPipelineResponse.safeParse(rawResult);
     if (!parsedResult.success) {
       throw new Error('Failed to parse pipeline response');
     }

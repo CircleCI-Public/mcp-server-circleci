@@ -9,7 +9,7 @@ export const runPipelineTool = {
 
     Option 1 - Direct URL (provide ONE of these):
     - projectURL: The URL of the CircleCI project in any of these formats:
-      * Project URL: https://app.circleci.com/pipelines/gh/organization/project
+      * Project URL with branch: https://app.circleci.com/pipelines/gh/organization/project?branch=feature-branch
       * Pipeline URL: https://app.circleci.com/pipelines/gh/organization/project/123
       * Workflow URL: https://app.circleci.com/pipelines/gh/organization/project/123/workflows/abc-def
       * Job URL: https://app.circleci.com/pipelines/gh/organization/project/123/workflows/abc-def/jobs/xyz

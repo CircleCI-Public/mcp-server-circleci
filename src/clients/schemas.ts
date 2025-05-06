@@ -111,6 +111,19 @@ const ConfigValidateSchema = z.object({
   'source-yaml': z.string(),
 });
 
+// TODO: may not need the full schema, probably only need the id/number/state
+const RunPipelineResponseSchema = z.object({
+  id: z.string(),
+  state: z.string(),
+  number: z.number(),
+  // created_at: z.string(),
+  // message: z.string(),
+});
+
+const ProjectSchema = z.object({
+  id: z.string(),
+});
+
 export const Test = TestSchema;
 export type Test = z.infer<typeof TestSchema>;
 
@@ -126,6 +139,12 @@ export type ConfigValidate = z.infer<typeof ConfigValidateSchema>;
 // Export the schemas and inferred types with the same names as the original types
 export const Pipeline = PipelineSchema;
 export type Pipeline = z.infer<typeof PipelineSchema>;
+
+export const RunPipelineResponse = RunPipelineResponseSchema;
+export type RunPipelineResponse = z.infer<typeof RunPipelineResponseSchema>;
+
+export const Project = ProjectSchema;
+export type Project = z.infer<typeof ProjectSchema>;
 
 export const PaginatedPipelineResponseSchema = z.object({
   items: z.array(Pipeline),

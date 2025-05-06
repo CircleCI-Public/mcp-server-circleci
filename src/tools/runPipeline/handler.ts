@@ -6,6 +6,7 @@ import {
 } from '../../lib/project-detection/index.js';
 import { runPipelineInputSchema } from './inputSchema.js';
 import mcpErrorOutput from '../../lib/mcpErrorOutput.js';
+import { getCircleCIClient } from '../../clients/client.js';
 
 export const runPipeline: ToolCallback<{
   params: typeof runPipelineInputSchema;
@@ -43,12 +44,25 @@ export const runPipeline: ToolCallback<{
   // temporary
   console.log(projectSlug, foundBranch);
 
-  // TODO: run pipeline
+  if (!foundBranch) {
+    return mcpErrorOutput(
+      'No branch provided. Ask the user to provide the branch.',
+    );
+  }
+
+  const circleci = getCircleCIClient();
+
+  const runPipelineResponse = await circleci.pipelines.runPipeline({
+    projectSlug,
+    branch: foundBranch || 'main',
+  });
+
+  // TODO: get a pipeline URL and return it
   return {
     content: [
       {
         type: 'text',
-        text: 'Pipeline run successfully:',
+        text: `Pipeline run successfully: ${runPipelineResponse.id}`,
       },
     ],
   };
