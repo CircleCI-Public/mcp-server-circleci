@@ -3,6 +3,8 @@ import { getCircleCIClient } from '../client.js';
 import {
   PaginatedPipelineResponseSchema,
   Pipeline,
+  PipelineDefinition,
+  PipelineDefinitionsResponse,
   RunPipelineResponse,
 } from '../schemas.js';
 import { HTTPClient } from './httpClient.js';
@@ -117,34 +119,46 @@ export class PipelinesAPI {
     return parsedResult.data;
   }
 
+  async getPipelineDefinitions({
+    projectId,
+  }: {
+    projectId: string;
+  }): Promise<PipelineDefinition[]> {
+    const rawResult = await this.client.get<unknown>(
+      `/project/${projectId}/pipeline-definitions`,
+    );
+
+    const parsedResult = PipelineDefinitionsResponse.safeParse(rawResult);
+    if (!parsedResult.success) {
+      throw new Error('Failed to parse pipeline definition response');
+    }
+
+    return parsedResult.data.items;
+  }
+
   async runPipeline({
     projectSlug,
     branch,
+    definitionId,
   }: {
     projectSlug: string;
     branch: string;
+    definitionId?: string;
   }): Promise<RunPipelineResponse> {
     // detect if classic or standalone project
     const isClassic = !projectSlug.startsWith('circleci/');
 
-    // fetch projectId
     const circleci = getCircleCIClient();
     const { id: projectId } = await circleci.projects.getProject({
       projectSlug,
     });
 
-    // if classic, generate definition id from projectId:
-    const definitionId = isClassic
-      ? generateClassicDefinitionId(projectId)
-      : 'something'; // TODO: this needs to be the configSource.publicId
-
-    // if standalone fetch config sources from /private/soc/project/${projectId}/config-sources - this is a bff, so how can we get it here?
-    // definition id is selectedStandaloneConfigSource.publicId - but how do we know which one?
-
     const rawResult = await this.client.post<unknown>(
       `/project/${projectSlug}/pipeline/run`,
       {
-        definition_id: definitionId,
+        definition_id: isClassic // maybe we need to allow classic projects to run standalone config sources
+          ? generateClassicDefinitionId(projectId)
+          : definitionId,
         config: {
           branch,
         },

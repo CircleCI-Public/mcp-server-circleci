@@ -124,6 +124,45 @@ const ProjectSchema = z.object({
   id: z.string(),
 });
 
+const PipelineDefinitionSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  description: z.string(),
+  created_at: z.string(),
+  config_source: z
+    .object({
+      provider: z.string(),
+      repo: z.object({
+        full_name: z.string(),
+        external_id: z.string(),
+      }),
+      file_path: z.string(),
+      public_id: z.string().optional(),
+    })
+    .optional(),
+  checkout_source: z
+    .object({
+      provider: z.string(),
+      repo: z.object({
+        full_name: z.string(),
+        external_id: z.string(),
+      }),
+    })
+    .optional(),
+});
+
+const PipelineDefinitionsResponseSchema = z.object({
+  items: z.array(PipelineDefinitionSchema),
+});
+
+export const PipelineDefinition = PipelineDefinitionSchema;
+export type PipelineDefinition = z.infer<typeof PipelineDefinitionSchema>;
+
+export const PipelineDefinitionsResponse = PipelineDefinitionsResponseSchema;
+export type PipelineDefinitionsResponse = z.infer<
+  typeof PipelineDefinitionsResponseSchema
+>;
+
 export const Test = TestSchema;
 export type Test = z.infer<typeof TestSchema>;
 
