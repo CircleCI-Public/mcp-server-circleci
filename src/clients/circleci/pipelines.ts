@@ -148,6 +148,10 @@ export class PipelinesAPI {
     // detect if classic or standalone project
     const isClassic = !projectSlug.startsWith('circleci/');
 
+    if (!isClassic && !definitionId) {
+      throw new Error('Definition ID is required for standalone projects');
+    }
+
     const circleci = getCircleCIClient();
     const { id: projectId } = await circleci.projects.getProject({
       projectSlug,
@@ -156,8 +160,8 @@ export class PipelinesAPI {
     const rawResult = await this.client.post<unknown>(
       `/project/${projectSlug}/pipeline/run`,
       {
-        definition_id: isClassic // maybe we need to allow classic projects to run standalone config sources
-          ? generateClassicDefinitionId(projectId)
+        definition_id: isClassic
+          ? (definitionId ?? generateClassicDefinitionId(projectId)) // allow classic projects to run standalone config sources if passed in
           : definitionId,
         config: {
           branch,
