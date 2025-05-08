@@ -18,10 +18,30 @@ describe('getPipelineNumberFromURL', () => {
       url: 'https://app.circleci.com/pipelines/circleci/GM1mbrQEWnNbzLKEnotDo4/5gh9pgQgohHwicwomY5nYQ/123/workflows/abc123de-f456-78gh-90ij-klmnopqrstuv',
       expected: 123,
     },
+    // Workflow URL (no pipelines in URL)
+    {
+      url: 'https://circleci.server.customdomain.com/gh/organization/project/2/workflows/abc123de-f456-78gh-90ij-klmnopqrstuv',
+      expected: 2,
+    },
     // Project URL (no pipeline number)
     {
       url: 'https://app.circleci.com/pipelines/gh/organization/project',
       expected: undefined,
+    },
+    // Project URL (no pipelines and no pipeline number in path)
+    {
+      url: 'https://app.circleci.com/gh/organization/project',
+      expected: undefined,
+    },
+    // Project URL (no pipelines in URL but pipeline number in path)
+    {
+      url: 'https://circleci.com/gh/organization/project/123',
+      expected: 123,
+    },
+    // Project URL (no pipelines in URL but pipeline number in path)
+    {
+      url: 'https://circleci.server.customdomain.com/gh/organization/project/123',
+      expected: 123,
     },
   ])('extracts pipeline number $expected from URL', ({ url, expected }) => {
     expect(getPipelineNumberFromURL(url)).toBe(expected);

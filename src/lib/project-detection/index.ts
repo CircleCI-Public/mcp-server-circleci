@@ -70,7 +70,10 @@ export const getPipelineNumberFromURL = (url: string): number | undefined => {
       );
     }
 
-    const slugIndex = parts.indexOf(projectSlug);
+    const slugParts = projectSlug.split('/');
+    const lastSlugPart = slugParts[slugParts.length - 1];
+    const slugIndex = parts.findIndex((part) => part === lastSlugPart);
+
     const nextPart = parts[slugIndex + 1];
     if (slugIndex >= 0 && nextPart?.match(/^\d+$/)) {
       pipelineNumber = nextPart;
