@@ -151,10 +151,10 @@ export const getProjectSlugFromURL = (url: string) => {
     );
   }
 
-  const vcs = parts[startIndex];
-  const org = parts[startIndex + 1];
-  const project = parts[startIndex + 2];
-
+  const [vcs, org, project] = parts.slice(
+    startIndex,
+    startIndex + 3, // vcs/org/project
+  );
   if (!vcs || !org || !project) {
     throw new Error('Unable to extract project information from URL');
   }
