@@ -30,7 +30,9 @@ describe('getPipelineNumberFromURL', () => {
   it('throws error for invalid CircleCI URL format', () => {
     expect(() =>
       getPipelineNumberFromURL('https://app.circleci.com/invalid/url'),
-    ).toThrow('Invalid CircleCI URL format');
+    ).toThrow(
+      'Error getting pipeline number from URL: Invalid CircleCI URL format',
+    );
   });
 
   it('throws error when pipeline number is not a valid number', () => {
@@ -58,6 +60,31 @@ describe('getProjectSlugFromURL', () => {
     {
       url: 'https://app.circleci.com/pipelines/gh/organization/project/123',
       expected: 'gh/organization/project',
+    },
+    // Legacy Pipeline URL for gh
+    {
+      url: 'https://circleci.com/gh/organization/project/123',
+      expected: 'gh/organization/project',
+    },
+    // Legacy Pipeline URL for Github
+    {
+      url: 'https://circleci.com/github/organization/project/123',
+      expected: 'github/organization/project',
+    },
+    // Legacy Pipeline URL for bb
+    {
+      url: 'https://circleci.com/bb/organization/project/123',
+      expected: 'bb/organization/project',
+    },
+    // Legacy Pipeline URL for Bitbucket
+    {
+      url: 'https://circleci.com/bitbucket/organization/project/123',
+      expected: 'bitbucket/organization/project',
+    },
+    // Legacy Pipeline URL for CircleCI
+    {
+      url: 'https://circleci.com/circleci/GM1mbrQEWnNbzLKEnotDo4/5gh9pgQgohHwicwomY5nYQ/456',
+      expected: 'circleci/GM1mbrQEWnNbzLKEnotDo4/5gh9pgQgohHwicwomY5nYQ',
     },
     // Pipeline URL
     {
@@ -96,7 +123,9 @@ describe('getProjectSlugFromURL', () => {
   it('throws error for invalid CircleCI URL format', () => {
     expect(() =>
       getProjectSlugFromURL('https://app.circleci.com/invalid/url'),
-    ).toThrow('Invalid CircleCI URL format');
+    ).toThrow(
+      'Error getting project slug from URL: Invalid CircleCI URL format',
+    );
   });
 
   it('throws error when project information is incomplete', () => {
@@ -134,7 +163,7 @@ describe('getBranchFromURL', () => {
 
   it('throws error for invalid CircleCI URL format', () => {
     expect(() => getBranchFromURL('not-a-url')).toThrow(
-      'Invalid CircleCI URL format',
+      'Error getting branch from URL: Invalid CircleCI URL format',
     );
   });
 });

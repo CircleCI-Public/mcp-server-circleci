@@ -12,12 +12,13 @@ export const getLatestPipelineStatusTool = {
     - Check build progress
     - Get pipeline information
 
-    Input options (EXACTLY ONE of these two options must be used):
+    Input options (EXACTLY ONE of these two options must be used. Before performing the tool call, ensure that the user has provided the correct inputs.):
 
     Option 1 - Direct URL (provide ONE of these):
     - projectURL: The URL of the CircleCI project in any of these formats:
       * Project URL: https://app.circleci.com/pipelines/gh/organization/project
       * Pipeline URL: https://app.circleci.com/pipelines/gh/organization/project/123
+      * Legacy Pipeline URL: https://circleci.com/gh/organization/project/123
       * Workflow URL: https://app.circleci.com/pipelines/gh/organization/project/123/workflows/abc-def
       * Job URL: https://app.circleci.com/pipelines/gh/organization/project/123/workflows/abc-def/jobs/xyz
 
@@ -28,7 +29,7 @@ export const getLatestPipelineStatusTool = {
 
     Additional Requirements:
     - Never call this tool with incomplete parameters
-    - If using Option 1, the URLs MUST be provided by the user - do not attempt to construct or guess URLs
+    - If using Option 1, the URLs MUST be provided by the user - do not attempt to construct, reconstruct or guess URLs.
     - If using Option 2, ALL THREE parameters (workspaceRoot, gitRemoteURL, branch) must be provided
     - If neither option can be fully satisfied, ask the user for the missing information before making the tool call
   `,
