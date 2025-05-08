@@ -55,12 +55,27 @@ export const identifyProjectSlug = async ({
 export const getPipelineNumberFromURL = (url: string): number | undefined => {
   const parts = url.split('/');
   const pipelineIndex = parts.indexOf('pipelines');
-  if (pipelineIndex === -1) {
-    throw new Error(
-      'Error getting pipeline number from URL: Invalid CircleCI URL format',
-    );
+
+  let pipelineNumber: string | undefined;
+
+  if (pipelineIndex !== -1) {
+    pipelineNumber = parts[pipelineIndex + 4];
+  } else {
+    let projectSlug: string | undefined;
+    try {
+      projectSlug = getProjectSlugFromURL(url);
+    } catch {
+      throw new Error(
+        'Error getting project slug from URL to get pipeline number: Invalid CircleCI URL format',
+      );
+    }
+
+    const slugIndex = parts.indexOf(projectSlug);
+    const nextPart = parts[slugIndex + 1];
+    if (slugIndex >= 0 && nextPart?.match(/^\d+$/)) {
+      pipelineNumber = nextPart;
+    }
   }
-  const pipelineNumber = parts[pipelineIndex + 4];
 
   if (!pipelineNumber) {
     return undefined;

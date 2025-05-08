@@ -31,7 +31,7 @@ describe('getPipelineNumberFromURL', () => {
     expect(() =>
       getPipelineNumberFromURL('https://app.circleci.com/invalid/url'),
     ).toThrow(
-      'Error getting pipeline number from URL: Invalid CircleCI URL format',
+      'Error getting project slug from URL to get pipeline number: Invalid CircleCI URL format',
     );
   });
 
