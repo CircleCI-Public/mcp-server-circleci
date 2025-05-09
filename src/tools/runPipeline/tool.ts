@@ -19,6 +19,12 @@ export const runPipelineTool = {
     - gitRemoteURL: The URL of the git remote repository
     - branch: The name of the current branch
 
+    Pipeline Selection:
+    - If the project has multiple pipeline definitions, the tool will return a list of available pipelines
+    - You must then make another call with the chosen pipeline name using the pipelineChoiceName parameter
+    - The pipelineChoiceName must exactly match one of the pipeline names returned by the tool
+    - If the project has only one pipeline definition, pipelineChoiceName is not needed
+
     Additional Requirements:
     - Never call this tool with incomplete parameters
     - If using Option 1, the URLs MUST be provided by the user - do not attempt to construct or guess URLs

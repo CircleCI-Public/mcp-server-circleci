@@ -34,4 +34,12 @@ export const runPipelineInputSchema = z.object({
         '- Job URL: https://app.circleci.com/pipelines/gh/organization/project/123/workflows/abc-def/jobs/xyz',
     )
     .optional(),
+  pipelineChoiceName: z
+    .string()
+    .describe(
+      'The name of the pipeline to run. This parameter is only needed if the project has multiple pipeline definitions. ' +
+        'If not provided and multiple pipelines exist, the tool will return a list of available pipelines for the user to choose from. ' +
+        'If provided, it must exactly match one of the pipeline names returned by the tool.',
+    )
+    .optional(),
 });

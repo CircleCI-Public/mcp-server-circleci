@@ -13,6 +13,8 @@ import { createPromptTemplate } from './tools/createPromptTemplate/handler.js';
 import { createPromptTemplateTool } from './tools/createPromptTemplate/tool.js';
 import { recommendPromptTemplateTestsTool } from './tools/recommendPromptTemplateTests/tool.js';
 import { recommendPromptTemplateTests } from './tools/recommendPromptTemplateTests/handler.js';
+import { runPipeline } from './tools/runPipeline/handler.js';
+import { runPipelineTool } from './tools/runPipeline/tool.js';
 
 // Define the tools with their configurations
 export const CCI_TOOLS = [
@@ -23,6 +25,7 @@ export const CCI_TOOLS = [
   configHelperTool,
   createPromptTemplateTool,
   recommendPromptTemplateTestsTool,
+  runPipelineTool,
 ];
 
 // Extract the tool names as a union type
@@ -45,4 +48,5 @@ export const CCI_HANDLERS = {
   config_helper: configHelper,
   create_prompt_template: createPromptTemplate,
   recommend_prompt_template_tests: recommendPromptTemplateTests,
+  run_pipeline: runPipeline,
 } satisfies ToolHandlers;

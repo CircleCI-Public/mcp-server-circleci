@@ -1,11 +1,9 @@
-import { generateClassicDefinitionId } from '../../lib/generateClassicDefinitionId.js';
-import { getCircleCIClient } from '../client.js';
 import {
   PaginatedPipelineResponseSchema,
   Pipeline,
-  PipelineDefinition,
   PipelineDefinitionsResponse,
   RunPipelineResponse,
+  PipelineDefinition,
 } from '../schemas.js';
 import { HTTPClient } from './httpClient.js';
 import { defaultPaginationOptions } from './index.js';
@@ -125,7 +123,7 @@ export class PipelinesAPI {
     projectId: string;
   }): Promise<PipelineDefinition[]> {
     const rawResult = await this.client.get<unknown>(
-      `/project/${projectId}/pipeline-definitions`,
+      `/projects/${projectId}/pipeline-definitions`,
     );
 
     const parsedResult = PipelineDefinitionsResponse.safeParse(rawResult);
@@ -143,26 +141,12 @@ export class PipelinesAPI {
   }: {
     projectSlug: string;
     branch: string;
-    definitionId?: string;
+    definitionId: string;
   }): Promise<RunPipelineResponse> {
-    // detect if classic or standalone project
-    const isClassic = !projectSlug.startsWith('circleci/');
-
-    if (!isClassic && !definitionId) {
-      throw new Error('Definition ID is required for standalone projects');
-    }
-
-    const circleci = getCircleCIClient();
-    const { id: projectId } = await circleci.projects.getProject({
-      projectSlug,
-    });
-
     const rawResult = await this.client.post<unknown>(
       `/project/${projectSlug}/pipeline/run`,
       {
-        definition_id: isClassic
-          ? (definitionId ?? generateClassicDefinitionId(projectId)) // allow classic projects to run standalone config sources if passed in
-          : definitionId,
+        definition_id: definitionId,
         config: {
           branch,
         },

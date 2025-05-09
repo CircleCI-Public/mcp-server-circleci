@@ -11,7 +11,13 @@ import { getCircleCIClient } from '../../clients/client.js';
 export const runPipeline: ToolCallback<{
   params: typeof runPipelineInputSchema;
 }> = async (args) => {
-  const { workspaceRoot, gitRemoteURL, branch, projectURL } = args.params;
+  const {
+    workspaceRoot,
+    gitRemoteURL,
+    branch,
+    projectURL,
+    pipelineChoiceName,
+  } = args.params;
 
   let projectSlug: string | undefined;
   let branchFromURL: string | undefined;
@@ -38,12 +44,7 @@ export const runPipeline: ToolCallback<{
           Branch: ${branch}
           `);
   }
-
   const foundBranch = branchFromURL || branch;
-
-  // temporary
-  console.log(projectSlug, foundBranch);
-
   if (!foundBranch) {
     return mcpErrorOutput(
       'No branch provided. Ask the user to provide the branch.',
@@ -51,18 +52,64 @@ export const runPipeline: ToolCallback<{
   }
 
   const circleci = getCircleCIClient();
+  const { id: projectId } = await circleci.projects.getProject({
+    projectSlug,
+  });
+  const pipelineDefinitions = await circleci.pipelines.getPipelineDefinitions({
+    projectId,
+  });
+
+  const pipelineChoices = [
+    ...pipelineDefinitions.map((definition) => ({
+      name: definition.name,
+      definitionId: definition.id,
+    })),
+  ];
+
+  if (pipelineChoices.length === 0) {
+    return mcpErrorOutput('No pipeline definitions found.');
+  }
+
+  if (pipelineChoices.length > 1 && !pipelineChoiceName) {
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `Multiple pipeline definitions found. Please choose one of the following:\n${pipelineChoices
+            .map(
+              (pipeline, index) =>
+                `${index + 1}. ${pipeline.name} (definitionId: ${pipeline.definitionId})`,
+            )
+            .join('\n')}\n`,
+        },
+      ],
+    };
+  }
+
+  const chosenPipeline = pipelineChoiceName
+    ? pipelineChoices.find((pipeline) => pipeline.name === pipelineChoiceName)
+    : undefined;
+
+  if (pipelineChoiceName && !chosenPipeline) {
+    return mcpErrorOutput(
+      `Pipeline definition with name ${pipelineChoiceName} not found.`,
+    );
+  }
+
+  const runPipelineDefinitionId =
+    chosenPipeline?.definitionId || pipelineChoices[0].definitionId;
 
   const runPipelineResponse = await circleci.pipelines.runPipeline({
     projectSlug,
-    branch: foundBranch || 'main',
+    branch: foundBranch,
+    definitionId: runPipelineDefinitionId,
   });
 
-  // TODO: get a pipeline URL and return it
   return {
     content: [
       {
         type: 'text',
-        text: `Pipeline run successfully: ${runPipelineResponse.id}`,
+        text: `Pipeline run successfully. View it at: https://app.circleci.com/pipelines/${projectSlug}/${runPipelineResponse.number}`,
       },
     ],
   };
