@@ -5,7 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.4.4] - 2025-05-10
+## [0.5.0] - 2025-05-09
+
+### Added
+
+- Added `run_pipeline` tool to run a pipeline
+  - Support for triggering pipelines using project URL or local git repository context
+  - Branch detection from URLs or local git context
+  - Handles multiple pipeline definitions with interactive selection
+  - Provides direct link to monitor pipeline execution
+
+## [0.4.4] - 2025-05-08
 
 ### Fixed
 
