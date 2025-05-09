@@ -9,11 +9,10 @@ export class ProjectsAPI {
   }
 
   /**
-   * Get all workflows for a pipeline with pagination support
-   * @param params Configuration parameters
-   * @param params.projectSlug The project slug
-   * @returns Flaky test details
-   * @throws Error if timeout or max pages reached
+   * Get project info by slug
+   * @param projectSlug The project slug
+   * @returns The project info
+   * @throws Error if the request fails
    */
   async getProject({ projectSlug }: { projectSlug: string }): Promise<Project> {
     const rawResult = await this.client.get<unknown>(`/project/${projectSlug}`);

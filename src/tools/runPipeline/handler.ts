@@ -67,20 +67,24 @@ export const runPipeline: ToolCallback<{
   ];
 
   if (pipelineChoices.length === 0) {
-    return mcpErrorOutput('No pipeline definitions found.');
+    return mcpErrorOutput(
+      'No pipeline definitions found. Please make sure your project is set up on CircleCI to run pipelines.',
+    );
   }
+
+  const formattedPipelineChoices = pipelineChoices
+    .map(
+      (pipeline, index) =>
+        `${index + 1}. ${pipeline.name} (definitionId: ${pipeline.definitionId})`,
+    )
+    .join('\n');
 
   if (pipelineChoices.length > 1 && !pipelineChoiceName) {
     return {
       content: [
         {
           type: 'text',
-          text: `Multiple pipeline definitions found. Please choose one of the following:\n${pipelineChoices
-            .map(
-              (pipeline, index) =>
-                `${index + 1}. ${pipeline.name} (definitionId: ${pipeline.definitionId})`,
-            )
-            .join('\n')}\n`,
+          text: `Multiple pipeline definitions found. Please choose one of the following:\n${formattedPipelineChoices}`,
         },
       ],
     };
@@ -92,7 +96,7 @@ export const runPipeline: ToolCallback<{
 
   if (pipelineChoiceName && !chosenPipeline) {
     return mcpErrorOutput(
-      `Pipeline definition with name ${pipelineChoiceName} not found.`,
+      `Pipeline definition with name ${pipelineChoiceName} not found. Please choose one of the following:\n${formattedPipelineChoices}`,
     );
   }
 

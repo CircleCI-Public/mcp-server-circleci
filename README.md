@@ -351,6 +351,33 @@ https://docs.windsurf.com/windsurf/mcp
   - Identify edge cases and potential issues
   - Improve overall AI application quality
 
+- `run_pipeline`
+
+  Triggers a pipeline to run. This tool can be used in two ways:
+
+  1. Using CircleCI URL (Recommended):
+
+     - Provide a CircleCI URL in any of these formats:
+       - Job URL: "https://app.circleci.com/pipelines/github/org/repo/123/workflows/abc-def/jobs/789"
+       - Workflow URL: "https://app.circleci.com/pipelines/github/org/repo/123/workflows/abc-def"
+       - Pipeline URL: "https://app.circleci.com/pipelines/github/org/repo/123"
+       - Project URL with branch: "https://app.circleci.com/projects/github/org/repo?branch=main"
+     - Example: "Run the pipeline for https://app.circleci.com/pipelines/github/org/repo/123/workflows/abc-def"
+
+  2. Using Local Project Context:
+     - Works from your local workspace by providing:
+       - Workspace root path
+       - Git remote URL
+       - Branch name
+     - Example: "Run the pipeline for my current project on the main branch"
+
+  The tool returns a link to monitor the pipeline execution.
+
+  This is particularly useful for:
+
+  - Quickly running pipelines without visiting the CircleCI web UI
+  - Running pipelines from a specific branch
+
 # Development
 
 ## Getting Started
