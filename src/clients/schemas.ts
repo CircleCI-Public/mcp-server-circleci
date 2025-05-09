@@ -112,8 +112,6 @@ const ConfigValidateSchema = z.object({
 });
 
 const RunPipelineResponseSchema = z.object({
-  id: z.string(),
-  state: z.string(),
   number: z.number(),
 });
 
@@ -124,26 +122,6 @@ const ProjectSchema = z.object({
 const PipelineDefinitionSchema = z.object({
   id: z.string(),
   name: z.string(),
-  description: z.string().optional(),
-  created_at: z.string().optional(),
-  config_source: z.object({
-    provider: z.string(),
-    repo: z.object({
-      full_name: z.string(),
-      external_id: z.string(),
-    }),
-    file_path: z.string(),
-    public_id: z.string().optional(),
-  }),
-  checkout_source: z
-    .object({
-      provider: z.string(),
-      repo: z.object({
-        full_name: z.string(),
-        external_id: z.string(),
-      }),
-    })
-    .optional(),
 });
 
 const PipelineDefinitionsResponseSchema = z.object({
@@ -202,12 +180,3 @@ export type FollowedProject = z.infer<typeof FollowedProjectSchema>;
 
 export const PromptObject = promptObjectSchema;
 export type PromptObject = z.infer<typeof PromptObject>;
-
-export type PipelineDefinitionWithPublicId = Omit<
-  PipelineDefinition,
-  'config_source'
-> & {
-  config_source: Omit<PipelineDefinition['config_source'], 'public_id'> & {
-    public_id: string;
-  };
-};
