@@ -13,13 +13,16 @@ import mcpErrorOutput from '../../lib/mcpErrorOutput.js';
 export const getBuildFailureLogs: ToolCallback<{
   params: typeof getBuildFailureOutputInputSchema;
 }> = async (args) => {
-  const { workspaceRoot, gitRemoteURL, branch, projectURL } = args.params;
+  const { workspaceRoot, gitRemoteURL, branch, projectURL, mcpConfig } =
+    args.params;
 
   let projectSlug: string | undefined;
   let pipelineNumber: number | undefined;
   let branchFromURL: string | undefined;
 
-  if (projectURL) {
+  if (mcpConfig) {
+    projectSlug = mcpConfig.projectSlug;
+  } else if (projectURL) {
     projectSlug = getProjectSlugFromURL(projectURL);
     pipelineNumber = getPipelineNumberFromURL(projectURL);
     branchFromURL = getBranchFromURL(projectURL);

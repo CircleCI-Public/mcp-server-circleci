@@ -12,11 +12,13 @@ import mcpErrorOutput from '../../lib/mcpErrorOutput.js';
 export const getFlakyTestLogs: ToolCallback<{
   params: typeof getFlakyTestLogsInputSchema;
 }> = async (args) => {
-  const { workspaceRoot, gitRemoteURL, projectURL } = args.params;
+  const { workspaceRoot, gitRemoteURL, projectURL, mcpConfig } = args.params;
 
   let projectSlug: string | null | undefined;
 
-  if (projectURL) {
+  if (mcpConfig) {
+    projectSlug = mcpConfig.projectSlug;
+  } else if (projectURL) {
     projectSlug = getProjectSlugFromURL(projectURL);
   } else if (workspaceRoot && gitRemoteURL) {
     projectSlug = await identifyProjectSlug({
