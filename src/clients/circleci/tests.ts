@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 const TestResponseSchema = z.object({
   items: z.array(Test),
-  next_page_token: z.string().nullable(),
+  next_page_token: z.string().nullable().optional(),
 });
 
 export class TestsAPI {
@@ -70,7 +70,7 @@ export class TestsAPI {
 
       pageCount++;
       allTests.push(...result.items);
-      nextPageToken = result.next_page_token;
+      nextPageToken = result.next_page_token ?? null;
     } while (nextPageToken);
 
     return allTests;
