@@ -13,13 +13,27 @@ import mcpErrorOutput from '../../lib/mcpErrorOutput.js';
 export const getBuildFailureLogs: ToolCallback<{
   params: typeof getBuildFailureOutputInputSchema;
 }> = async (args) => {
-  const { workspaceRoot, gitRemoteURL, branch, projectURL } = args.params;
+  const {
+    workspaceRoot,
+    gitRemoteURL,
+    branch,
+    projectURL,
+    projectSlug: inputProjectSlug,
+  } = args.params;
 
   let projectSlug: string | undefined;
   let pipelineNumber: number | undefined;
   let branchFromURL: string | undefined;
   let jobNumber: number | undefined;
-  if (projectURL) {
+
+  if (inputProjectSlug) {
+    if (!branch) {
+      return mcpErrorOutput(
+        'Branch not provided. When using projectSlug, a branch must also be specified.',
+      );
+    }
+    projectSlug = inputProjectSlug;
+  } else if (projectURL) {
     projectSlug = getProjectSlugFromURL(projectURL);
     pipelineNumber = getPipelineNumberFromURL(projectURL);
     branchFromURL = getBranchFromURL(projectURL);
@@ -30,7 +44,7 @@ export const getBuildFailureLogs: ToolCallback<{
     });
   } else {
     return mcpErrorOutput(
-      'No inputs provided. Ask the user to provide the inputs user can provide based on the tool description.',
+      'Missing required inputs. Please provide either: 1) projectSlug with branch, 2) projectURL, or 3) workspaceRoot with gitRemoteURL and branch.',
     );
   }
 

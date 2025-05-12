@@ -28,24 +28,34 @@ export class MeAPI {
       maxPages?: number;
       timeoutMs?: number;
     } = {},
-  ): Promise<FollowedProject[]> {
+  ): Promise<{
+    projects: FollowedProject[];
+    reachedMaxPagesOrTimeout: boolean;
+  }> {
     const { maxPages = 20, timeoutMs = defaultPaginationOptions.timeoutMs } =
       options;
 
     const startTime = Date.now();
     const allProjects: FollowedProject[] = [];
+    // Track unique project slugs to prevent duplicates
+    const seenSlugs = new Set<string>();
     let nextPageToken: string | null = null;
+    let previousPageToken: string | null = null;
     let pageCount = 0;
+
+    let reachedMaxPagesOrTimeout = false;
 
     do {
       // Check timeout
       if (Date.now() - startTime > timeoutMs) {
-        throw new Error(`Timeout reached after ${timeoutMs}ms`);
+        reachedMaxPagesOrTimeout = true;
+        break;
       }
 
       // Check page limit
       if (pageCount >= maxPages) {
-        throw new Error(`Maximum number of pages (${maxPages}) reached`);
+        reachedMaxPagesOrTimeout = true;
+        break;
       }
 
       const params = nextPageToken ? { next_page_token: nextPageToken } : {};
@@ -58,10 +68,29 @@ export class MeAPI {
       const result = FollowedProjectResponseSchema.parse(rawResult);
 
       pageCount++;
-      allProjects.push(...result.items);
+
+      // Only add projects that haven't been seen before
+      for (const project of result.items) {
+        if (!seenSlugs.has(project.slug)) {
+          seenSlugs.add(project.slug);
+          allProjects.push(project);
+        }
+      }
+
+      // Store the current token before updating
+      previousPageToken = nextPageToken;
       nextPageToken = result.next_page_token;
+
+      // Break if we received the same token as before (stuck in a loop)
+      if (nextPageToken && nextPageToken === previousPageToken) {
+        reachedMaxPagesOrTimeout = true;
+        break;
+      }
     } while (nextPageToken);
 
-    return allProjects;
+    return {
+      projects: allProjects,
+      reachedMaxPagesOrTimeout,
+    };
   }
 }

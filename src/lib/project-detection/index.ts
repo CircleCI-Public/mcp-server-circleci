@@ -24,7 +24,8 @@ export const identifyProjectSlug = async ({
     throw new Error(`VCS with host ${parsedGitURL.host} is not handled`);
   }
 
-  const followedProjects = await cciPrivateClients.me.getFollowedProjects();
+  const { projects: followedProjects } =
+    await cciPrivateClients.me.getFollowedProjects();
   if (!followedProjects) {
     throw new Error('Failed to get followed projects');
   }
@@ -51,7 +52,7 @@ export const identifyProjectSlug = async ({
  * // Pipeline URL with complex project path
  * getPipelineNumberFromURL('https://app.circleci.com/pipelines/circleci/GM1mbrQEWnNbzLKEnotDo4/5gh9pgQgohHwicwomY5nYQ/123/workflows/abc123de-f456-78gh-90ij-klmnopqrstuv')
  * // returns 123
- * 
+ *
  * @example
  * // URL without pipelines segment. This is a legacy job URL format.
  * getPipelineNumberFromURL('https://circleci.com/gh/organization/project/2')
@@ -83,7 +84,7 @@ export const getPipelineNumberFromURL = (url: string): number | undefined => {
  * // Job URL
  * getJobNumberFromURL('https://app.circleci.com/pipelines/gh/organization/project/123/workflows/abc123de-f456-78gh-90ij-klmnopqrstuv/jobs/456')
  * // returns 456
- * 
+ *
  * @example
  * // Legacy job URL format
  * getJobNumberFromURL('https://circleci.com/gh/organization/project/123')
@@ -98,15 +99,15 @@ export const getJobNumberFromURL = (url: string): number | undefined => {
   const parts = url.split('/');
   const jobsIndex = parts.indexOf('jobs');
   const pipelineIndex = parts.indexOf('pipelines');
-  
+
   // Handle legacy URL format (e.g. https://circleci.com/gh/organization/project/123)
   if (jobsIndex === -1 && pipelineIndex === -1) {
     const jobNumber = parts[parts.length - 1];
-      if (!jobNumber) {
-        return undefined;
-      }
-      const parsedNumber = Number(jobNumber);
-      if (isNaN(parsedNumber)) {
+    if (!jobNumber) {
+      return undefined;
+    }
+    const parsedNumber = Number(jobNumber);
+    if (isNaN(parsedNumber)) {
       throw new Error('Job number in URL is not a valid number');
     }
     return parsedNumber;
