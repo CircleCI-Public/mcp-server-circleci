@@ -23,7 +23,7 @@ describe('getPipelineNumberFromURL', () => {
       url: 'https://app.circleci.com/pipelines/gh/organization/project',
       expected: undefined,
     },
-    // Project URL (Legacy job URL format without job number returns undefined for pipeline number)
+    // Project URL (missing all info)
     {
       url: 'https://app.circleci.com/gh/organization/project',
       expected: undefined,
