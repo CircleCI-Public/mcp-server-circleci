@@ -18,9 +18,9 @@ export const getLatestPipelineStatusTool = {
     - projectURL: The URL of the CircleCI project in any of these formats:
       * Project URL: https://app.circleci.com/pipelines/gh/organization/project
       * Pipeline URL: https://app.circleci.com/pipelines/gh/organization/project/123
-      * Legacy Pipeline URL: https://circleci.com/gh/organization/project/123
       * Workflow URL: https://app.circleci.com/pipelines/gh/organization/project/123/workflows/abc-def
       * Job URL: https://app.circleci.com/pipelines/gh/organization/project/123/workflows/abc-def/jobs/xyz
+      * Legacy Job URL: https://circleci.com/gh/organization/project/123
 
     Option 2 - Project Detection (ALL of these must be provided together):
     - workspaceRoot: The absolute path to the workspace root

@@ -51,44 +51,27 @@ export const identifyProjectSlug = async ({
  * // Pipeline URL with complex project path
  * getPipelineNumberFromURL('https://app.circleci.com/pipelines/circleci/GM1mbrQEWnNbzLKEnotDo4/5gh9pgQgohHwicwomY5nYQ/123/workflows/abc123de-f456-78gh-90ij-klmnopqrstuv')
  * // returns 123
+ * 
+ * @example
+ * // URL without pipelines segment. This is a legacy job URL format.
+ * getPipelineNumberFromURL('https://circleci.com/gh/organization/project/2')
+ * // returns undefined
  */
 export const getPipelineNumberFromURL = (url: string): number | undefined => {
   const parts = url.split('/');
   const pipelineIndex = parts.indexOf('pipelines');
-
-  let pipelineNumber: string | undefined;
-
-  if (pipelineIndex !== -1) {
-    pipelineNumber = parts[pipelineIndex + 4];
-  } else {
-    let projectSlug: string | undefined;
-    try {
-      projectSlug = getProjectSlugFromURL(url);
-    } catch {
-      throw new Error(
-        'Error getting project slug from URL to get pipeline number: Invalid CircleCI URL format',
-      );
-    }
-
-    const slugParts = projectSlug.split('/');
-    const lastSlugPart = slugParts[slugParts.length - 1];
-    const slugIndex = parts.findIndex((part) => part === lastSlugPart);
-
-    const nextPart = parts[slugIndex + 1];
-    if (slugIndex >= 0 && nextPart?.match(/^\d+$/)) {
-      pipelineNumber = nextPart;
-    }
+  if (pipelineIndex === -1) {
+    return undefined;
   }
+  const pipelineNumber = parts[pipelineIndex + 4];
 
   if (!pipelineNumber) {
     return undefined;
   }
-
   const parsedNumber = Number(pipelineNumber);
   if (isNaN(parsedNumber)) {
     throw new Error('Pipeline number in URL is not a valid number');
   }
-
   return parsedNumber;
 };
 
@@ -100,6 +83,11 @@ export const getPipelineNumberFromURL = (url: string): number | undefined => {
  * // Job URL
  * getJobNumberFromURL('https://app.circleci.com/pipelines/gh/organization/project/123/workflows/abc123de-f456-78gh-90ij-klmnopqrstuv/jobs/456')
  * // returns 456
+ * 
+ * @example
+ * // Legacy job URL format
+ * getJobNumberFromURL('https://circleci.com/gh/organization/project/123')
+ * // returns 123
  *
  * @example
  * // URL without job number
@@ -109,7 +97,27 @@ export const getPipelineNumberFromURL = (url: string): number | undefined => {
 export const getJobNumberFromURL = (url: string): number | undefined => {
   const parts = url.split('/');
   const jobsIndex = parts.indexOf('jobs');
-  if (jobsIndex === -1 || jobsIndex + 1 >= parts.length) {
+  const pipelineIndex = parts.indexOf('pipelines');
+  
+  // Handle legacy URL format (e.g. https://circleci.com/gh/organization/project/123)
+  if (jobsIndex === -1 && pipelineIndex === -1) {
+    const jobNumber = parts[parts.length - 1];
+      if (!jobNumber) {
+        return undefined;
+      }
+      const parsedNumber = Number(jobNumber);
+      if (isNaN(parsedNumber)) {
+      throw new Error('Job number in URL is not a valid number');
+    }
+    return parsedNumber;
+  }
+
+  if (jobsIndex === -1) {
+    return undefined;
+  }
+
+  // Handle modern URL format with /jobs/ segment
+  if (jobsIndex + 1 >= parts.length) {
     return undefined;
   }
 

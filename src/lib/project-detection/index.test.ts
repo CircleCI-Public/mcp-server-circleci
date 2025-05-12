@@ -18,41 +18,34 @@ describe('getPipelineNumberFromURL', () => {
       url: 'https://app.circleci.com/pipelines/circleci/GM1mbrQEWnNbzLKEnotDo4/5gh9pgQgohHwicwomY5nYQ/123/workflows/abc123de-f456-78gh-90ij-klmnopqrstuv',
       expected: 123,
     },
-    // Workflow URL (no pipelines in URL)
-    {
-      url: 'https://circleci.server.customdomain.com/gh/organization/project/2/workflows/abc123de-f456-78gh-90ij-klmnopqrstuv',
-      expected: 2,
-    },
     // Project URL (no pipeline number)
     {
       url: 'https://app.circleci.com/pipelines/gh/organization/project',
       expected: undefined,
     },
-    // Project URL (no pipelines and no pipeline number in path)
+    // Project URL (Legacy job URL format without job number returns undefined for pipeline number)
     {
       url: 'https://app.circleci.com/gh/organization/project',
       expected: undefined,
     },
-    // Project URL (no pipelines in URL but pipeline number in path)
+    // Project URL (Legacy job URL format with job number returns undefined for pipeline number)
     {
       url: 'https://circleci.com/gh/organization/project/123',
-      expected: 123,
+      expected: undefined,
     },
-    // Project URL (no pipelines in URL but pipeline number in path)
+    // Project URL (Legacy job URL format with job number returns undefined for pipeline number)
     {
       url: 'https://circleci.server.customdomain.com/gh/organization/project/123',
-      expected: 123,
+      expected: undefined,
     },
   ])('extracts pipeline number $expected from URL', ({ url, expected }) => {
     expect(getPipelineNumberFromURL(url)).toBe(expected);
   });
 
-  it('throws error for invalid CircleCI URL format', () => {
+  it('should not throw error for invalid CircleCI URL format. Returns undefined for pipeline number', () => {
     expect(() =>
       getPipelineNumberFromURL('https://app.circleci.com/invalid/url'),
-    ).toThrow(
-      'Error getting project slug from URL to get pipeline number: Invalid CircleCI URL format',
-    );
+    ).not.toThrow();
   });
 
   it('throws error when pipeline number is not a valid number', () => {
@@ -199,6 +192,16 @@ describe('getJobNumberFromURL', () => {
     {
       url: 'https://app.circleci.com/pipelines/circleci/GM1mbrQEWnNbzLKEnotDo4/5gh9pgQgohHwicwomY5nYQ/123/workflows/abc123de-f456-78gh-90ij-klmnopqrstuv/jobs/789',
       expected: 789,
+    },
+    // Job URL with legacy format
+    {
+      url: 'https://circleci.com/gh/organization/project/123',
+      expected: 123,
+    },
+    // Job URL with legacy format with custom domain
+    {
+      url: 'https://circleci.server.customdomain.com/gh/organization/project/123',
+      expected: 123,
     },
     // Workflow URL (no job number)
     {
