@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.1] - 2025-05-12
+
+### Added
+
+- Fix handling of legacy job url format in tools
+- Fix handling of pagination of test results when no test results are found
+
 ## [0.5.0] - 2025-05-09
 
 ### Added
