@@ -17,12 +17,20 @@ export const runPipeline: ToolCallback<{
     branch,
     projectURL,
     pipelineChoiceName,
+    projectSlug: inputProjectSlug,
   } = args.params;
 
   let projectSlug: string | undefined;
   let branchFromURL: string | undefined;
 
-  if (projectURL) {
+  if (inputProjectSlug) {
+    if (!branch) {
+      return mcpErrorOutput(
+        'Branch not provided. When using projectSlug, a branch must also be specified.',
+      );
+    }
+    projectSlug = inputProjectSlug;
+  } else if (projectURL) {
     projectSlug = getProjectSlugFromURL(projectURL);
     branchFromURL = getBranchFromURL(projectURL);
   } else if (workspaceRoot && gitRemoteURL && branch) {
@@ -31,7 +39,7 @@ export const runPipeline: ToolCallback<{
     });
   } else {
     return mcpErrorOutput(
-      'No inputs provided. Ask the user to provide the inputs user can provide based on the tool description.',
+      'Missing required inputs. Please provide either: 1) projectSlug with branch, 2) projectURL, or 3) workspaceRoot with gitRemoteURL and branch.',
     );
   }
 

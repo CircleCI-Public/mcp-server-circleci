@@ -91,6 +91,33 @@ describe('runPipeline handler', () => {
     expect(response.content[0].text).toContain('No branch provided');
   });
 
+  it('should return a valid MCP error response when projectSlug is provided without branch', async () => {
+    const args = {
+      params: {
+        projectSlug: 'gh/org/repo',
+        // No branch provided
+      },
+    } as any;
+
+    const controller = new AbortController();
+    const response = await runPipeline(args, {
+      signal: controller.signal,
+    });
+
+    expect(response).toHaveProperty('content');
+    expect(response).toHaveProperty('isError', true);
+    expect(Array.isArray(response.content)).toBe(true);
+    expect(response.content[0]).toHaveProperty('type', 'text');
+    expect(response.content[0].text).toContain('Branch not provided');
+
+    // Verify that CircleCI API was not called
+    expect(mockCircleCIClient.projects.getProject).not.toHaveBeenCalled();
+    expect(
+      mockCircleCIClient.pipelines.getPipelineDefinitions,
+    ).not.toHaveBeenCalled();
+    expect(mockCircleCIClient.pipelines.runPipeline).not.toHaveBeenCalled();
+  });
+
   it('should return a valid MCP error response when no pipeline definitions are found', async () => {
     vi.spyOn(projectDetection, 'getProjectSlugFromURL').mockReturnValue(
       'gh/org/repo',
@@ -317,5 +344,47 @@ describe('runPipeline handler', () => {
       branch: 'feature-branch',
       definitionId: 'def1',
     });
+  });
+
+  it('should run a pipeline using projectSlug and branch inputs correctly', async () => {
+    mockCircleCIClient.projects.getProject.mockResolvedValue({
+      id: 'project-id',
+    });
+    mockCircleCIClient.pipelines.getPipelineDefinitions.mockResolvedValue([
+      { id: 'def1', name: 'Pipeline 1' },
+    ]);
+    mockCircleCIClient.pipelines.runPipeline.mockResolvedValue({
+      number: 123,
+      state: 'pending',
+      id: 'pipeline-id',
+    });
+
+    const args = {
+      params: {
+        projectSlug: 'gh/org/repo',
+        branch: 'feature/new-feature',
+      },
+    } as any;
+
+    const controller = new AbortController();
+    const response = await runPipeline(args, {
+      signal: controller.signal,
+    });
+
+    expect(mockCircleCIClient.projects.getProject).toHaveBeenCalledWith({
+      projectSlug: 'gh/org/repo',
+    });
+
+    expect(mockCircleCIClient.pipelines.runPipeline).toHaveBeenCalledWith({
+      projectSlug: 'gh/org/repo',
+      branch: 'feature/new-feature',
+      definitionId: 'def1',
+    });
+
+    expect(response).toHaveProperty('content');
+    expect(Array.isArray(response.content)).toBe(true);
+    expect(response.content[0]).toHaveProperty('type', 'text');
+    expect(typeof response.content[0].text).toBe('string');
+    expect(response.content[0].text).toContain('Pipeline run successfully');
   });
 });
