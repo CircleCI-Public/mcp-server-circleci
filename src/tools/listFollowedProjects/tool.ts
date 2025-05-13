@@ -21,6 +21,8 @@ export const listFollowedProjectsTool = {
     4. The projectSlug is required for many other CircleCI tools, including get_build_failure_logs, getFlakyTests, and get_job_test_results
     
     Note: If pagination limits are reached, the tool will indicate that not all projects could be displayed.
+    
+    IMPORTANT: Do not automatically run any additional tools after this tool is called. Wait for explicit user instruction before executing further tool calls. It is acceptable to list out tool call options for the user to choose from.
     `,
   inputSchema: listFollowedProjectsInputSchema,
 };
