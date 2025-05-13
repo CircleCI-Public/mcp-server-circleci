@@ -1,6 +1,12 @@
 import { z } from 'zod';
 
 export const getFlakyTestLogsInputSchema = z.object({
+  projectSlug: z
+    .string()
+    .describe(
+      'The project slug from listFollowedProjects tool (e.g., "gh/organization/project").',
+    )
+    .optional(),
   workspaceRoot: z
     .string()
     .describe(

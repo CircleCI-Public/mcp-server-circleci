@@ -98,4 +98,54 @@ describe('getBuildFailureLogs handler', () => {
     expect(response.content[0]).toHaveProperty('type', 'text');
     expect(typeof response.content[0].text).toBe('string');
   });
+
+  it('should handle projectSlug and branch inputs correctly', async () => {
+    const mockLogs = [
+      {
+        jobName: 'build',
+        steps: [
+          {
+            stepName: 'Build app',
+            logs: { output: 'Build failed', error: 'Error: build failed' },
+          },
+        ],
+      },
+    ];
+
+    vi.spyOn(getPipelineJobLogsModule, 'default').mockResolvedValue(mockLogs);
+
+    vi.spyOn(formatJobLogs, 'formatJobLogs').mockReturnValue({
+      content: [
+        {
+          type: 'text',
+          text: 'Formatted job logs',
+        },
+      ],
+    });
+
+    const args = {
+      params: {
+        projectSlug: 'gh/org/repo',
+        branch: 'feature/new-feature',
+      },
+    } as any;
+
+    const controller = new AbortController();
+    const response = await getBuildFailureLogs(args, {
+      signal: controller.signal,
+    });
+
+    expect(getPipelineJobLogsModule.default).toHaveBeenCalledWith({
+      projectSlug: 'gh/org/repo',
+      branch: 'feature/new-feature',
+      pipelineNumber: undefined,
+      jobNumber: undefined,
+    });
+
+    expect(formatJobLogs.formatJobLogs).toHaveBeenCalledWith(mockLogs);
+    expect(response).toHaveProperty('content');
+    expect(Array.isArray(response.content)).toBe(true);
+    expect(response.content[0]).toHaveProperty('type', 'text');
+    expect(typeof response.content[0].text).toBe('string');
+  });
 });

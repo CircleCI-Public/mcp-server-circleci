@@ -12,11 +12,18 @@ import mcpErrorOutput from '../../lib/mcpErrorOutput.js';
 export const getFlakyTestLogs: ToolCallback<{
   params: typeof getFlakyTestLogsInputSchema;
 }> = async (args) => {
-  const { workspaceRoot, gitRemoteURL, projectURL } = args.params;
+  const {
+    workspaceRoot,
+    gitRemoteURL,
+    projectURL,
+    projectSlug: inputProjectSlug,
+  } = args.params;
 
   let projectSlug: string | null | undefined;
 
-  if (projectURL) {
+  if (inputProjectSlug) {
+    projectSlug = inputProjectSlug;
+  } else if (projectURL) {
     projectSlug = getProjectSlugFromURL(projectURL);
   } else if (workspaceRoot && gitRemoteURL) {
     projectSlug = await identifyProjectSlug({
@@ -24,7 +31,7 @@ export const getFlakyTestLogs: ToolCallback<{
     });
   } else {
     return mcpErrorOutput(
-      'No inputs provided. Ask the user to provide the inputs user can provide based on the tool description.',
+      'Missing required inputs. Please provide either: 1) projectSlug, 2) projectURL, or 3) workspaceRoot with gitRemoteURL.',
     );
   }
 

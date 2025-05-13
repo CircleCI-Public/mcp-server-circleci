@@ -54,6 +54,48 @@ describe('getFlakyTestLogs handler', () => {
     expect(typeof response.content[0].text).toBe('string');
   });
 
+  it('should use projectSlug directly when provided', async () => {
+    const mockGetFlakyTests = vi
+      .spyOn(getFlakyTestsModule, 'default')
+      .mockResolvedValue([
+        {
+          name: 'flakyTest',
+          message: 'Test failure message',
+          run_time: '1.5',
+          result: 'failure',
+          classname: 'TestClass',
+          file: 'path/to/file.js',
+        },
+      ]);
+
+    vi.spyOn(formatFlakyTestsModule, 'formatFlakyTests').mockReturnValue({
+      content: [
+        {
+          type: 'text',
+          text: 'Flaky test output',
+        },
+      ],
+    });
+
+    const args = {
+      params: {
+        projectSlug: 'gh/org/repo',
+      },
+    } as any;
+
+    const controller = new AbortController();
+    await getFlakyTestLogs(args, {
+      signal: controller.signal,
+    });
+
+    expect(mockGetFlakyTests).toHaveBeenCalledWith({
+      projectSlug: 'gh/org/repo',
+    });
+    // Verify that no project detection methods were called
+    expect(projectDetection.getProjectSlugFromURL).not.toHaveBeenCalled();
+    expect(projectDetection.identifyProjectSlug).not.toHaveBeenCalled();
+  });
+
   it('should return a valid MCP success response with flaky tests', async () => {
     vi.spyOn(projectDetection, 'getProjectSlugFromURL').mockReturnValue(
       'gh/org/repo',
