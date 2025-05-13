@@ -352,6 +352,31 @@ https://docs.windsurf.com/windsurf/mcp
   - Identify edge cases and potential issues
   - Improve overall AI application quality
 
+- `list_followed_projects`
+
+  Lists all projects that the user is following on CircleCI. This tool:
+
+  1. Retrieves and Displays Projects:
+     - Shows all projects the user has access to and is following
+     - Provides the project name and projectSlug for each entry
+     - Example: "List my CircleCI projects"
+
+  The tool returns a formatted list of projects, example output:
+  
+  ```
+  Projects followed:
+  1. my-project (projectSlug: gh/organization/my-project)
+  2. another-project (projectSlug: gh/organization/another-project)
+  ```
+
+  This is particularly useful for:
+  
+  - Identifying which CircleCI projects are available to you
+  - Obtaining the projectSlug needed for other CircleCI tools
+  - Selecting a project for subsequent operations
+
+  Note: The projectSlug (not the project name) is required for many other CircleCI tools, and will be used for those tool calls after a project is selected.
+
 - `run_pipeline`
 
   Triggers a pipeline to run. This tool can be used in two ways:

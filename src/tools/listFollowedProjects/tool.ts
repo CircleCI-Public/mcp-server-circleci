@@ -18,7 +18,7 @@ export const listFollowedProjectsTool = {
     1. Run this tool to see available projects
     2. User selects a project from the list
     3. The LLM should extract and use the projectSlug (not the project name) from the selected project for subsequent tool calls
-    4. The projectSlug is required for many other CircleCI tools, including get_build_failure_logs, getFlakyTests, and get_job_test_results
+    4. The projectSlug is required for many other CircleCI tools, and will be used for those tool calls after a project is selected
     
     Note: If pagination limits are reached, the tool will indicate that not all projects could be displayed.
     
