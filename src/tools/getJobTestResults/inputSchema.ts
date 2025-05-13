@@ -1,6 +1,12 @@
 import { z } from 'zod';
 
 export const getJobTestResultsInputSchema = z.object({
+  projectSlug: z
+    .string()
+    .describe(
+      'The project slug from listFollowedProjects. When using this option, branch must also be provided.',
+    )
+    .optional(),
   workspaceRoot: z
     .string()
     .describe(

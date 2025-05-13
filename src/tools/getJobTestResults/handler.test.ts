@@ -108,6 +108,53 @@ describe('getJobTestResults handler', () => {
     });
   });
 
+  it('should return a valid MCP success response with test results for projectSlug and branch', async () => {
+    const mockTests = [
+      {
+        message: 'No failures',
+        run_time: 0.5,
+        file: 'src/test.js',
+        result: 'success',
+        name: 'should pass the test',
+        classname: 'TestClass',
+      },
+    ];
+
+    vi.spyOn(getJobTestsModule, 'getJobTests').mockResolvedValue(mockTests);
+
+    vi.spyOn(formatJobTestsModule, 'formatJobTests').mockReturnValue({
+      content: [
+        {
+          type: 'text',
+          text: 'Test results output',
+        },
+      ],
+    });
+
+    const args = {
+      params: {
+        projectSlug: 'gh/org/repo',
+        branch: 'feature/new-feature',
+      },
+    } as any;
+
+    const controller = new AbortController();
+    const response = await getJobTestResults(args, {
+      signal: controller.signal,
+    });
+
+    expect(response).toHaveProperty('content');
+    expect(Array.isArray(response.content)).toBe(true);
+    expect(response.content[0]).toHaveProperty('type', 'text');
+    expect(typeof response.content[0].text).toBe('string');
+
+    expect(getJobTestsModule.getJobTests).toHaveBeenCalledWith({
+      projectSlug: 'gh/org/repo',
+      branch: 'feature/new-feature',
+      jobNumber: undefined,
+    });
+  });
+
   it('should return a valid MCP success response with test results for a branch', async () => {
     vi.spyOn(projectDetection, 'identifyProjectSlug').mockResolvedValue(
       'gh/org/repo',
