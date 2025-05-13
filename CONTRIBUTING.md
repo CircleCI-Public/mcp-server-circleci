@@ -9,6 +9,7 @@ get started, we recommend taking a look at the guidelines below:
 - [Contributing](#contribute)
   - [Submission Guidelines](#guidelines)
   - [Release Process](#release)
+  - [Creating New Tools](#creating-tools)
 
 ## <a name="question"></a>Have a Question?
 
@@ -136,3 +137,43 @@ After the issue has been created, follow these steps to create a Pull Request.
 9. In GitHub, send a Pull Request to `mcp-server-circleci:main`
 
 Thank you for your contribution!
+
+### <a name="creating-tools"></a>Creating New Tools
+
+This project provides a tool generator script to help you quickly create new tools with the correct structure and boilerplate code.
+
+To create a new tool:
+
+1. Run the following command, replacing `yourToolName` with your tool's name in camelCase:
+   ```bash
+   pnpm create-tool yourToolName
+   ```
+
+2. This will generate a new directory at `src/tools/yourToolName` with the following files:
+   - `inputSchema.ts` - Defines the input schema for the tool using Zod
+   - `tool.ts` - Defines the tool name, description, and input schema
+   - `handler.ts` - Contains the main implementation logic
+   - `handler.test.ts` - Contains basic test setup
+
+3. After creating the files, you'll need to register your tool in `src/circleci-tools.ts`:
+   ```typescript
+   // Import your tool and handler
+   import { yourToolNameTool } from './tools/yourToolName/tool.js';
+   import { yourToolName } from './tools/yourToolName/handler.js';
+
+   // Add your tool to the CCI_TOOLS array
+   export const CCI_TOOLS = [
+     // ...existing tools
+     yourToolNameTool,
+   ];
+
+   // Add your handler to the CCI_HANDLERS object
+   export const CCI_HANDLERS = {
+     // ...existing handlers
+     your_tool_name: yourToolName,
+   } satisfies ToolHandlers;
+   ```
+
+4. Implement your tool's logic in the handler and add comprehensive tests.
+
+Using this script ensures consistency across the codebase and saves development time.
