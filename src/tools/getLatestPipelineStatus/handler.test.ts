@@ -111,6 +111,62 @@ describe('getLatestPipelineStatus handler', () => {
     expect(response).toEqual(mockFormattedResponse);
   });
 
+  it('should get latest pipeline status using projectSlug and branch', async () => {
+    const args = {
+      params: {
+        projectSlug: 'gh/circleci/project',
+        branch: 'feature/branch',
+      },
+    };
+
+    const controller = new AbortController();
+    const response = await getLatestPipelineStatus(args as any, {
+      signal: controller.signal,
+    });
+
+    // Verify that project detection functions were not called
+    expect(projectDetection.getProjectSlugFromURL).not.toHaveBeenCalled();
+    expect(projectDetection.identifyProjectSlug).not.toHaveBeenCalled();
+
+    expect(
+      getLatestPipelineWorkflowsModule.getLatestPipelineWorkflows,
+    ).toHaveBeenCalledWith({
+      projectSlug: 'gh/circleci/project',
+      branch: 'feature/branch',
+    });
+    expect(
+      formatLatestPipelineStatusModule.formatLatestPipelineStatus,
+    ).toHaveBeenCalledWith(mockWorkflows);
+    expect(response).toEqual(mockFormattedResponse);
+  });
+
+  it('should return error when projectSlug is provided without branch', async () => {
+    const args = {
+      params: {
+        projectSlug: 'gh/circleci/project',
+        // No branch provided
+      },
+    };
+
+    const controller = new AbortController();
+    const response = await getLatestPipelineStatus(args as any, {
+      signal: controller.signal,
+    });
+
+    expect(response).toHaveProperty('content');
+    expect(response).toHaveProperty('isError', true);
+    expect(response.content[0]).toHaveProperty('type', 'text');
+    expect(response.content[0].text).toContain('Branch not provided');
+
+    // Verify that no further processing was attempted
+    expect(
+      getLatestPipelineWorkflowsModule.getLatestPipelineWorkflows,
+    ).not.toHaveBeenCalled();
+    expect(
+      formatLatestPipelineStatusModule.formatLatestPipelineStatus,
+    ).not.toHaveBeenCalled();
+  });
+
   it('should return error when no valid inputs are provided', async () => {
     const args = {
       params: {},
@@ -123,7 +179,7 @@ describe('getLatestPipelineStatus handler', () => {
 
     expect(response).toHaveProperty('content');
     expect(response.content[0]).toHaveProperty('type', 'text');
-    expect(response.content[0].text).toContain('No inputs provided');
+    expect(response.content[0].text).toContain('Missing required inputs');
   });
 
   it('should return error when project slug cannot be identified', async () => {
