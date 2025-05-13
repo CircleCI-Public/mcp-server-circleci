@@ -22,7 +22,7 @@ export const listFollowedProjectsTool = {
     
     Note: If pagination limits are reached, the tool will indicate that not all projects could be displayed.
     
-    IMPORTANT: Do not automatically run any additional tools after this tool is called. Wait for explicit user instruction before executing further tool calls. It is acceptable to list out tool call options for the user to choose from.
+    IMPORTANT: Do not automatically run any additional tools after this tool is called. Wait for explicit user instruction before executing further tool calls. The LLM MUST NOT invoke any other CircleCI tools until receiving a clear instruction from the user about what to do next, even if the user selects a project. It is acceptable to list out tool call options for the user to choose from, but do not execute them until instructed.
     `,
   inputSchema: listFollowedProjectsInputSchema,
 };
