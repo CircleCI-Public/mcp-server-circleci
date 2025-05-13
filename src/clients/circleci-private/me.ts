@@ -58,7 +58,7 @@ export class MeAPI {
         break;
       }
 
-      const params = nextPageToken ? { next_page_token: nextPageToken } : {};
+      const params = nextPageToken ? { 'page-token': nextPageToken } : {};
       const rawResult = await this.client.get<unknown>(
         '/me/followed-projects',
         params,
