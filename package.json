@@ -24,6 +24,7 @@
     "watch": "nodemon --watch . --ext ts,json --exec pnpm run build",
     "inspector": "npx @modelcontextprotocol/inspector@0.9 node ./dist/index.js",
     "build:inspector": "pnpm run build && pnpm run inspector",
+    "create-tool": "node ./scripts/create-tool.js",
     "tsx": "tsx",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
