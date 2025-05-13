@@ -1,20 +1,12 @@
 import { z } from 'zod';
+import {
+  branchDescription,
+  projectSlugDescription,
+} from '../sharedInputSchemas.js';
 
 export const getBuildFailureOutputInputSchema = z.object({
-  projectSlug: z
-    .string()
-    .describe(
-      'The project slug from listFollowedProjects. When using this option, branch must also be provided.',
-    )
-    .optional(),
-  branch: z
-    .string()
-    .describe(
-      'The name of the branch currently checked out in local workspace. ' +
-        'This should match local git branch. ' +
-        'For example: "feature/my-branch", "bugfix/123", "main", "master" etc.',
-    )
-    .optional(),
+  projectSlug: z.string().describe(projectSlugDescription).optional(),
+  branch: z.string().describe(branchDescription).optional(),
   projectURL: z
     .string()
     .describe(
