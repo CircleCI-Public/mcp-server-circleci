@@ -4,12 +4,12 @@ import {
   getProjectSlugFromURL,
   getBranchFromURL,
   identifyProjectSlug,
+  getJobNumberFromURL,
 } from '../../lib/project-detection/index.js';
 import { getBuildFailureOutputInputSchema } from './inputSchema.js';
 import getPipelineJobLogs from '../../lib/pipeline-job-logs/getPipelineJobLogs.js';
 import { formatJobLogs } from '../../lib/pipeline-job-logs/getJobLogs.js';
 import mcpErrorOutput from '../../lib/mcpErrorOutput.js';
-
 export const getBuildFailureLogs: ToolCallback<{
   params: typeof getBuildFailureOutputInputSchema;
 }> = async (args) => {
@@ -18,11 +18,12 @@ export const getBuildFailureLogs: ToolCallback<{
   let projectSlug: string | undefined;
   let pipelineNumber: number | undefined;
   let branchFromURL: string | undefined;
-
+  let jobNumber: number | undefined;
   if (projectURL) {
     projectSlug = getProjectSlugFromURL(projectURL);
     pipelineNumber = getPipelineNumberFromURL(projectURL);
     branchFromURL = getBranchFromURL(projectURL);
+    jobNumber = getJobNumberFromURL(projectURL);
   } else if (workspaceRoot && gitRemoteURL && branch) {
     projectSlug = await identifyProjectSlug({
       gitRemoteURL,
@@ -47,6 +48,7 @@ export const getBuildFailureLogs: ToolCallback<{
     projectSlug,
     branch: branchFromURL || branch,
     pipelineNumber,
+    jobNumber,
   });
 
   return formatJobLogs(logs);

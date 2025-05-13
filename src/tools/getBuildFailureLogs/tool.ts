@@ -18,6 +18,7 @@ export const getBuildFailureLogsTool = {
     - projectURL: The URL of the CircleCI project in any of these formats:
       * Project URL: https://app.circleci.com/pipelines/gh/organization/project
       * Pipeline URL: https://app.circleci.com/pipelines/gh/organization/project/123
+      * Legacy Job URL: https://circleci.com/pipelines/gh/organization/project/123
       * Workflow URL: https://app.circleci.com/pipelines/gh/organization/project/123/workflows/abc-def
       * Job URL: https://app.circleci.com/pipelines/gh/organization/project/123/workflows/abc-def/jobs/xyz
 
