@@ -42,4 +42,10 @@ export const runPipelineInputSchema = z.object({
         'If provided, it must exactly match one of the pipeline names returned by the tool.',
     )
     .optional(),
+  configContent: z
+    .string()
+    .describe(
+      'The content of the CircleCI YAML configuration file for the pipeline.',
+    )
+    .optional(),
 });
