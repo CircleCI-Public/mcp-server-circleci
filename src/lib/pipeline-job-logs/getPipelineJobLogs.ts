@@ -34,7 +34,6 @@ const getPipelineJobLogs = async ({
       pipelineNumber,
     });
   } else {
-    // If branch is provided, fetch the pipeline logs for failed steps in jobs for a branch
     const pipelines = await circleci.pipelines.getPipelines({
       projectSlug,
       branch,
