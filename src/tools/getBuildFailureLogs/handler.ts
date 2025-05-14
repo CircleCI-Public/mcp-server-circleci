@@ -27,6 +27,11 @@ export const getBuildFailureLogs: ToolCallback<{
   let jobNumber: number | undefined;
 
   if (inputProjectSlug) {
+    if (!branch) {
+      return mcpErrorOutput(
+        'Branch not provided. When using projectSlug, a branch must also be specified.',
+      );
+    }
     projectSlug = inputProjectSlug;
   } else if (projectURL) {
     projectSlug = getProjectSlugFromURL(projectURL);

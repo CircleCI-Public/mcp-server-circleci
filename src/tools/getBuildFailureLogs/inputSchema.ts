@@ -1,11 +1,11 @@
 import { z } from 'zod';
 import {
   branchDescription,
-  projectSlugDescriptionNoBranch,
+  projectSlugDescription,
 } from '../sharedInputSchemas.js';
 
 export const getBuildFailureOutputInputSchema = z.object({
-  projectSlug: z.string().describe(projectSlugDescriptionNoBranch).optional(),
+  projectSlug: z.string().describe(projectSlugDescription).optional(),
   branch: z.string().describe(branchDescription).optional(),
   projectURL: z
     .string()

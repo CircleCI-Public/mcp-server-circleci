@@ -14,9 +14,9 @@ export const getBuildFailureLogsTool = {
 
     Input options (EXACTLY ONE of these THREE options must be used):
 
-    Option 1 - Project Slug and optional branch:
+    Option 1 - Project Slug and branch (BOTH required):
     - projectSlug: The project slug obtained from listFollowedProjects tool (e.g., "gh/organization/project")
-    - branch: The name of the branch to retrieve logs for (optional)
+    - branch: The name of the branch (required when using projectSlug)
 
     Option 2 - Direct URL (provide ONE of these):
     - projectURL: The URL of the CircleCI project in any of these formats:

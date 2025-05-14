@@ -26,7 +26,6 @@ const getPipelineJobLogs = async ({
       failedStepsOnly: true,
     });
   }
-  
   // If pipelineNumber is provided, fetch the pipeline logs for failed steps in jobs
   if (pipelineNumber) {
     pipeline = await circleci.pipelines.getPipelineByNumber({
@@ -43,7 +42,9 @@ const getPipelineJobLogs = async ({
     pipeline = pipelines[0];
   } else {
     // If no jobNumber, pipelineNumber or branch is provided, throw an error
-    throw new Error('Either jobNumber, pipelineNumber or branch must be provided');
+    throw new Error(
+      'Either jobNumber, pipelineNumber or branch must be provided',
+    );
   }
 
   if (!pipeline) {
