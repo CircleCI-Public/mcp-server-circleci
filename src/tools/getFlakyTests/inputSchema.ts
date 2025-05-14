@@ -1,12 +1,8 @@
 import { z } from 'zod';
+import { projectSlugDescriptionNoBranch } from '../sharedInputSchemas.js';
 
 export const getFlakyTestLogsInputSchema = z.object({
-  projectSlug: z
-    .string()
-    .describe(
-      'The project slug from listFollowedProjects tool (e.g., "gh/organization/project").',
-    )
-    .optional(),
+  projectSlug: z.string().describe(projectSlugDescriptionNoBranch).optional(),
   workspaceRoot: z
     .string()
     .describe(
