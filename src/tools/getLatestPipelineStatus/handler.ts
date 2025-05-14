@@ -28,7 +28,7 @@ export const getLatestPipelineStatus: ToolCallback<{
   } else if (projectURL) {
     projectSlug = getProjectSlugFromURL(projectURL);
     branchFromURL = getBranchFromURL(projectURL);
-  } else if (workspaceRoot && gitRemoteURL && branch) {
+  } else if (workspaceRoot && gitRemoteURL) {
     projectSlug = await identifyProjectSlug({
       gitRemoteURL,
     });

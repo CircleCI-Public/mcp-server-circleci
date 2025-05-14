@@ -42,19 +42,21 @@ export class MeAPI {
     let previousPageToken: string | null = null;
     let pageCount = 0;
 
-    let reachedMaxPagesOrTimeout = false;
-
     do {
       // Check timeout
       if (Date.now() - startTime > timeoutMs) {
-        reachedMaxPagesOrTimeout = true;
-        break;
+        return {
+          projects: allProjects,
+          reachedMaxPagesOrTimeout: true,
+        };
       }
 
       // Check page limit
       if (pageCount >= maxPages) {
-        reachedMaxPagesOrTimeout = true;
-        break;
+        return {
+          projects: allProjects,
+          reachedMaxPagesOrTimeout: true,
+        };
       }
 
       const params = nextPageToken ? { 'page-token': nextPageToken } : {};
@@ -76,14 +78,16 @@ export class MeAPI {
 
       // Break if we received the same token as before (stuck in a loop)
       if (nextPageToken && nextPageToken === previousPageToken) {
-        reachedMaxPagesOrTimeout = true;
-        break;
+        return {
+          projects: allProjects,
+          reachedMaxPagesOrTimeout: true,
+        };
       }
     } while (nextPageToken);
 
     return {
       projects: allProjects,
-      reachedMaxPagesOrTimeout,
+      reachedMaxPagesOrTimeout: false,
     };
   }
 }
