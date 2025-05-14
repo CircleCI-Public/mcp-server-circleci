@@ -34,9 +34,9 @@ export const getJobTestResultsTool = {
 
     Input options (EXACTLY ONE of these THREE options must be used):
 
-    Option 1 - Project Slug (BOTH of these must be provided together):
+    Option 1 - Project Slug and optional branch:
     - projectSlug: The project slug obtained from listFollowedProjects tool (e.g., "gh/organization/project")
-    - branch: The name of the branch to retrieve test results for
+    - branch: The name of the branch to retrieve test results for (optional)
 
     Option 2 - Direct URL (provide ONE of these):
     - projectURL: The URL of the CircleCI job in any of these formats:

@@ -140,33 +140,6 @@ describe('getLatestPipelineStatus handler', () => {
     expect(response).toEqual(mockFormattedResponse);
   });
 
-  it('should return error when projectSlug is provided without branch', async () => {
-    const args = {
-      params: {
-        projectSlug: 'gh/circleci/project',
-        // No branch provided
-      },
-    };
-
-    const controller = new AbortController();
-    const response = await getLatestPipelineStatus(args as any, {
-      signal: controller.signal,
-    });
-
-    expect(response).toHaveProperty('content');
-    expect(response).toHaveProperty('isError', true);
-    expect(response.content[0]).toHaveProperty('type', 'text');
-    expect(response.content[0].text).toContain('Branch not provided');
-
-    // Verify that no further processing was attempted
-    expect(
-      getLatestPipelineWorkflowsModule.getLatestPipelineWorkflows,
-    ).not.toHaveBeenCalled();
-    expect(
-      formatLatestPipelineStatusModule.formatLatestPipelineStatus,
-    ).not.toHaveBeenCalled();
-  });
-
   it('should return error when no valid inputs are provided', async () => {
     const args = {
       params: {},

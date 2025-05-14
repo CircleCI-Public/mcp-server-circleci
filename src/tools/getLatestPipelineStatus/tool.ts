@@ -14,9 +14,9 @@ export const getLatestPipelineStatusTool = {
 
     Input options (EXACTLY ONE of these THREE options must be used):
 
-    Option 1 - Project Slug (BOTH of these must be provided together):
+    Option 1 - Project Slug and optional branch:
     - projectSlug: The project slug obtained from listFollowedProjects tool (e.g., "gh/organization/project")
-    - branch: The name of the branch to retrieve status for
+    - branch: The name of the branch to retrieve pipeline status for (optional)
 
     Option 2 - Direct URL (provide ONE of these):
     - projectURL: The URL of the CircleCI project in any of these formats:
