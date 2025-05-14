@@ -37,8 +37,7 @@ export class MeAPI {
 
     const startTime = Date.now();
     const allProjects: FollowedProject[] = [];
-    // Track unique project slugs to prevent duplicates
-    const seenSlugs = new Set<string>();
+
     let nextPageToken: string | null = null;
     let previousPageToken: string | null = null;
     let pageCount = 0;
@@ -69,13 +68,7 @@ export class MeAPI {
 
       pageCount++;
 
-      // Only add projects that haven't been seen before
-      for (const project of result.items) {
-        if (!seenSlugs.has(project.slug)) {
-          seenSlugs.add(project.slug);
-          allProjects.push(project);
-        }
-      }
+      allProjects.push(...result.items);
 
       // Store the current token before updating
       previousPageToken = nextPageToken;
