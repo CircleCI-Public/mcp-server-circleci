@@ -1,6 +1,7 @@
 import { ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { rerunWorkflowInputSchema } from './inputSchema.js';
 import { getCircleCIClient } from '../../clients/client.js';
+import mcpErrorOutput from '../../lib/mcpErrorOutput.js';
 
 export const rerunWorkflow: ToolCallback<{
   params: typeof rerunWorkflowInputSchema;
@@ -27,12 +28,5 @@ export const rerunWorkflow: ToolCallback<{
     };
   }
 
-  return {
-    content: [
-      {
-        type: 'text',
-        text: `New workflowId is ${newWorkflow.workflow_id}`,
-      },
-    ],
-  };
+  return mcpErrorOutput('Failed to rerun workflow.');
 };
