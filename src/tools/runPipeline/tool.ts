@@ -1,4 +1,5 @@
 import { runPipelineInputSchema } from './inputSchema.js';
+import { option1Description } from '../sharedInputSchemas.js';
 
 export const runPipelineTool = {
   name: 'run_pipeline' as const,
@@ -7,9 +8,7 @@ export const runPipelineTool = {
 
     Input options (EXACTLY ONE of these THREE options must be used):
 
-      Option 1 - Project Slug and branch (BOTH required):
-    - projectSlug: The project slug obtained from listFollowedProjects tool (e.g., "gh/organization/project")
-    - branch: The name of the branch (required when using projectSlug)
+    ${option1Description}
 
     Option 2 - Direct URL (provide ONE of these):
     - projectURL: The URL of the CircleCI project in any of these formats:
