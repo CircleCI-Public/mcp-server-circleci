@@ -1,5 +1,5 @@
 import { runPipelineInputSchema } from './inputSchema.js';
-import { option1Description } from '../sharedInputSchemas.js';
+import { option1DescriptionBranchRequired } from '../sharedInputSchemas.js';
 
 export const runPipelineTool = {
   name: 'run_pipeline' as const,
@@ -8,7 +8,7 @@ export const runPipelineTool = {
 
     Input options (EXACTLY ONE of these THREE options must be used):
 
-    ${option1Description}
+    ${option1DescriptionBranchRequired}
 
     Option 2 - Direct URL (provide ONE of these):
     - projectURL: The URL of the CircleCI project in any of these formats:

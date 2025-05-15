@@ -1,5 +1,5 @@
 import { getLatestPipelineStatusInputSchema } from './inputSchema.js';
-import { option1Description } from '../sharedInputSchemas.js';
+import { option1DescriptionBranchRequired } from '../sharedInputSchemas.js';
 
 export const getLatestPipelineStatusTool = {
   name: 'get_latest_pipeline_status' as const,
@@ -15,7 +15,7 @@ export const getLatestPipelineStatusTool = {
 
     Input options (EXACTLY ONE of these THREE options must be used):
 
-    ${option1Description}
+    ${option1DescriptionBranchRequired}
 
     Option 2 - Direct URL (provide ONE of these):
     - projectURL: The URL of the CircleCI project in any of these formats:

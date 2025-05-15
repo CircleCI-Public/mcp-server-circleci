@@ -1,5 +1,5 @@
 import { getJobTestResultsInputSchema } from './inputSchema.js';
-import { option1Description } from '../sharedInputSchemas.js';
+import { option1DescriptionBranchRequired } from '../sharedInputSchemas.js';
 
 export const getJobTestResultsTool = {
   name: 'get_job_test_results' as const,
@@ -35,7 +35,7 @@ export const getJobTestResultsTool = {
 
     Input options (EXACTLY ONE of these THREE options must be used):
 
-    ${option1Description}
+    ${option1DescriptionBranchRequired}
 
     Option 2 - Direct URL (provide ONE of these):
     - projectURL: The URL of the CircleCI job in any of these formats:
