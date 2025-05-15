@@ -10,7 +10,7 @@ export class RerunWorkflowAPI {
   /**
    * Rerun workflow from failed
    * @param workflowId The workflowId
-   * @returns The project info
+   * @returns A new workflowId
    * @throws Error if the request fails
    */
   async rerunWorkflowFromFailed({
