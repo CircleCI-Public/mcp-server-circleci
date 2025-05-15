@@ -9,7 +9,7 @@ export const rerunWorkflowInputSchema = z.object({
   fromFailed: z
     .boolean()
     .describe(
-      'This should be false by default. If the user wants to rerun workflow from started, set this to false',
+      'This should be true by default. If the user wants to rerun workflow from started, set this to false',
     )
     .optional(),
   workflowURL: z
