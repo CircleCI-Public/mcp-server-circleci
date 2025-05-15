@@ -1,9 +1,7 @@
 import { z } from 'zod';
 
 export const rerunWorkflowFromFailedInputSchema = z.object({
-  message: z
+  workflowId: z
     .string()
-    .describe(
-      'A message to echo back to the user.',
-    ),
+    .describe('This should be the workflowId of the workflow that failed.'),
 });

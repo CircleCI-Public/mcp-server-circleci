@@ -17,6 +17,8 @@ import { runPipeline } from './tools/runPipeline/handler.js';
 import { runPipelineTool } from './tools/runPipeline/tool.js';
 import { listFollowedProjectsTool } from './tools/listFollowedProjects/tool.js';
 import { listFollowedProjects } from './tools/listFollowedProjects/handler.js';
+import { rerunWorkflowFromFailedTool } from './tools/rerunWorkflowFromFailed/tool.js';
+import { rerunWorkflowFromFailed } from './tools/rerunWorkflowFromFailed/handler.js';
 
 // Define the tools with their configurations
 export const CCI_TOOLS = [
@@ -29,6 +31,7 @@ export const CCI_TOOLS = [
   recommendPromptTemplateTestsTool,
   runPipelineTool,
   listFollowedProjectsTool,
+  rerunWorkflowFromFailedTool,
 ];
 
 // Extract the tool names as a union type
@@ -53,4 +56,5 @@ export const CCI_HANDLERS = {
   recommend_prompt_template_tests: recommendPromptTemplateTests,
   run_pipeline: runPipeline,
   list_followed_projects: listFollowedProjects,
+  rerun_workflow_from_failed: rerunWorkflowFromFailed,
 } satisfies ToolHandlers;

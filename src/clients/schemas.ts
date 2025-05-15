@@ -51,6 +51,10 @@ const WorkflowSchema = z.object({
   pipeline_number: z.number(),
 });
 
+const reRunWorkflowResponseSchema = z.object({
+  workflow_id: z.string(),
+});
+
 const JobSchema = z.object({
   job_number: z.number().optional(),
   id: z.string(),
@@ -180,3 +184,6 @@ export type FollowedProject = z.infer<typeof FollowedProjectSchema>;
 
 export const PromptObject = promptObjectSchema;
 export type PromptObject = z.infer<typeof PromptObject>;
+
+export const RerunWorkflowResponse = reRunWorkflowResponseSchema;
+export type RerunWorkflowResponse = z.infer<typeof reRunWorkflowResponseSchema>;

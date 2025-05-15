@@ -3,21 +3,21 @@ import { rerunWorkflowFromFailedInputSchema } from './inputSchema.js';
 export const rerunWorkflowFromFailedTool = {
   name: 'rerun_workflow_from_failed' as const,
   description: `
-  This tool is a basic "hello world" tool that echoes back a message provided by the user.
+  This tool is used to rerun a workflow from failed.
 
   Parameters:
   - params: An object containing:
-    - message: string - A message provided by the user that will be echoed back.
+    - workflowId: string - A message provided by the user that will be echoed back.
 
   Example usage:
   {
     "params": {
-      "message": "Hello, world!"
+      "workflowId": "a12145c5-90f8-4cc9-98f2-36cb85db9e4b"
     }
   }
 
   Returns:
-  - The message provided by the user.
+  - A message indicating that the workflow has been rerun and provide the new workflowId.
   `,
   inputSchema: rerunWorkflowFromFailedInputSchema,
 };
