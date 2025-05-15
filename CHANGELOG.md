@@ -5,12 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] - 2025-05-15
+
+### Added
+
+- Added `rerun_workflow_from_failed` tool to rerun a failed workflow
+
 ## [0.7.1] - 2025-05-14
 
 ### Updated
 
 - Updated `get_build_failure_logs`, `get_job_test_results`, and `get_latest_pipeline_status` tools to require a branch parameter when using projectSlug option
-
 
 ## [0.7.0] - 2025-05-13
 
