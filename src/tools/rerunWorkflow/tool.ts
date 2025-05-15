@@ -1,7 +1,7 @@
-import { rerunWorkflowFromFailedInputSchema } from './inputSchema.js';
+import { rerunWorkflowInputSchema } from './inputSchema.js';
 
-export const rerunWorkflowFromFailedTool = {
-  name: 'rerun_workflow_from_failed' as const,
+export const rerunWorkflowTool = {
+  name: 'rerun_workflow' as const,
   description: `
   This tool is used to rerun a workflow from failed.
 
@@ -19,5 +19,5 @@ export const rerunWorkflowFromFailedTool = {
   Returns:
   - A message indicating that the workflow has been rerun and provide the new workflowId.
   `,
-  inputSchema: rerunWorkflowFromFailedInputSchema,
+  inputSchema: rerunWorkflowInputSchema,
 };

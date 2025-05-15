@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added `rerun_workflow_from_failed` tool to rerun a failed workflow
+- Added `rerun_workflow` tool to rerun a workflow from failed or started
 
 ## [0.7.1] - 2025-05-14
 

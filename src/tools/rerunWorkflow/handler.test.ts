@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { rerunWorkflowFromFailed } from './handler.js';
+import { rerunWorkflow } from './handler.js';
 import * as client from '../../clients/client.js';
 
 vi.mock('../../clients/client.js');
 
-describe('rerunWorkflowFromFailed', () => {
+describe('rerunWorkflow', () => {
   beforeEach(() => {
     vi.resetAllMocks();
   });
@@ -12,7 +12,7 @@ describe('rerunWorkflowFromFailed', () => {
   it('should return the new workflowId to the user when the return is successful', async () => {
     const mockCircleCIClient = {
       rerunWorkflow: {
-        rerunWorkflowFromFailed: vi.fn().mockResolvedValue({
+        rerunWorkflow: vi.fn().mockResolvedValue({
           workflow_id: '11111111-1111-1111-1111-111111111111',
         }),
       },
@@ -23,7 +23,7 @@ describe('rerunWorkflowFromFailed', () => {
     );
 
     const controller = new AbortController();
-    const result = await rerunWorkflowFromFailed(
+    const result = await rerunWorkflow(
       {
         params: {
           workflowId: '00000000-0000-0000-0000-000000000000',

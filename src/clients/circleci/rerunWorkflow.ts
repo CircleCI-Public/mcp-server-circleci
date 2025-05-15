@@ -8,20 +8,23 @@ export class RerunWorkflowAPI {
   }
 
   /**
-   * Rerun workflow from failed
+   * Rerun workflow from failed or started
    * @param workflowId The workflowId
+   * @param fromFailed Whether to rerun from failed or started
    * @returns A new workflowId
    * @throws Error if the request fails
    */
-  async rerunWorkflowFromFailed({
+  async rerunWorkflow({
     workflowId,
+    fromFailed = true,
   }: {
     workflowId: string;
+    fromFailed?: boolean;
   }): Promise<RerunWorkflowResponse> {
     const rawResult = await this.client.post<unknown>(
       `/workflow/${workflowId}/rerun`,
       {
-        workflow_id: workflowId,
+        from_failed: fromFailed,
       },
     );
     const parsedResult = RerunWorkflowResponse.safeParse(rawResult);
