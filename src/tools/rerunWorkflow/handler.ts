@@ -11,6 +11,22 @@ export const rerunWorkflow: ToolCallback<{
     workflowId,
     fromFailed: true,
   });
+
+  if (newWorkflow.workflow_id) {
+    const workflow = await circleci.workflow.getWorkflow({
+      workflowId: newWorkflow.workflow_id,
+    });
+    const workflowUrl = `https://app.circleci.com/pipelines/${workflow.project_slug}/${workflow.pipeline_number}/workflows/${workflow.id}`;
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `New workflowId is ${newWorkflow.workflow_id} and [View Workflow in CircleCI](${workflowUrl})`,
+        },
+      ],
+    };
+  }
+
   return {
     content: [
       {

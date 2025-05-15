@@ -17,7 +17,7 @@ export const rerunWorkflowTool = {
   }
 
   Returns:
-  - A message indicating that the workflow has been rerun and provide the new workflowId.
+  - A message indicating that the workflow has been rerun and provide the new workflowId and url if the workflow is successful.
   `,
   inputSchema: rerunWorkflowInputSchema,
 };

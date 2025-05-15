@@ -49,6 +49,8 @@ const WorkflowSchema = z.object({
   created_at: z.string(),
   stopped_at: z.string().nullable().optional(),
   pipeline_number: z.number(),
+  project_slug: z.string(),
+  pipeline_id: z.string(),
 });
 
 const reRunWorkflowResponseSchema = z.object({
