@@ -68,7 +68,7 @@ describe('recommendPromptTemplateTests handler', () => {
       'save the `promptTemplate`, `contextSchema`, and `recommendedTests`',
     );
     expect(responseText).toContain('RULES FOR SAVING FILES:');
-    expect(responseText).toContain('.circleci/ai/prompts');
+    expect(responseText).toContain('./prompts');
   });
 
   it('should handle errors from CircletClient', async () => {

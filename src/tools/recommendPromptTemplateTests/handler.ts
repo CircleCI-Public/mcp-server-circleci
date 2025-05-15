@@ -39,7 +39,7 @@ RULES FOR SAVING FILES:
   - If a README already exists, update it with the new information.
   - If a README does not exist, create one.
 - The file should be formatted using the user's preferred conventions.
-- The file should be saved in the '.circleci/ai/prompts' directory.
+- The file should be saved in the './prompts' directory at the root of the project.
 - Only save the following files (and nothing else):
   - \`prompt_<relevant-name>.json\`
   - \`README.md\`
