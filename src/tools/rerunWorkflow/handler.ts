@@ -2,7 +2,7 @@ import { ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { rerunWorkflowInputSchema } from './inputSchema.js';
 import { getCircleCIClient } from '../../clients/client.js';
 import mcpErrorOutput from '../../lib/mcpErrorOutput.js';
-import { getBaseURL } from '../../clients/circleci/index.js';
+import { getAppURL } from '../../clients/circleci/index.js';
 import { getWorkflowIdFromURL } from '../../lib/getWorkflowIdFromURL.js';
 
 export const rerunWorkflow: ToolCallback<{
@@ -10,7 +10,7 @@ export const rerunWorkflow: ToolCallback<{
 }> = async (args) => {
   let { workflowId } = args.params;
   const { fromFailed, workflowURL } = args.params;
-  const baseURL = getBaseURL(false, true);
+  const baseURL = getAppURL(true);
   const circleci = getCircleCIClient();
 
   if (workflowURL) {

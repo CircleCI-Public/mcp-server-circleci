@@ -7,7 +7,7 @@ import {
 import { runPipelineInputSchema } from './inputSchema.js';
 import mcpErrorOutput from '../../lib/mcpErrorOutput.js';
 import { getCircleCIClient } from '../../clients/client.js';
-import { getBaseURL } from '../../clients/circleci/index.js';
+import { getAppURL } from '../../clients/circleci/index.js';
 
 export const runPipeline: ToolCallback<{
   params: typeof runPipelineInputSchema;
@@ -23,7 +23,7 @@ export const runPipeline: ToolCallback<{
 
   let projectSlug: string | undefined;
   let branchFromURL: string | undefined;
-  const baseURL = getBaseURL(false, true);
+  const baseURL = getAppURL(true);
   if (inputProjectSlug) {
     if (!branch) {
       return mcpErrorOutput(
