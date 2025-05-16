@@ -7,12 +7,12 @@ import { getBaseURL } from '../../clients/circleci/index.js';
 export const rerunWorkflow: ToolCallback<{
   params: typeof rerunWorkflowInputSchema;
 }> = async (args) => {
-  const { workflowId } = args.params;
+  const { workflowId, fromFailed } = args.params;
   const baseURL = getBaseURL(false, true);
   const circleci = getCircleCIClient();
   const newWorkflow = await circleci.workflows.rerunWorkflow({
     workflowId,
-    fromFailed: true,
+    fromFailed: fromFailed ?? true,
   });
 
   if (newWorkflow.workflow_id) {
