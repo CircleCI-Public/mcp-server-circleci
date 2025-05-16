@@ -7,6 +7,7 @@ import {
 import { runPipelineInputSchema } from './inputSchema.js';
 import mcpErrorOutput from '../../lib/mcpErrorOutput.js';
 import { getCircleCIClient } from '../../clients/client.js';
+import { getBaseURL } from '../../clients/circleci/index.js';
 
 export const runPipeline: ToolCallback<{
   params: typeof runPipelineInputSchema;
@@ -22,7 +23,7 @@ export const runPipeline: ToolCallback<{
 
   let projectSlug: string | undefined;
   let branchFromURL: string | undefined;
-
+  const baseURL = getBaseURL(false, true);
   if (inputProjectSlug) {
     if (!branch) {
       return mcpErrorOutput(
@@ -121,7 +122,7 @@ export const runPipeline: ToolCallback<{
     content: [
       {
         type: 'text',
-        text: `Pipeline run successfully. View it at: https://app.circleci.com/pipelines/${projectSlug}/${runPipelineResponse.number}`,
+        text: `Pipeline run successfully. View it at: ${baseURL}/pipelines/${projectSlug}/${runPipelineResponse.number}`,
       },
     ],
   };

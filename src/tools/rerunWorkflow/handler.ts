@@ -2,11 +2,13 @@ import { ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { rerunWorkflowInputSchema } from './inputSchema.js';
 import { getCircleCIClient } from '../../clients/client.js';
 import mcpErrorOutput from '../../lib/mcpErrorOutput.js';
+import { getBaseURL } from '../../clients/circleci/index.js';
 
 export const rerunWorkflow: ToolCallback<{
   params: typeof rerunWorkflowInputSchema;
 }> = async (args) => {
   const { workflowId } = args.params;
+  const baseURL = getBaseURL(false, true);
   const circleci = getCircleCIClient();
   const newWorkflow = await circleci.workflows.rerunWorkflow({
     workflowId,
@@ -17,7 +19,7 @@ export const rerunWorkflow: ToolCallback<{
     const workflow = await circleci.workflows.getWorkflow({
       workflowId: newWorkflow.workflow_id,
     });
-    const workflowUrl = `https://app.circleci.com/pipelines/${workflow.project_slug}/${workflow.pipeline_number}/workflows/${workflow.id}`;
+    const workflowUrl = `${baseURL}/pipelines/${workflow.project_slug}/${workflow.pipeline_number}/workflows/${workflow.id}`;
     return {
       content: [
         {

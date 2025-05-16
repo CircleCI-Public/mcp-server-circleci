@@ -9,11 +9,18 @@ import { ConfigValidateAPI } from './configValidate.js';
 import { ProjectsAPI } from './projects.js';
 export type TCircleCIClient = InstanceType<typeof CircleCIClients>;
 
-export const getBaseURL = (useAPISubdomain = false) => {
+export const getBaseURL = (
+  useAPISubdomain = false,
+  useAppSubdomain = false,
+) => {
   let baseURL = process.env.CIRCLECI_BASE_URL || 'https://circleci.com';
 
   if (useAPISubdomain) {
     baseURL = baseURL.replace('https://', 'https://api.');
+  }
+
+  if (useAppSubdomain) {
+    baseURL = baseURL.replace('https://', 'https://app.');
   }
 
   return baseURL;
