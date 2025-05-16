@@ -3,7 +3,7 @@ import { rerunWorkflowInputSchema } from './inputSchema.js';
 import { getCircleCIClient } from '../../clients/client.js';
 import mcpErrorOutput from '../../lib/mcpErrorOutput.js';
 import { getBaseURL } from '../../clients/circleci/index.js';
-import { getWorkflowIdFromURL } from './getWorkflowIdFromURL.js';
+import { getWorkflowIdFromURL } from '../../lib/getWorkflowIdFromURL.js';
 
 export const rerunWorkflow: ToolCallback<{
   params: typeof rerunWorkflowInputSchema;
