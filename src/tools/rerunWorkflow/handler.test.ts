@@ -11,12 +11,10 @@ describe('rerunWorkflow', () => {
 
   it('should return the new workflowId and url to the user when the return is successful', async () => {
     const mockCircleCIClient = {
-      rerunWorkflow: {
+      workflows: {
         rerunWorkflow: vi.fn().mockResolvedValue({
           workflow_id: '11111111-1111-1111-1111-111111111111',
         }),
-      },
-      workflow: {
         getWorkflow: vi.fn().mockResolvedValue({
           id: '11111111-1111-1111-1111-111111111111',
           project_slug: 'test-project',
@@ -53,12 +51,10 @@ describe('rerunWorkflow', () => {
 
   it('should return an error message when the rerun workflow is not successful', async () => {
     const mockCircleCIClient = {
-      rerunWorkflow: {
+      workflows: {
         rerunWorkflow: vi.fn().mockResolvedValue({
           workflow_id: '',
         }),
-      },
-      workflow: {
         getWorkflow: vi.fn().mockResolvedValue({
           id: '11111111-1111-1111-1111-111111111111',
           project_slug: 'test-project',
