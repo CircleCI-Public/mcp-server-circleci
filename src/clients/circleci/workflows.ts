@@ -74,27 +74,6 @@ export class WorkflowsAPI {
   }
 
   /**
-   * Get workflow
-   * @param workflowId The workflowId
-   * @returns The workflow object
-   * @throws Error if the request fails
-   */
-  async getWorkflow({
-    workflowId,
-  }: {
-    workflowId: string;
-    fromFailed?: boolean;
-  }): Promise<Workflow> {
-    const rawResult = await this.client.get<unknown>(`/workflow/${workflowId}`);
-    const parsedResult = Workflow.safeParse(rawResult);
-    if (!parsedResult.success) {
-      throw new Error('Failed to parse workflow response');
-    }
-
-    return parsedResult.data;
-  }
-
-  /**
    * Rerun workflow from failed or started
    * @param workflowId The workflowId
    * @param fromFailed Whether to rerun from failed or started
