@@ -20,9 +20,6 @@ Option 2 - Workflow URL:
   * Workflow URL: https://app.circleci.com/pipelines/:vcsType/:orgName/:projectName/:pipelineNumber/workflows/:workflowId
   * Workflow Job URL: https://app.circleci.com/pipelines/:vcsType/:orgName/:projectName/:pipelineNumber/workflows/:workflowId/jobs/:buildNumber
 - fromFailed: true by default (optional)
-
-  Returns:
-  - A message indicating that the workflow has been rerun and provide the new workflowId and url if the workflow is successful.
   `,
   inputSchema: rerunWorkflowInputSchema,
 };
