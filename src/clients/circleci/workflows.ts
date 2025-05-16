@@ -1,4 +1,4 @@
-import { Workflow } from '../schemas.js';
+import { Workflow, RerunWorkflow } from '../schemas.js';
 import { HTTPClient } from './httpClient.js';
 import { defaultPaginationOptions } from './index.js';
 import { z } from 'zod';
@@ -71,5 +71,33 @@ export class WorkflowsAPI {
     } while (nextPageToken);
 
     return allWorkflows;
+  }
+
+  /**
+   * Rerun workflow from failed or start
+   * @param workflowId The workflowId
+   * @param fromFailed Whether to rerun from failed or start
+   * @returns A new workflowId
+   * @throws Error if the request fails
+   */
+  async rerunWorkflow({
+    workflowId,
+    fromFailed = true,
+  }: {
+    workflowId: string;
+    fromFailed?: boolean;
+  }): Promise<RerunWorkflow> {
+    const rawResult = await this.client.post<unknown>(
+      `/workflow/${workflowId}/rerun`,
+      {
+        from_failed: fromFailed,
+      },
+    );
+    const parsedResult = RerunWorkflow.safeParse(rawResult);
+    if (!parsedResult.success) {
+      throw new Error('Failed to parse workflow response');
+    }
+
+    return parsedResult.data;
   }
 }

@@ -49,6 +49,12 @@ const WorkflowSchema = z.object({
   created_at: z.string(),
   stopped_at: z.string().nullable().optional(),
   pipeline_number: z.number(),
+  project_slug: z.string(),
+  pipeline_id: z.string(),
+});
+
+const RerunWorkflowSchema = z.object({
+  workflow_id: z.string(),
 });
 
 const JobSchema = z.object({
@@ -180,3 +186,6 @@ export type FollowedProject = z.infer<typeof FollowedProjectSchema>;
 
 export const PromptObject = promptObjectSchema;
 export type PromptObject = z.infer<typeof PromptObject>;
+
+export const RerunWorkflow = RerunWorkflowSchema;
+export type RerunWorkflow = z.infer<typeof RerunWorkflowSchema>;

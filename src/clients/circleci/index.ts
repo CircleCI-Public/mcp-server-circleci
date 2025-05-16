@@ -19,6 +19,16 @@ export const getBaseURL = (useAPISubdomain = false) => {
   return baseURL;
 };
 
+export const getAppURL = (useAppSubdomain = false) => {
+  let baseURL = process.env.CIRCLECI_BASE_URL || 'https://circleci.com';
+
+  if (useAppSubdomain) {
+    baseURL = baseURL.replace('https://', 'https://app.');
+  }
+
+  return baseURL;
+};
+
 export const defaultPaginationOptions = {
   maxPages: 5,
   timeoutMs: 10000,
