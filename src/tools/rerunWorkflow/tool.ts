@@ -3,11 +3,11 @@ import { rerunWorkflowInputSchema } from './inputSchema.js';
 export const rerunWorkflowTool = {
   name: 'rerun_workflow' as const,
   description: `
-  This tool is used to rerun a workflow from started or failed.
+  This tool is used to rerun a workflow from start or failed.
 
   Common use cases:
   - Rerun a workflow from failed
-  - Rerun a workflow from started
+  - Rerun a workflow from start
 
 Input options (EXACTLY ONE of these TWO options must be used):
 

@@ -406,13 +406,13 @@ https://docs.windsurf.com/windsurf/mcp
 
 - `rerun_workflow`
 
-  Rerun a workflow from failed or started
+  Reruns a workflow from its start or point of failure.
 
-  The tool returns a new workflow
+  The tool returns the ID of the newly-created workflow, and a link to monitor the new workflow.
 
   This is particularly useful for:
 
-  - Quickly rerun a workflow from failed or started without visiting the CircleCI web UI
+  - Quickly rerunning a workflow from its start or from the point it failed without visiting the CircleCI web UI
 
 # Development
 
