@@ -5,7 +5,8 @@ export const rerunWorkflowInputSchema = z.object({
     .string()
     .describe(
       'This should be the workflowId of the workflow that need rerun. The workflowId is an UUID. An example workflowId is a12145c5-90f8-4cc9-98f2-36cb85db9e4b',
-    ),
+    )
+    .optional(),
   fromFailed: z
     .boolean()
     .describe(
@@ -16,8 +17,8 @@ export const rerunWorkflowInputSchema = z.object({
     .string()
     .describe(
       'The URL of the CircleCI workflow or job. Can be any of these formats:\n' +
-        '- Workflow URL: https://app.circleci.com/pipelines/gh/organization/project/123/workflows/abc-def\n' +
-        '- Job URL: https://app.circleci.com/pipelines/gh/organization/project/123/workflows/abc-def/jobs/xyz',
+        '- Workflow URL: https://app.circleci.com/pipelines/:vcsType/:orgName/:projectName/:pipelineNumber/workflows/:workflowId' +
+        '- Job URL: https://app.circleci.com/pipelines/:vcsType/:orgName/:projectName/:pipelineNumber/workflows/:workflowId/jobs/:buildNumber',
     )
     .optional(),
 });

@@ -89,4 +89,40 @@ describe('rerunWorkflow', () => {
       ],
     });
   });
+
+  it('should only return new workflowId when the fetch workflow is not successful', async () => {
+    const mockCircleCIClient = {
+      workflows: {
+        rerunWorkflow: vi.fn().mockResolvedValue({
+          workflow_id: '11111111-1111-1111-1111-111111111111',
+        }),
+        getWorkflow: vi.fn().mockResolvedValue({}),
+      },
+    };
+
+    vi.spyOn(client, 'getCircleCIClient').mockReturnValue(
+      mockCircleCIClient as any,
+    );
+
+    const controller = new AbortController();
+    const result = await rerunWorkflow(
+      {
+        params: {
+          workflowId: '00000000-0000-0000-0000-000000000000',
+        },
+      },
+      {
+        signal: controller.signal,
+      },
+    );
+
+    expect(result).toEqual({
+      content: [
+        {
+          type: 'text',
+          text: 'New workflowId is 11111111-1111-1111-1111-111111111111',
+        },
+      ],
+    });
+  });
 });

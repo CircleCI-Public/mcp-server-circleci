@@ -9,21 +9,20 @@ export const rerunWorkflowTool = {
   - Rerun a workflow from failed
   - Rerun a workflow from started
 
-  Parameters:
-  - params: An object containing:
-    - workflowId: string - A message provided by the user that will be echoed back.
+Input options (EXACTLY ONE of these TWO options must be used):
 
-  Example usage:
-  {
-    "params": {
-      "workflowId": "a12145c5-90f8-4cc9-98f2-36cb85db9e4b"
-    }
-  }
+Option 1 - Workflow ID:
+- workflowId: The ID of the workflow to rerun
+- fromFailed: true by default (optional)
+
+Option 2 - Workflow URL:
+- workflowURL: The URL of the workflow to rerun
+  * Workflow URL: https://app.circleci.com/pipelines/:vcsType/:orgName/:projectName/:pipelineNumber/workflows/:workflowId
+  * Workflow Job URL: https://app.circleci.com/pipelines/:vcsType/:orgName/:projectName/:pipelineNumber/workflows/:workflowId/jobs/:buildNumber
+- fromFailed: true by default (optional)
 
   Returns:
   - A message indicating that the workflow has been rerun and provide the new workflowId and url if the workflow is successful.
-
-  if the workflowId is not provided, the workflow URL is provided, parse the workflowId from the workflow URL.
   `,
   inputSchema: rerunWorkflowInputSchema,
 };
