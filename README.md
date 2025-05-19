@@ -151,14 +151,22 @@ https://docs.windsurf.com/windsurf/mcp
 
 - `get_build_failure_logs`
 
-  Retrieves detailed failure logs from CircleCI builds. This tool can be used in two ways:
+  Retrieves detailed failure logs from CircleCI builds. This tool can be used in three ways:
 
-  1. Using CircleCI URLs:
+  1. Using Project Slug and Branch (Recommended Workflow):
+     - First, list your available projects:
+       - Use the list_followed_projects tool to get your projects
+       - Example: "List my CircleCI projects"
+       - Then choose the project, which has a projectSlug associated with it
+       - Example: "Lets use my-project"
+     - Then ask to retrieve the build failure logs for a specific branch:
+       - Example: "Get build failures for my-project on the main branch"
 
+  2. Using CircleCI URLs:
      - Provide a failed job URL or pipeline URL directly
      - Example: "Get logs from https://app.circleci.com/pipelines/github/org/repo/123"
 
-  2. Using Local Project Context:
+  3. Using Local Project Context:
      - Works from your local workspace by providing:
        - Workspace root path
        - Git remote URL
@@ -182,14 +190,23 @@ https://docs.windsurf.com/windsurf/mcp
 
   Identifies flaky tests in your CircleCI project by analyzing test execution history. This leverages the flaky test detection feature described here: https://circleci.com/blog/introducing-test-insights-with-flaky-test-detection/#flaky-test-detection
 
-  This tool can be used in two ways:
+  This tool can be used in three ways:
 
-  1. Using CircleCI Project URL:
+  1. Using Project Slug (Recommended Workflow):
+     - First, list your available projects:
+       - Use the list_followed_projects tool to get your projects
+       - Example: "List my CircleCI projects"
+       - Then choose the project, which has a projectSlug associated with it
+       - Example: "Lets use my-project"
+     - Then ask to retrieve the flaky tests:
+       - Example: "Get flaky tests for my-project"
+
+  2. Using CircleCI Project URL:
 
      - Provide the project URL directly from CircleCI
      - Example: "Find flaky tests in https://app.circleci.com/pipelines/github/org/repo"
 
-  2. Using Local Project Context:
+  3. Using Local Project Context:
      - Works from your local workspace by providing:
        - Workspace root path
        - Git remote URL
@@ -208,14 +225,23 @@ https://docs.windsurf.com/windsurf/mcp
 
 - `get_latest_pipeline_status`
 
-  Retrieves the status of the latest pipeline for a given branch. This tool can be used in two ways:
+  Retrieves the status of the latest pipeline for a given branch. This tool can be used in three ways:
 
-  1. Using CircleCI Project URL:
+  1. Using Project Slug and Branch (Recommended Workflow):
+     - First, list your available projects:
+       - Use the list_followed_projects tool to get your projects
+       - Example: "List my CircleCI projects"
+       - Then choose the project, which has a projectSlug associated with it
+       - Example: "Lets use my-project"
+     - Then ask to retrieve the latest pipeline status for a specific branch:
+       - Example: "Get the status of the latest pipeline for my-project on the main branch"
+
+  2. Using CircleCI Project URL:
 
      - Provide the project URL directly from CircleCI
      - Example: "Get the status of the latest pipeline for https://app.circleci.com/pipelines/github/org/repo"
 
-  2. Using Local Project Context:
+  3. Using Local Project Context:
      - Works from your local workspace by providing:
        - Workspace root path
        - Git remote URL
@@ -254,9 +280,18 @@ https://docs.windsurf.com/windsurf/mcp
 
 - `get_job_test_results`
 
-  Retrieves test metadata for CircleCI jobs, allowing you to analyze test results without leaving your IDE. This tool can be used in two ways:
+  Retrieves test metadata for CircleCI jobs, allowing you to analyze test results without leaving your IDE. This tool can be used in three ways:
 
-  1. Using CircleCI URL (Recommended):
+  1. Using Project Slug and Branch (Recommended Workflow):
+     - First, list your available projects:
+       - Use the list_followed_projects tool to get your projects
+       - Example: "List my CircleCI projects"
+       - Then choose the project, which has a projectSlug associated with it
+       - Example: "Lets use my-project"
+     - Then ask to retrieve the test results for a specific branch:
+       - Example: "Get test results for my-project on the main branch"
+
+  2. Using CircleCI URL:
 
      - Provide a CircleCI URL in any of these formats:
        - Job URL: "https://app.circleci.com/pipelines/github/org/repo/123/workflows/abc-def/jobs/789"
@@ -264,7 +299,7 @@ https://docs.windsurf.com/windsurf/mcp
        - Pipeline URL: "https://app.circleci.com/pipelines/github/org/repo/123"
      - Example: "Get test results for https://app.circleci.com/pipelines/github/org/repo/123/workflows/abc-def"
 
-  2. Using Local Project Context:
+  3. Using Local Project Context:
      - Works from your local workspace by providing:
        - Workspace root path
        - Git remote URL
@@ -379,9 +414,18 @@ https://docs.windsurf.com/windsurf/mcp
 
 - `run_pipeline`
 
-  Triggers a pipeline to run. This tool can be used in two ways:
+  Triggers a pipeline to run. This tool can be used in three ways:
 
-  1. Using CircleCI URL (Recommended):
+  1. Using Project Slug and Branch (Recommended Workflow):
+     - First, list your available projects:
+       - Use the list_followed_projects tool to get your projects
+       - Example: "List my CircleCI projects"
+       - Then choose the project, which has a projectSlug associated with it
+       - Example: "Lets use my-project"
+     - Then ask to run the pipeline for a specific branch:
+       - Example: "Run the pipeline for my-project on the main branch"
+
+  2. Using CircleCI URL:
 
      - Provide a CircleCI URL in any of these formats:
        - Job URL: "https://app.circleci.com/pipelines/github/org/repo/123/workflows/abc-def/jobs/789"
@@ -390,7 +434,7 @@ https://docs.windsurf.com/windsurf/mcp
        - Project URL with branch: "https://app.circleci.com/projects/github/org/repo?branch=main"
      - Example: "Run the pipeline for https://app.circleci.com/pipelines/github/org/repo/123/workflows/abc-def"
 
-  2. Using Local Project Context:
+  3. Using Local Project Context:
      - Works from your local workspace by providing:
        - Workspace root path
        - Git remote URL
