@@ -2,11 +2,26 @@ version: 2.1
 
 orbs:
   node: circleci/node@7.1.0
+  docker: circleci/docker@2.8.2
 
 commands:
   setup:
     steps:
       - checkout
+      - run:
+          name: Extract package info
+          command: |
+            PACKAGE_NAME="$(jq --raw-output .name package.json)"
+            PACKAGE_VERSION="$(jq --raw-output .version package.json)"
+            FULL_IDENTIFIER="$PACKAGE_NAME@$PACKAGE_VERSION"
+            
+            echo "export PACKAGE_NAME=$PACKAGE_NAME" >> $BASH_ENV
+            echo "export PACKAGE_VERSION=$PACKAGE_VERSION" >> $BASH_ENV
+            echo "export FULL_IDENTIFIER=$FULL_IDENTIFIER" >> $BASH_ENV
+            
+            echo "Package: $PACKAGE_NAME"
+            echo "Version: $PACKAGE_VERSION"
+            echo "Full identifier: $FULL_IDENTIFIER"
 
   login:
     steps:
@@ -23,12 +38,17 @@ executors:
   node-executor:
     docker:
       - image: cimg/node:22.14
+  
+  docker-executor:
+    machine:
+      image: ubuntu-2404:current
+      docker_layer_caching: true
 
 jobs:
   build:
     executor: node-executor
     steps:
-      - checkout
+      - setup
       - install-deps
       - run:
           name: Build
@@ -72,16 +92,34 @@ jobs:
       - run:
           name: Publish npm Package
           command: |
-            name="$(jq --raw-output .name package.json)"
-            version="$(jq --raw-output .version package.json)"
-            full_identifier="$name@$version"
-            echo "Checking for published version..."
-            if ! pnpm view $full_identifier --json > /dev/null 2>&1; then
-              echo "Publishing $full_identifier…"
+            echo "Checking for published version: $FULL_IDENTIFIER..."
+            if ! pnpm view $FULL_IDENTIFIER --json > /dev/null 2>&1; then
+              echo "Publishing $FULL_IDENTIFIER…"
               pnpm publish --no-git-checks
             else
-              echo "$full_identifier already published. Doing nothing."
+              echo "$FULL_IDENTIFIER already published. Doing nothing."
             fi
+
+  publish-docker-image:
+    executor: docker-executor
+    steps:
+      - setup
+      - attach_workspace:
+          at: .
+      - run:
+          name: Set up Docker Buildx
+          command: |
+            docker buildx create --name multiarch --use
+            docker buildx inspect --bootstrap
+      - docker/check
+      - run:
+          name: Build and push multi-architecture Docker image
+          command: |
+            docker buildx build --platform linux/amd64,linux/arm64 \
+              -t ${DOCKER_NAMESPACE}/mcp-server-circleci:latest \
+              -t ${DOCKER_NAMESPACE}/mcp-server-circleci:${PACKAGE_VERSION} \
+              -t ${DOCKER_NAMESPACE}/mcp-server-circleci:${CIRCLE_SHA1} \
+              --push .
 
 workflows:
   build-and-test:
@@ -95,6 +133,15 @@ workflows:
             - build
       - publish-release:
           context: npm-registry-public
+          filters:
+            branches:
+              only: main
+          requires:
+            - build
+            - lint
+            - test
+      - publish-docker-image:
+          context: mcp-server-docker-publish
           filters:
             branches:
               only: main

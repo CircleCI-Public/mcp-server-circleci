@@ -11,6 +11,10 @@ startCommand:
       circleciToken:
         type: string
         description: CircleCI API token with read access to CircleCI projects
+      circleciBaseUrl:
+        type: string
+        description: CircleCI base URL (optional, defaults to https://circleci.com)
+        default: "https://circleci.com"
     default: {}
   commandFunction:
     # A JS function that produces the CLI command based on the given config to start the MCP on stdio.
@@ -18,7 +22,11 @@ startCommand:
     (config) => ({
       command: 'node',
       args: ['dist/index.js'],
-      env: { CIRCLECI_TOKEN: config.circleciToken }
+      env: { 
+        CIRCLECI_TOKEN: config.circleciToken,
+        CIRCLECI_BASE_URL: config.circleciBaseUrl
+      }
     })
   exampleConfig:
     circleciToken: your-circleci-token-here
+    circleciBaseUrl: https://circleci.com

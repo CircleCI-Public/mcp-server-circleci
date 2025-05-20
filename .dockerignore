@@ -1,0 +1,23 @@
+# Dependencies
+node_modules
+
+# Build outputs
+dist
+
+# Version control
+.git
+.gitignore
+.github
+
+# CI/CD
+.circleci
+
+# Environment and config
+.npmrc
+
+# Docs
+*.md
+
+# Misc
+.prettierrc
+.prettierignore
