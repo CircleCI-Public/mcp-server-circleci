@@ -9,7 +9,7 @@ export const createSandbox: ToolCallback<{
   const response = await fetch(sandboxURL, {
     method: 'GET',
     headers: {
-      Authorization: `Basic ${btoa('webster:2DACFD4625544A0AB8251C65B249CB78')}`,
+      Authorization: `Basic ${btoa('user:pass')}`,
     },
   });
   const data = await response.json();
