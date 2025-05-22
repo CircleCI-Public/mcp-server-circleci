@@ -1,7 +1,17 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { createPromptTemplate } from './handler.js';
+import {
+  contextSchemaKey,
+  createPromptTemplate,
+  promptOriginKey,
+  promptTemplateKey,
+  modelKey,
+} from './handler.js';
 import { CircletClient } from '../../clients/circlet/index.js';
-import { recommendPromptTemplateTestsTool } from '../recommendPromptTemplateTests/tool.js';
+import {
+  defaultModel,
+  PromptOrigin,
+  PromptWorkbenchToolName,
+} from '../shared/types.js';
 
 // Mock dependencies
 vi.mock('../../clients/circlet/index.js');
@@ -11,7 +21,7 @@ describe('createPromptTemplate handler', () => {
     vi.resetAllMocks();
   });
 
-  it('should return a valid MCP response with template and context schema', async () => {
+  it('should return a valid MCP response with template, context schema, and prompt origin', async () => {
     const mockCreatePromptTemplate = vi.fn().mockResolvedValue({
       template: 'This is a test template with {{variable}}',
       contextSchema: {
@@ -32,6 +42,8 @@ describe('createPromptTemplate handler', () => {
     const args = {
       params: {
         prompt: 'Create a test prompt template',
+        promptOrigin: PromptOrigin.requirements,
+        model: defaultModel,
       },
     };
 
@@ -49,17 +61,38 @@ describe('createPromptTemplate handler', () => {
     expect(response.content[0]).toHaveProperty('type', 'text');
     expect(typeof response.content[0].text).toBe('string');
 
-    expect(response.content[0].text).toContain(
-      'promptTemplate: This is a test template with {{variable}}',
+    const responseText = response.content[0].text;
+
+    // Verify promptOrigin is included
+    expect(responseText).toContain(
+      `${promptOriginKey}: ${PromptOrigin.requirements}`,
     );
-    expect(response.content[0].text).toContain('contextSchema: {');
-    expect(response.content[0].text).toContain(
-      '"variable": "Description of the variable"',
+
+    // Verify model is included
+    expect(responseText).toContain(`${modelKey}: ${defaultModel}`);
+
+    // Verify template and schema are present
+    expect(responseText).toContain(
+      `${promptTemplateKey}: This is a test template with {{variable}}`,
     );
-    expect(response.content[0].text).toContain(`NEXT STEP:`);
-    expect(response.content[0].text).toContain(
-      `${recommendPromptTemplateTestsTool.name}`,
+    expect(responseText).toContain(`${contextSchemaKey}: {`);
+    expect(responseText).toContain('"variable": "Description of the variable"');
+
+    // Verify next steps format
+    expect(responseText).toContain('NEXT STEP:');
+    expect(responseText).toContain(
+      `${PromptWorkbenchToolName.recommend_prompt_template_tests}`,
     );
+    expect(responseText).toContain(
+      `template: the \`${promptTemplateKey}\` above`,
+    );
+    expect(responseText).toContain(
+      `${contextSchemaKey}: the \`${contextSchemaKey}\` above`,
+    );
+    expect(responseText).toContain(
+      `${promptOriginKey}: the \`${promptOriginKey}\` above`,
+    );
+    expect(responseText).toContain(`${modelKey}: the \`${modelKey}\` above`);
   });
 
   it('should handle errors from CircletClient', async () => {
@@ -76,6 +109,8 @@ describe('createPromptTemplate handler', () => {
     const args = {
       params: {
         prompt: 'Create a test prompt template',
+        promptOrigin: PromptOrigin.requirements,
+        model: defaultModel,
       },
     };
 
