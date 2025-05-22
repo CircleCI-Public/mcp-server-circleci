@@ -22,6 +22,9 @@ export const runPipelineTool = {
     - gitRemoteURL: The URL of the git remote repository
     - branch: The name of the current branch
 
+    Configuration:
+    - an optional configContent parameter can be provided to override the default pipeline configuration
+
     Pipeline Selection:
     - If the project has multiple pipeline definitions, the tool will return a list of available pipelines
     - You must then make another call with the chosen pipeline name using the pipelineChoiceName parameter
