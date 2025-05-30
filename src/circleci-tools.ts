@@ -17,6 +17,8 @@ import { runPipeline } from './tools/runPipeline/handler.js';
 import { runPipelineTool } from './tools/runPipeline/tool.js';
 import { listFollowedProjectsTool } from './tools/listFollowedProjects/tool.js';
 import { listFollowedProjects } from './tools/listFollowedProjects/handler.js';
+import { runEvaluationTestsTool } from './tools/runEvaluationTests/tool.js';
+import { runEvaluationTests } from './tools/runEvaluationTests/handler.js';
 import { rerunWorkflowTool } from './tools/rerunWorkflow/tool.js';
 import { rerunWorkflow } from './tools/rerunWorkflow/handler.js';
 
@@ -31,6 +33,7 @@ export const CCI_TOOLS = [
   recommendPromptTemplateTestsTool,
   runPipelineTool,
   listFollowedProjectsTool,
+  runEvaluationTestsTool,
   rerunWorkflowTool,
 ];
 
@@ -56,5 +59,6 @@ export const CCI_HANDLERS = {
   recommend_prompt_template_tests: recommendPromptTemplateTests,
   run_pipeline: runPipeline,
   list_followed_projects: listFollowedProjects,
+  run_evaluation_tests: runEvaluationTests,
   rerun_workflow: rerunWorkflow,
 } satisfies ToolHandlers;

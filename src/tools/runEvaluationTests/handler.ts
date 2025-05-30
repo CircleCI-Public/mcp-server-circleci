@@ -4,27 +4,26 @@ import {
   getProjectSlugFromURL,
   identifyProjectSlug,
 } from '../../lib/project-detection/index.js';
-import { runPipelineInputSchema } from './inputSchema.js';
+import { runEvaluationTestsInputSchema } from './inputSchema.js';
 import mcpErrorOutput from '../../lib/mcpErrorOutput.js';
 import { getCircleCIClient } from '../../clients/client.js';
-import { getAppURL } from '../../clients/circleci/index.js';
 
-export const runPipeline: ToolCallback<{
-  params: typeof runPipelineInputSchema;
+export const runEvaluationTests: ToolCallback<{
+  params: typeof runEvaluationTestsInputSchema;
 }> = async (args) => {
   const {
     workspaceRoot,
     gitRemoteURL,
     branch,
-    configContent,
     projectURL,
     pipelineChoiceName,
     projectSlug: inputProjectSlug,
+    files,
   } = args.params;
 
   let projectSlug: string | undefined;
   let branchFromURL: string | undefined;
-  const baseURL = getAppURL();
+
   if (inputProjectSlug) {
     if (!branch) {
       return mcpErrorOutput(
@@ -57,7 +56,7 @@ export const runPipeline: ToolCallback<{
   const foundBranch = branchFromURL || branch;
   if (!foundBranch) {
     return mcpErrorOutput(
-      'No branch provided. Ask the user to provide the branch.',
+      'No branch provided. Try using the current git branch.',
     );
   }
 
@@ -113,6 +112,30 @@ export const runPipeline: ToolCallback<{
   const runPipelineDefinitionId =
     chosenPipeline?.definitionId || pipelineChoices[0].definitionId;
 
+  const configContent = `
+version: 2.1
+
+jobs:
+  hello-job-mcp:
+    docker:
+      - image: cimg/python:3.12.0
+    steps:
+      - run: |
+          curl https://gist.githubusercontent.com/jvincent42/10bf3d2d2899033ae1530cf429ed03f8/raw/8cafcc58cdd21fe9e1c5757ef89ef57e0ac85b3a/eval.py > eval.py
+          echo "deepeval>=2.8.2
+          openai>=1.76.2
+          pyyaml>=6.0.2
+          " > requirements.txt
+          pip install -r requirements.txt
+      - run: |
+          python eval.py ${files.join(' ')}
+
+workflows:
+  my-workflow-from-mcp:
+    jobs:
+      - hello-job-mcp
+`;
+
   const runPipelineResponse = await circleci.pipelines.runPipeline({
     projectSlug,
     branch: foundBranch,
@@ -124,7 +147,7 @@ export const runPipeline: ToolCallback<{
     content: [
       {
         type: 'text',
-        text: `Pipeline run successfully. View it at: ${baseURL}/pipelines/${projectSlug}/${runPipelineResponse.number}`,
+        text: `Pipeline run successfully. View it at: https://app.circleci.com/pipelines/${projectSlug}/${runPipelineResponse.number}`,
       },
     ],
   };
