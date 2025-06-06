@@ -1,6 +1,6 @@
 {
   "name": "@circleci/mcp-server-circleci",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "A Model Context Protocol (MCP) server implementation for CircleCI, enabling natural language interactions with CircleCI functionality through MCP-enabled clients",
   "type": "module",
   "access": "public",

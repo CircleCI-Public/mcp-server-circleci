@@ -30,6 +30,45 @@ const promptObjectSchema = z
     'a complete prompt template with a template string and a context schema',
   );
 
+const RuleReviewSchema = z.object({
+  isRuleCompliant: z.boolean(),
+  relatedRules: z.object({
+    compliant: z.array(
+      z.object({
+        rule: z.string(),
+        reason: z.string(),
+        confidence_score: z.number(),
+      }),
+    ),
+    violations: z.array(
+      z.object({
+        rule: z.string(),
+        reason: z.string(),
+        confidence_score: z.number(),
+        violation_instances: z.array(
+          z.object({
+            line_numbers_in_diff: z.array(z.string()),
+            violating_code_snippet: z.string(),
+            explanation_of_violation: z.string(),
+          }),
+        ),
+      }),
+    ),
+    requiresHumanReview: z.array(
+      z.object({
+        rule: z.string(),
+        reason: z.string(),
+        confidence_score: z.number(),
+        human_review_required: z.object({
+          points_of_ambiguity: z.array(z.string()),
+          questions_for_manual_reviewer: z.array(z.string()),
+        }),
+      }),
+    ),
+  }),
+  unrelatedRules: z.array(z.string()),
+});
+
 const FollowedProjectSchema = z.object({
   name: z.string(),
   slug: z.string(),
@@ -189,3 +228,6 @@ export type PromptObject = z.infer<typeof PromptObject>;
 
 export const RerunWorkflow = RerunWorkflowSchema;
 export type RerunWorkflow = z.infer<typeof RerunWorkflowSchema>;
+
+export const RuleReview = RuleReviewSchema;
+export type RuleReview = z.infer<typeof RuleReviewSchema>;
