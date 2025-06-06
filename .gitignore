@@ -136,3 +136,6 @@ dist
 .pnp.*
 
 .cursor
+
+# VSCode settings
+.DS_Store
