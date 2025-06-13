@@ -1,5 +1,5 @@
 import { HTTPClient } from '../circleci/httpClient.js';
-import { PromptObject } from '../schemas.js';
+import { PromptObject, RuleReview } from '../schemas.js';
 import { z } from 'zod';
 import { PromptOrigin } from '../../tools/shared/constants.js';
 
@@ -18,7 +18,6 @@ export const RecommendedTestsResponseSchema = z.object({
 export type RecommendedTestsResponse = z.infer<
   typeof RecommendedTestsResponseSchema
 >;
-
 export class CircletAPI {
   protected client: HTTPClient;
 
@@ -70,5 +69,25 @@ export class CircletAPI {
     }
 
     return parsedResult.data.recommendedTests;
+  }
+
+  async ruleReview({
+    diff,
+    rules,
+  }: {
+    diff: string;
+    rules: string;
+  }): Promise<RuleReview> {
+    const rawResult = await this.client.post<unknown>('/rule-review', {
+      changeSet: diff,
+      rules,
+    });
+    const parsedResult = RuleReview.safeParse(rawResult);
+    if (!parsedResult.success) {
+      throw new Error(
+        `Failed to parse rule review response. Error: ${parsedResult.error.message}`,
+      );
+    }
+    return parsedResult.data;
   }
 }

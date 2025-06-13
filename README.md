@@ -18,10 +18,12 @@ https://github.com/user-attachments/assets/3c765985-8827-442a-a8dc-5069e01edb74
 - CircleCI Personal API Token - you can generate one through the CircleCI. [Learn more](https://circleci.com/docs/managing-api-tokens/) or [click here](https://app.circleci.com/settings/user/tokens) for quick access.
 
 For NPX installation:
+
 - pnpm package manager - [Learn more](https://pnpm.io/installation)
 - Node.js >= v18.0.0
 
 For Docker installation:
+
 - Docker - [Learn more](https://docs.docker.com/get-docker/)
 
 ## Installation
@@ -60,8 +62,10 @@ Add the following to your cursor MCP config:
         "run",
         "--rm",
         "-i",
-        "-e", "CIRCLECI_TOKEN",
-        "-e", "CIRCLECI_BASE_URL",
+        "-e",
+        "CIRCLECI_TOKEN",
+        "-e",
+        "CIRCLECI_BASE_URL",
         "circleci:mcp-server-circleci"
       ],
       "env": {
@@ -141,8 +145,10 @@ To install CircleCI MCP Server for VS Code in `.vscode/mcp.json` using Docker:
         "run",
         "--rm",
         "-i",
-        "-e", "CIRCLECI_TOKEN",
-        "-e", "CIRCLECI_BASE_URL",
+        "-e",
+        "CIRCLECI_TOKEN",
+        "-e",
+        "CIRCLECI_BASE_URL",
         "circleci:mcp-server-circleci"
       ],
       "env": {
@@ -195,8 +201,10 @@ Add the following to your claude_desktop_config.json:
         "run",
         "--rm",
         "-i",
-        "-e", "CIRCLECI_TOKEN",
-        "-e", "CIRCLECI_BASE_URL",
+        "-e",
+        "CIRCLECI_TOKEN",
+        "-e",
+        "CIRCLECI_BASE_URL",
         "circleci:mcp-server-circleci"
       ],
       "env": {
@@ -273,8 +281,10 @@ Add the following to your windsurf mcp_config.json:
         "run",
         "--rm",
         "-i",
-        "-e", "CIRCLECI_TOKEN",
-        "-e", "CIRCLECI_BASE_URL",
+        "-e",
+        "CIRCLECI_TOKEN",
+        "-e",
+        "CIRCLECI_BASE_URL",
         "circleci:mcp-server-circleci"
       ],
       "env": {
@@ -306,6 +316,7 @@ npx -y @smithery/cli install @CircleCI-Public/mcp-server-circleci --client claud
   Retrieves detailed failure logs from CircleCI builds. This tool can be used in three ways:
 
   1. Using Project Slug and Branch (Recommended Workflow):
+
      - First, list your available projects:
        - Use the list_followed_projects tool to get your projects
        - Example: "List my CircleCI projects"
@@ -315,6 +326,7 @@ npx -y @smithery/cli install @CircleCI-Public/mcp-server-circleci --client claud
        - Example: "Get build failures for my-project on the main branch"
 
   2. Using CircleCI URLs:
+
      - Provide a failed job URL or pipeline URL directly
      - Example: "Get logs from https://app.circleci.com/pipelines/github/org/repo/123"
 
@@ -345,6 +357,7 @@ npx -y @smithery/cli install @CircleCI-Public/mcp-server-circleci --client claud
   This tool can be used in three ways:
 
   1. Using Project Slug (Recommended Workflow):
+
      - First, list your available projects:
        - Use the list_followed_projects tool to get your projects
        - Example: "List my CircleCI projects"
@@ -380,6 +393,7 @@ npx -y @smithery/cli install @CircleCI-Public/mcp-server-circleci --client claud
   Retrieves the status of the latest pipeline for a given branch. This tool can be used in three ways:
 
   1. Using Project Slug and Branch (Recommended Workflow):
+
      - First, list your available projects:
        - Use the list_followed_projects tool to get your projects
        - Example: "List my CircleCI projects"
@@ -435,6 +449,7 @@ npx -y @smithery/cli install @CircleCI-Public/mcp-server-circleci --client claud
   Retrieves test metadata for CircleCI jobs, allowing you to analyze test results without leaving your IDE. This tool can be used in three ways:
 
   1. Using Project Slug and Branch (Recommended Workflow):
+
      - First, list your available projects:
        - Use the list_followed_projects tool to get your projects
        - Example: "List my CircleCI projects"
@@ -569,6 +584,7 @@ npx -y @smithery/cli install @CircleCI-Public/mcp-server-circleci --client claud
   Triggers a pipeline to run. This tool can be used in three ways:
 
   1. Using Project Slug and Branch (Recommended Workflow):
+
      - First, list your available projects:
        - Use the list_followed_projects tool to get your projects
        - Example: "List my CircleCI projects"
@@ -609,6 +625,43 @@ npx -y @smithery/cli install @CircleCI-Public/mcp-server-circleci --client claud
   This is particularly useful for:
 
   - Quickly rerunning a workflow from its start or from the failed job without visiting the CircleCI web UI
+
+- `analyze_diff`
+
+  Analyzes git diffs against cursor rules to identify rule violations.
+
+  This tool can be used by providing:
+
+  1. Git Diff Content:
+
+     - Staged changes: `git diff --cached`
+     - Unstaged changes: `git diff`
+     - All changes: `git diff HEAD`
+     - Example: "Analyze my staged changes against the cursor rules"
+
+  2. Repository Rules:
+     - Rules from `.cursorrules` file in your repository root
+     - Rules from `.cursor/rules` directory
+     - Multiple rule files combined with `---` separator
+     - Example: "Check my diff against the TypeScript coding standards"
+
+  The tool provides:
+
+  - Detailed violation reports with confidence scores
+  - Specific explanations for each rule violation
+
+  Example usage scenarios:
+
+  - "Analyze my staged changes for any rule violations"
+  - "Check my unstaged changes against rules"
+
+  This is particularly useful for:
+
+  - Pre-commit code quality checks
+  - Ensuring consistency with team coding standards
+  - Catching rule violations before code review
+
+  The tool integrates with your existing cursor rules setup and provides immediate feedback on code quality, helping you catch issues early in the development process.
 
 # Development
 
