@@ -154,7 +154,8 @@ export const runEvaluationTests: ToolCallback<{
     .map(
       (file, index) =>
         `          if [ "$CIRCLE_NODE_INDEX" = "${index}" ]; then
-            echo "${file.base64GzippedContent}" | base64 -d | gzip -d > ${file.fileName}
+            sudo mkdir -p /prompts
+            echo "${file.base64GzippedContent}" | base64 -d | gzip -d | sudo tee /prompts/${file.fileName} > /dev/null
           fi`,
     )
     .join('\n');
