@@ -163,7 +163,7 @@ const writeTestsToFiles = async ({
       content: [
         {
           type: 'text' as const,
-          text: `Found ${tests.length} flaky tests that need stabilization. Review each file to identify failure patterns and root causes, then fix the underlying issues.\n\nFocus on:\n- Timing issues (race conditions, insufficient waits)\n- Environment dependencies (network, external services)\n- Test isolation problems (shared state, cleanup issues)\n- Non-deterministic assertions\n\nTest files:\n${filePaths.map((path) => `- ${path}`).join('\n')}\n\nFiles are located in: ${useFileOutputDirectory}`,
+          text: `Found ${tests.length} flaky tests that need stabilization. Each file contains test failure data and metadata - analyze these reports to understand what's causing the flakiness, then locate and fix the actual test code.\n\nFocus on identifying:\n- Timing issues (race conditions, insufficient waits)\n- Environment dependencies (network, external services)\n- Test isolation problems (shared state, cleanup issues)\n- Non-deterministic assertions\n\nFlaky test reports:\n${filePaths.map((path) => `- ${path}`).join('\n')}\n\nFiles are located in: ${useFileOutputDirectory}`,
         },
       ],
     };

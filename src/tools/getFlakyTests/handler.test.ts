@@ -199,7 +199,7 @@ describe('getFlakyTestLogs handler', () => {
     expect(Array.isArray(response.content)).toBe(true);
     expect(response.content[0]).toHaveProperty('type', 'text');
     expect(response.content[0].text).toContain(
-      'Successfully wrote 2 flaky tests',
+      'Found 2 flaky tests that need stabilization',
     );
     expect(response.content[0].text).toContain(useFileOutputDirectory);
   });
