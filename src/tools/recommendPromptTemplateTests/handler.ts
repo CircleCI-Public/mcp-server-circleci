@@ -13,6 +13,7 @@ import {
 
 const promptTemplateKey = 'promptTemplate';
 const modelKey = 'model';
+const temperatureKey = 'temperature';
 const contextSchemaKey = 'contextSchema';
 const promptOriginKey = 'promptOrigin';
 const recommendedTestsKey = 'recommendedTests';
@@ -39,6 +40,7 @@ NEXT STEP:
     - \`version\`: string (the semantic version of the prompt template, e.g. "1.0.0")
     - \`${promptOriginKey}\`: string (the origin of the prompt template, e.g. "${PromptOrigin.codebase}" or "${PromptOrigin.requirements}")
     - \`${modelKey}\`: string (the model used for generating the prompt template and tests)
+    - \`${temperatureKey}\`: number (the temperature used for generating the prompt template and tests)
     - \`template\`: multi-line string (the prompt template)
     - \`${contextSchemaKey}\`: object (the \`${contextSchemaKey}\`)
     - \`tests\`: array of objects (based on the \`${recommendedTestsKey}\`)

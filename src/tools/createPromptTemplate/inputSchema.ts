@@ -1,5 +1,9 @@
 import { z } from 'zod';
-import { defaultModel, PromptOrigin } from '../shared/constants.js';
+import {
+  defaultModel,
+  defaultTemperature,
+  PromptOrigin,
+} from '../shared/constants.js';
 
 export const createPromptTemplateInputSchema = z.object({
   prompt: z
@@ -17,5 +21,11 @@ export const createPromptTemplateInputSchema = z.object({
     .default(defaultModel)
     .describe(
       `The model that the prompt template will be tested against. Explicitly specify the model if it can be inferred from the codebase. Otherwise, defaults to \`${defaultModel}\`.`,
+    ),
+  temperature: z
+    .number()
+    .default(defaultTemperature)
+    .describe(
+      `The temperature of the prompt template. Explicitly specify the temperature if it can be inferred from the codebase. Otherwise, defaults to ${defaultTemperature}.`,
     ),
 });

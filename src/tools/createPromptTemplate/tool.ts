@@ -8,6 +8,7 @@ import {
   fileNameExample2,
   fileNameExample3,
   defaultModel,
+  defaultTemperature,
 } from '../shared/constants.js';
 
 const paramsKey = 'params';
@@ -16,6 +17,7 @@ const promptOriginKey = 'promptOrigin';
 const templateKey = 'template';
 const contextSchemaKey = '`contextSchema`';
 const modelKey = 'model';
+const temperatureKey = 'temperature';
 
 export const createPromptTemplateTool = {
   name: PromptWorkbenchToolName.create_prompt_template,
@@ -38,6 +40,7 @@ export const createPromptTemplateTool = {
     - ${promptKey}: string (the feature requirements or pre-existing prompt/prompt template that will be used to generate a prompt template. Can be a multi-line string.)
     - ${promptOriginKey}: "${PromptOrigin.codebase}" | "${PromptOrigin.requirements}" (indicates whether the prompt comes from an existing codebase or from new requirements)
     - ${modelKey}: string (the model that the prompt template will be tested against. Explicitly specify the model if it can be inferred from the codebase. Otherwise, defaults to \`${defaultModel}\`.)
+    - ${temperatureKey}: number (the temperature of the prompt template. Explicitly specify the temperature if it can be inferred from the codebase. Otherwise, defaults to ${defaultTemperature}.)
 
   EXAMPLE USAGE (from new requirements):
   {
@@ -45,6 +48,7 @@ export const createPromptTemplateTool = {
       "${promptKey}": "Create an app that takes any topic and an age (in years), then renders a 1-minute bedtime story for a person of that age.",
       "${promptOriginKey}": "${PromptOrigin.requirements}"
       "${modelKey}": "${defaultModel}"
+      "${temperatureKey}": 1.0
     }
   }
 
@@ -54,6 +58,7 @@ export const createPromptTemplateTool = {
       "${promptKey}": "The user wants a bedtime story about {{topic}} for a person of age {{age}} years old. Please craft a captivating tale that captivates their imagination and provides a delightful bedtime experience.",
       "${promptOriginKey}": "${PromptOrigin.codebase}"
       "${modelKey}": "claude-3-5-sonnet-latest"
+      "${temperatureKey}": 0.7
     }
   }
 
