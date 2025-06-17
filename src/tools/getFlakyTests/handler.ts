@@ -142,6 +142,11 @@ const writeTestsToFiles = async ({
     // Create directory recursively
     const { mkdirSync } = await import('fs');
     mkdirSync(useFileOutputDirectory, { recursive: true });
+
+    // Create .gitignore to ignore all files in this directory
+    const gitignorePath = join(useFileOutputDirectory, '.gitignore');
+    const gitignoreContent = '# Ignore all flaky test output files\n*\n';
+    writeFileSync(gitignorePath, gitignoreContent, 'utf8');
   } catch (error) {
     return mcpErrorOutput(
       `Failed to create output directory: ${error instanceof Error ? error.message : String(error)}`,
