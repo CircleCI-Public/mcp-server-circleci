@@ -8,6 +8,11 @@ import getFlakyTests, {
   formatFlakyTests,
 } from '../../lib/flaky-tests/getFlakyTests.js';
 import mcpErrorOutput from '../../lib/mcpErrorOutput.js';
+import { writeFileSync } from 'fs';
+import { join } from 'path';
+import { Test } from '../../clients/schemas.js';
+
+export const useFileOutputDirectory = './flaky-tests-output';
 
 export const getFlakyTestLogs: ToolCallback<{
   params: typeof getFlakyTestLogsInputSchema;
@@ -48,5 +53,118 @@ export const getFlakyTestLogs: ToolCallback<{
     projectSlug,
   });
 
+  if (process.env.USE_FILE_OUTPUT === 'true') {
+    return await writeTestsToFiles({ tests });
+  }
+
   return formatFlakyTests(tests);
+};
+
+const generateSafeFilename = ({
+  test,
+  index,
+}: {
+  test: Test;
+  index: number;
+}): string => {
+  const safeTestName = (test.name || 'unnamed-test')
+    .replace(/[^a-zA-Z0-9\-_]/g, '_')
+    .substring(0, 50); // Limit length
+
+  return `flaky-test-${index + 1}-${safeTestName}.txt`;
+};
+
+/**
+ * Write test data to a file
+ */
+const writeTestToFile = ({
+  test,
+  filePath,
+  index,
+}: {
+  test: Test;
+  filePath: string;
+  index: number;
+}): void => {
+  const testContent = [
+    `Flaky Test #${index + 1}`,
+    '='.repeat(50),
+    test.file && `File Name: ${test.file}`,
+    test.classname && `Classname: ${test.classname}`,
+    test.name && `Test name: ${test.name}`,
+    test.result && `Result: ${test.result}`,
+    test.run_time && `Run time: ${test.run_time}`,
+    test.message && `Message: ${test.message}`,
+    '',
+    'Raw Test Data:',
+    '-'.repeat(20),
+    JSON.stringify(test, null, 2),
+  ]
+    .filter(Boolean)
+    .join('\n');
+
+  writeFileSync(filePath, testContent, 'utf8');
+};
+
+/**
+ * Write flaky tests to individual files
+ * @param params Configuration parameters
+ * @param params.tests Array of test objects to write to files
+ * @returns Response object with success message or error
+ */
+const writeTestsToFiles = async ({
+  tests,
+}: {
+  tests: Test[];
+}): Promise<{
+  content: {
+    type: 'text';
+    text: string;
+  }[];
+}> => {
+  if (tests.length === 0) {
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: 'No flaky tests found - no files created',
+        },
+      ],
+    };
+  }
+
+  try {
+    // Create directory recursively
+    const { mkdirSync } = await import('fs');
+    mkdirSync(useFileOutputDirectory, { recursive: true });
+  } catch (error) {
+    return mcpErrorOutput(
+      `Failed to create output directory: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
+
+  const filePaths: string[] = [];
+
+  try {
+    tests.forEach((test, index) => {
+      const filename = generateSafeFilename({ test, index });
+      const filePath = join(useFileOutputDirectory, filename);
+
+      writeTestToFile({ test, filePath, index });
+      filePaths.push(filePath);
+    });
+
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: `Successfully wrote ${tests.length} flaky tests to individual files:\n\n${filePaths.map((path) => `- ${path}`).join('\n')}\n\nFiles are located in: ${useFileOutputDirectory}`,
+        },
+      ],
+    };
+  } catch (error) {
+    return mcpErrorOutput(
+      `Failed to write flaky test files: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
 };
