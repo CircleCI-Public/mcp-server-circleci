@@ -12,7 +12,8 @@ export const workflowUrlDescription =
 
 // PROMPT TEMPLATE ITERATION & TESTING TOOL CONSTANTS
 // NOTE: We want to be extremely consistent with the tool names and parameters passed through the Prompt Workbench toolchain, since one tool's output may be used as input for another tool.
-export const defaultModel = 'gpt-4o-mini';
+export const defaultModel = 'gpt-4.1-mini';
+export const defaultTemperature = 1.0;
 export const promptsOutputDirectory = './prompts';
 export const fileExtension = '.prompt.yml';
 export const fileNameTemplate = `<relevant-name>${fileExtension}`;

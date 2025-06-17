@@ -180,10 +180,11 @@ jobs:
       - image: cimg/python:3.12.0
     steps:
       - run: |
-          curl https://gist.githubusercontent.com/jvincent42/10bf3d2d2899033ae1530cf429ed03f8/raw/0d8419bd4b6bdeeb63e786e8e6db638a44ca91ce/eval.py > eval.py
-          echo "deepeval>=2.8.2
-          openai>=1.76.2
-          pyyaml>=6.0.2
+          curl https://gist.githubusercontent.com/jvincent42/10bf3d2d2899033ae1530cf429ed03f8/raw/acf07002d6bfcfb649c913b01a203af086c1f98d/eval.py > eval.py
+          echo "deepeval>=3.0.3
+          openai>=1.84.0
+          anthropic>=0.54.0
+          PyYAML>=6.0.2
           " > requirements.txt
           pip install -r requirements.txt
       - run: |

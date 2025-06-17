@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.2] - 2025-06-17
+
+### Added
+
+- Anthropic support on prompt eval script (w. auto-detection for OpenAI and Anthropic models)
+- Added `temperature` parameter support to prompt template tools
+  - Enhanced `create_prompt_template` tool with configurable temperature setting
+  - Enhanced `recommend_prompt_template_tests` tool with temperature parameter
+  - Default temperature value set to 1.0 for consistent prompt template generation
+
+### Updated
+
+- Updated default model from `gpt-4o-mini` to `gpt-4.1-mini` for prompt template tools
+- Enhanced evaluation script dependencies for improved compatibility
+  - Updated `deepeval` to version 3.0.3+ (from 2.8.2+)
+  - Updated `openai` to version 1.84.0+ (from 1.76.2+)
+  - Added `anthropic` version 0.54.0+ for Anthropic model support
+  - Updated `PyYAML` to version 6.0.2+
+
 ## [0.9.1] - 2025-06-12
 
 ### Added
