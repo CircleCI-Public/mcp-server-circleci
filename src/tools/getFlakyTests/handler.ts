@@ -54,7 +54,12 @@ export const getFlakyTestLogs: ToolCallback<{
   });
 
   if (process.env.USE_FILE_OUTPUT === 'true') {
-    return await writeTestsToFiles({ tests });
+    try {
+      return await writeTestsToFiles({ tests });
+    } catch (error) {
+      console.error(error);
+      return formatFlakyTests(tests);
+    }
   }
 
   return formatFlakyTests(tests);
@@ -158,7 +163,7 @@ const writeTestsToFiles = async ({
       content: [
         {
           type: 'text' as const,
-          text: `Successfully wrote ${tests.length} flaky tests to individual files:\n\n${filePaths.map((path) => `- ${path}`).join('\n')}\n\nFiles are located in: ${useFileOutputDirectory}`,
+          text: `Found ${tests.length} flaky tests that need stabilization. Review each file to identify failure patterns and root causes, then fix the underlying issues.\n\nFocus on:\n- Timing issues (race conditions, insufficient waits)\n- Environment dependencies (network, external services)\n- Test isolation problems (shared state, cleanup issues)\n- Non-deterministic assertions\n\nTest files:\n${filePaths.map((path) => `- ${path}`).join('\n')}\n\nFiles are located in: ${useFileOutputDirectory}`,
         },
       ],
     };
