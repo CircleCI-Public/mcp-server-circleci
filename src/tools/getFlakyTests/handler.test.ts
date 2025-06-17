@@ -193,7 +193,7 @@ describe('getFlakyTestLogs handler', () => {
     expect(mockMkdirSync).toHaveBeenCalledWith(useFileOutputDirectory, {
       recursive: true,
     });
-    expect(mockWriteFileSync).toHaveBeenCalledTimes(2);
+    expect(mockWriteFileSync).toHaveBeenCalledTimes(3);
 
     expect(response).toHaveProperty('content');
     expect(Array.isArray(response.content)).toBe(true);
