@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.10.0] - 2025-06-17
+
+### Added
+
+- Added `USE_FILE_OUTPUT` environment variable to `get_flaky_tests` tool
+  - When set to `true`, the tool will write flaky tests to files in the `./flaky-tests-output` directory instead of returning the results in the response
+  - The tool will return the file paths of the written files in the response
+
 ## [0.9.2] - 2025-06-17
 
 ### Added
