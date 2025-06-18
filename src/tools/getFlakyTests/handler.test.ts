@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { getFlakyTestLogs, useFileOutputDirectory } from './handler.js';
+import { getFlakyTestLogs, getFlakyTestsOutputDirectory } from './handler.js';
 import * as projectDetection from '../../lib/project-detection/index.js';
 import * as getFlakyTestsModule from '../../lib/flaky-tests/getFlakyTests.js';
 import * as formatFlakyTestsModule from '../../lib/flaky-tests/getFlakyTests.js';
@@ -194,12 +194,9 @@ describe('getFlakyTestLogs handler', () => {
       signal: controller.signal,
     });
 
-    expect(mockMkdirSync).toHaveBeenCalledWith(
-      useFileOutputDirectory(),
-      {
-        recursive: true,
-      },
-    );
+    expect(mockMkdirSync).toHaveBeenCalledWith(getFlakyTestsOutputDirectory(), {
+      recursive: true,
+    });
     expect(mockWriteFileSync).toHaveBeenCalledTimes(3);
 
     expect(response).toHaveProperty('content');
@@ -208,9 +205,7 @@ describe('getFlakyTestLogs handler', () => {
     expect(response.content[0].text).toContain(
       'Found 2 flaky tests that need stabilization',
     );
-    expect(response.content[0].text).toContain(
-      useFileOutputDirectory(),
-    );
+    expect(response.content[0].text).toContain(getFlakyTestsOutputDirectory());
   });
 
   it('should handle no flaky tests found in file output mode', async () => {
