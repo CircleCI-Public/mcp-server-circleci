@@ -9,15 +9,19 @@ vi.mock('../../lib/project-detection/index.js');
 vi.mock('../../lib/flaky-tests/getFlakyTests.js');
 
 // Define mock functions using vi.hoisted() to make them available everywhere
-const { mockWriteFileSync, mockMkdirSync, mockJoin } = vi.hoisted(() => ({
-  mockWriteFileSync: vi.fn(),
-  mockMkdirSync: vi.fn(),
-  mockJoin: vi.fn(),
-}));
+const { mockWriteFileSync, mockMkdirSync, mockRmSync, mockJoin } = vi.hoisted(
+  () => ({
+    mockWriteFileSync: vi.fn(),
+    mockMkdirSync: vi.fn(),
+    mockRmSync: vi.fn(),
+    mockJoin: vi.fn(),
+  }),
+);
 
 vi.mock('fs', () => ({
   writeFileSync: mockWriteFileSync,
   mkdirSync: mockMkdirSync,
+  rmSync: mockRmSync,
 }));
 
 vi.mock('path', () => ({
@@ -27,7 +31,7 @@ vi.mock('path', () => ({
 describe('getFlakyTestLogs handler', () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    delete process.env.USE_FILE_OUTPUT;
+    delete process.env.FILE_OUTPUT_DIRECTORY;
   });
 
   it('should return a valid MCP error response when no inputs are provided', async () => {
@@ -153,8 +157,8 @@ describe('getFlakyTestLogs handler', () => {
     expect(typeof response.content[0].text).toBe('string');
   });
 
-  it('should write flaky tests to files when USE_FILE_OUTPUT is true', async () => {
-    process.env.USE_FILE_OUTPUT = 'true';
+  it('should write flaky tests to files when FILE_OUTPUT_DIRECTORY is set', async () => {
+    process.env.FILE_OUTPUT_DIRECTORY = '/tmp/test-output';
 
     // Mock path.join to return predictable file paths for cross-platform test consistency
     // This ensures the same path format regardless of OS (Windows uses \, Unix uses /)
@@ -190,9 +194,12 @@ describe('getFlakyTestLogs handler', () => {
       signal: controller.signal,
     });
 
-    expect(mockMkdirSync).toHaveBeenCalledWith(useFileOutputDirectory, {
-      recursive: true,
-    });
+    expect(mockMkdirSync).toHaveBeenCalledWith(
+      useFileOutputDirectory(),
+      {
+        recursive: true,
+      },
+    );
     expect(mockWriteFileSync).toHaveBeenCalledTimes(3);
 
     expect(response).toHaveProperty('content');
@@ -201,11 +208,13 @@ describe('getFlakyTestLogs handler', () => {
     expect(response.content[0].text).toContain(
       'Found 2 flaky tests that need stabilization',
     );
-    expect(response.content[0].text).toContain(useFileOutputDirectory);
+    expect(response.content[0].text).toContain(
+      useFileOutputDirectory(),
+    );
   });
 
   it('should handle no flaky tests found in file output mode', async () => {
-    process.env.USE_FILE_OUTPUT = 'true';
+    process.env.FILE_OUTPUT_DIRECTORY = '/tmp/test-output';
 
     vi.spyOn(getFlakyTestsModule, 'default').mockResolvedValue([]);
 

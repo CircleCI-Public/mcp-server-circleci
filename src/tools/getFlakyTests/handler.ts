@@ -12,7 +12,9 @@ import { writeFileSync, mkdirSync, rmSync } from 'fs';
 import { join } from 'path';
 import { Test } from '../../clients/schemas.js';
 
-const flakyTestsOutputDirectory = `${process.env.FILE_OUTPUT_DIRECTORY}/flaky-tests-output`;
+const getFlakyTestsOutputDirectory = () => `${process.env.FILE_OUTPUT_DIRECTORY}/flaky-tests-output`;
+
+export const useFileOutputDirectory = getFlakyTestsOutputDirectory;
 
 export const getFlakyTestLogs: ToolCallback<{
   params: typeof getFlakyTestLogsInputSchema;
@@ -138,6 +140,8 @@ const writeTestsToFiles = async ({
     };
   }
 
+  const flakyTestsOutputDirectory = getFlakyTestsOutputDirectory();
+  
   try {
     rmSync(flakyTestsOutputDirectory, { recursive: true, force: true });
     mkdirSync(flakyTestsOutputDirectory, { recursive: true });
