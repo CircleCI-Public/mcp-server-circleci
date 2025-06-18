@@ -150,7 +150,7 @@ const writeTestsToFiles = async ({
     const gitignoreContent = '# Ignore all flaky test output files\n*\n';
     writeFileSync(gitignorePath, gitignoreContent, 'utf8');
   } catch (error) {
-    return mcpErrorOutput(
+    throw new Error(
       `Failed to create output directory: ${error instanceof Error ? error.message : String(error)}`,
     );
   }
@@ -170,7 +170,7 @@ const writeTestsToFiles = async ({
       content: [
         {
           type: 'text' as const,
-          text: `Found ${tests.length} flaky tests that need stabilization. Each file contains test failure data and metadata - analyze these reports to understand what's causing the flakiness, then locate and fix the actual test code.\n\nFocus on identifying:\n- Timing issues (race conditions, insufficient waits)\n- Environment dependencies (network, external services)\n- Test isolation problems (shared state, cleanup issues)\n- Non-deterministic assertions\n\nFlaky test reports:\n${filePaths.map((path) => `- ${path}`).join('\n')}\n\nFiles are located in: ${flakyTestsOutputDirectory}`,
+          text: `Found ${tests.length} flaky tests that need stabilization. Each file contains test failure data and metadata - analyze these reports to understand what's causing the flakiness, then locate and fix the actual test code.\n\nFlaky test reports:\n${filePaths.map((path) => `- ${path}`).join('\n')}\n\nFiles are located in: ${flakyTestsOutputDirectory}`,
         },
       ],
     };

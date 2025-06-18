@@ -13,32 +13,46 @@ const getFlakyTests = async ({ projectSlug }: { projectSlug: string }) => {
     throw new Error('Flaky tests not found');
   }
 
-  const jobNumbers = [
-    ...new Set(flakyTests.flaky_tests.map((test) => test.job_number)),
+  const flakyTestDetails = [
+    ...new Set(
+      flakyTests.flaky_tests.map((test) => ({
+        jobNumber: test.job_number,
+        classname: test.classname,
+      })),
+    ),
   ];
 
   const testsArrays = await rateLimitedRequests(
-    jobNumbers.map((jobNumber) => async () => {
+    flakyTestDetails.map(({ jobNumber, classname }) => async () => {
       try {
         const tests = await circleci.tests.getJobTests({
           projectSlug,
           jobNumber,
         });
-        return tests;
+        const matchingTest = tests.find((test) => test.classname === classname);
+        if (matchingTest) {
+          return matchingTest;
+        }
+        console.error(`Test ${classname} not found in job ${jobNumber}`);
+        return tests.filter((test) => test.result === 'failure');
       } catch (error) {
         if (error instanceof Error && error.message.includes('404')) {
           console.error(`Job ${jobNumber} not found:`, error);
-          return [];
+          return undefined;
         } else if (error instanceof Error && error.message.includes('429')) {
           console.error(`Rate limited for job request ${jobNumber}:`, error);
-          return [];
+          return undefined;
         }
         throw error;
       }
     }),
   );
 
-  return testsArrays.flat().filter((test) => test.result === 'failure');
+  const filteredTestsArrays = testsArrays
+    .flat()
+    .filter((test) => test !== undefined);
+
+  return filteredTestsArrays;
 };
 
 export const formatFlakyTests = (tests: Test[]) => {
