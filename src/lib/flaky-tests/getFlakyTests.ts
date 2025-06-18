@@ -17,23 +17,23 @@ const getFlakyTests = async ({ projectSlug }: { projectSlug: string }) => {
     ...new Set(
       flakyTests.flaky_tests.map((test) => ({
         jobNumber: test.job_number,
-        classname: test.classname,
+        test_name: test.test_name,
       })),
     ),
   ];
 
   const testsArrays = await rateLimitedRequests(
-    flakyTestDetails.map(({ jobNumber, classname }) => async () => {
+    flakyTestDetails.map(({ jobNumber, test_name }) => async () => {
       try {
         const tests = await circleci.tests.getJobTests({
           projectSlug,
           jobNumber,
         });
-        const matchingTest = tests.find((test) => test.classname === classname);
+        const matchingTest = tests.find((test) => test.name === test_name);
         if (matchingTest) {
           return matchingTest;
         }
-        console.error(`Test ${classname} not found in job ${jobNumber}`);
+        console.error(`Test ${test_name} not found in job ${jobNumber}`);
         return tests.filter((test) => test.result === 'failure');
       } catch (error) {
         if (error instanceof Error && error.message.includes('404')) {
