@@ -13,7 +13,9 @@ const getFlakyTests = async ({ projectSlug }: { projectSlug: string }) => {
     throw new Error('Flaky tests not found');
   }
 
-  const jobNumbers = flakyTests.flaky_tests.map((test) => test.job_number);
+  const jobNumbers = [
+    ...new Set(flakyTests.flaky_tests.map((test) => test.job_number)),
+  ];
 
   const testsArrays = await rateLimitedRequests(
     jobNumbers.map((jobNumber) => async () => {

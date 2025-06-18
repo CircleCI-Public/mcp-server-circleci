@@ -8,11 +8,11 @@ import getFlakyTests, {
   formatFlakyTests,
 } from '../../lib/flaky-tests/getFlakyTests.js';
 import mcpErrorOutput from '../../lib/mcpErrorOutput.js';
-import { writeFileSync } from 'fs';
+import { writeFileSync, mkdirSync, rmSync } from 'fs';
 import { join } from 'path';
 import { Test } from '../../clients/schemas.js';
 
-export const useFileOutputDirectory = './flaky-tests-output';
+const flakyTestsOutputDirectory = `${process.env.FILE_OUTPUT_DIRECTORY}/flaky-tests-output`;
 
 export const getFlakyTestLogs: ToolCallback<{
   params: typeof getFlakyTestLogsInputSchema;
@@ -53,7 +53,7 @@ export const getFlakyTestLogs: ToolCallback<{
     projectSlug,
   });
 
-  if (process.env.USE_FILE_OUTPUT === 'true') {
+  if (process.env.FILE_OUTPUT_DIRECTORY) {
     try {
       return await writeTestsToFiles({ tests });
     } catch (error) {
@@ -139,12 +139,11 @@ const writeTestsToFiles = async ({
   }
 
   try {
-    // Create directory recursively
-    const { mkdirSync } = await import('fs');
-    mkdirSync(useFileOutputDirectory, { recursive: true });
+    rmSync(flakyTestsOutputDirectory, { recursive: true, force: true });
+    mkdirSync(flakyTestsOutputDirectory, { recursive: true });
 
     // Create .gitignore to ignore all files in this directory
-    const gitignorePath = join(useFileOutputDirectory, '.gitignore');
+    const gitignorePath = join(flakyTestsOutputDirectory, '.gitignore');
     const gitignoreContent = '# Ignore all flaky test output files\n*\n';
     writeFileSync(gitignorePath, gitignoreContent, 'utf8');
   } catch (error) {
@@ -158,7 +157,7 @@ const writeTestsToFiles = async ({
   try {
     tests.forEach((test, index) => {
       const filename = generateSafeFilename({ test, index });
-      const filePath = join(useFileOutputDirectory, filename);
+      const filePath = join(flakyTestsOutputDirectory, filename);
 
       writeTestToFile({ test, filePath, index });
       filePaths.push(filePath);
@@ -168,7 +167,7 @@ const writeTestsToFiles = async ({
       content: [
         {
           type: 'text' as const,
-          text: `Found ${tests.length} flaky tests that need stabilization. Each file contains test failure data and metadata - analyze these reports to understand what's causing the flakiness, then locate and fix the actual test code.\n\nFocus on identifying:\n- Timing issues (race conditions, insufficient waits)\n- Environment dependencies (network, external services)\n- Test isolation problems (shared state, cleanup issues)\n- Non-deterministic assertions\n\nFlaky test reports:\n${filePaths.map((path) => `- ${path}`).join('\n')}\n\nFiles are located in: ${useFileOutputDirectory}`,
+          text: `Found ${tests.length} flaky tests that need stabilization. Each file contains test failure data and metadata - analyze these reports to understand what's causing the flakiness, then locate and fix the actual test code.\n\nFocus on identifying:\n- Timing issues (race conditions, insufficient waits)\n- Environment dependencies (network, external services)\n- Test isolation problems (shared state, cleanup issues)\n- Non-deterministic assertions\n\nFlaky test reports:\n${filePaths.map((path) => `- ${path}`).join('\n')}\n\nFiles are located in: ${flakyTestsOutputDirectory}`,
         },
       ],
     };
