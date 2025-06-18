@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.0] - 2025-06-18
+
+### Fixed
+
+- Fixed bug in `get_flaky_tests` tool where the same job number was being fetched multiple times
+- Fixed bug in `get_flaky_tests` where the output directory was not being created when using file output mode
+
 ## [0.10.2] - 2025-06-18
 
 ### Added
