@@ -378,6 +378,12 @@ npx -y @smithery/cli install @CircleCI-Public/mcp-server-circleci --client claud
        - Git remote URL
      - Example: "Find flaky tests in my current project"
 
+  The tool can be used in two ways:
+  1. Using text output mode (default):
+     - This will return the flaky tests and their details in a text format
+  2. Using file output mode: (requires the `FILE_OUTPUT_DIRECTORY` environment variable to be set)
+     - This will create a directory with the flaky tests and their details
+
   The tool returns detailed information about flaky tests, including:
 
   - Test names and file locations
