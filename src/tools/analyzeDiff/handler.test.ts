@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { FilterBy } from '../shared/constants.js';
 import { analyzeDiff } from './handler.js';
+import { analyzeDiffInputSchema } from './inputSchema.js';
 import { CircletClient } from '../../clients/circlet/index.js';
 import { RuleReview } from '../../clients/schemas.js';
 
@@ -24,6 +26,8 @@ describe('analyzeDiff', () => {
 
     const mockArgs = {
       params: {
+        speedMode: false,
+        filterBy: FilterBy.none,
         diff: 'diff --git a/test.ts b/test.ts\n+console.log("test");',
         rules: '',
       },
@@ -55,6 +59,8 @@ describe('analyzeDiff', () => {
 
     const mockArgs = {
       params: {
+        speedMode: false,
+        filterBy: FilterBy.none,
         diff: '',
         rules: '',
       },
@@ -102,6 +108,8 @@ describe('analyzeDiff', () => {
 
     const mockArgs = {
       params: {
+        speedMode: false,
+        filterBy: FilterBy.none,
         diff: `diff --git a/src/component.ts b/src/component.ts
 index 1234567..abcdefg 100644
 --- a/src/component.ts
@@ -126,6 +134,8 @@ Rule 4: All functions must have JSDoc comments`,
     const result = await analyzeDiff(mockArgs, { signal: controller.signal });
 
     expect(mockCircletInstance.circlet.ruleReview).toHaveBeenCalledWith({
+      speedMode: false,
+      filterBy: FilterBy.none,
       diff: mockArgs.params.diff,
       rules: mockArgs.params.rules,
     });
@@ -152,6 +162,7 @@ Rule 4: All functions must have JSDoc comments`,
             confidenceScore: 0.98,
             violationInstances: [
               {
+                file: 'src/component.ts',
                 lineNumbersInDiff: ['2'],
                 violatingCodeSnippet: 'console.log(x);',
                 explanationOfViolation: 'Direct console.log usage',
@@ -176,6 +187,8 @@ Rule 4: All functions must have JSDoc comments`,
 
     const mockArgs = {
       params: {
+        speedMode: false,
+        filterBy: FilterBy.none,
         diff: '+const x = 5;\n+console.log(x);',
         rules: `# Cursor Rules Example
 
@@ -191,6 +204,8 @@ Description: Avoid using 'any' type.`,
     const result = await analyzeDiff(mockArgs, { signal: controller.signal });
 
     expect(mockCircletInstance.circlet.ruleReview).toHaveBeenCalledWith({
+      speedMode: false,
+      filterBy: FilterBy.none,
       diff: mockArgs.params.diff,
       rules: mockArgs.params.rules,
     });
@@ -232,6 +247,8 @@ Description: Avoid using 'any' type.`,
 
     const mockArgs = {
       params: {
+        speedMode: false,
+        filterBy: FilterBy.none,
         diff: 'diff --git a/test.ts b/test.ts\n+const logger = new Logger();',
         rules: 'Rule 1: No console.log statements\nRule 2: Use proper logging',
       },
@@ -241,6 +258,8 @@ Description: Avoid using 'any' type.`,
     const result = await analyzeDiff(mockArgs, { signal: controller.signal });
 
     expect(mockCircletInstance.circlet.ruleReview).toHaveBeenCalledWith({
+      speedMode: false,
+      filterBy: FilterBy.none,
       diff: mockArgs.params.diff,
       rules: mockArgs.params.rules,
     });
@@ -267,6 +286,7 @@ Description: Avoid using 'any' type.`,
             confidenceScore: 0.98,
             violationInstances: [
               {
+                file: 'src/component.ts',
                 lineNumbersInDiff: ['5'],
                 violatingCodeSnippet: 'console.log("test");',
                 explanationOfViolation: 'Direct console.log usage',
@@ -279,6 +299,7 @@ Description: Avoid using 'any' type.`,
             confidenceScore: 0.92,
             violationInstances: [
               {
+                file: 'src/component.ts',
                 lineNumbersInDiff: ['3'],
                 violatingCodeSnippet: 'private data: any = {};',
                 explanationOfViolation: 'Variable declared with any type',
@@ -303,6 +324,8 @@ Description: Avoid using 'any' type.`,
 
     const mockArgs = {
       params: {
+        speedMode: false,
+        filterBy: FilterBy.none,
         diff: `diff --git a/src/component.ts b/src/component.ts
 index 1234567..abcdefg 100644
 --- a/src/component.ts
@@ -325,6 +348,8 @@ Rule 3: Use proper TypeScript types`,
     const result = await analyzeDiff(mockArgs, { signal: controller.signal });
 
     expect(mockCircletInstance.circlet.ruleReview).toHaveBeenCalledWith({
+      filterBy: FilterBy.none,
+      speedMode: false,
       diff: mockArgs.params.diff,
       rules: mockArgs.params.rules,
     });
@@ -357,6 +382,7 @@ Confidence Score: 0.92`,
             confidenceScore: 0.85,
             violationInstances: [
               {
+                file: 'src/component.ts',
                 lineNumbersInDiff: ['2'],
                 violatingCodeSnippet: 'const timeout = 5000;',
                 explanationOfViolation: 'Hardcoded timeout value',
@@ -381,6 +407,8 @@ Confidence Score: 0.92`,
 
     const mockArgs = {
       params: {
+        speedMode: false,
+        filterBy: FilterBy.none,
         diff: '+const timeout = 5000;',
         rules: 'Rule: No magic numbers',
       },
@@ -398,6 +426,49 @@ Reason: Magic numbers make code less maintainable
 Confidence Score: 0.85`,
         },
       ],
+    });
+  });
+
+  it('should set default values for speedMode and filterBy when not provided', async () => {
+    const mockRuleReview: RuleReview = {
+      isRuleCompliant: true,
+      relatedRules: {
+        compliant: [],
+        violations: [],
+        requiresHumanReview: [],
+      },
+      unrelatedRules: [],
+    };
+
+    const mockCircletInstance = {
+      circlet: {
+        ruleReview: vi.fn().mockResolvedValue(mockRuleReview),
+      },
+    };
+
+    vi.mocked(CircletClient).mockImplementation(
+      () => mockCircletInstance as any,
+    );
+
+    const rawParams = {
+      diff: '+const timeout = 5000;',
+      rules: 'Rule: No magic numbers',
+    };
+
+    const parsedParams = analyzeDiffInputSchema.parse(rawParams);
+    const mockArgs = {
+      params: parsedParams,
+    };
+
+    const controller = new AbortController();
+    await analyzeDiff(mockArgs, { signal: controller.signal });
+
+    // Verify default values (filterBy: FilterBy.none & speedMode: false) are applied when not explictly stated
+    expect(mockCircletInstance.circlet.ruleReview).toHaveBeenCalledWith({
+      diff: rawParams.diff,
+      rules: rawParams.rules,
+      filterBy: FilterBy.none,
+      speedMode: false,
     });
   });
 });

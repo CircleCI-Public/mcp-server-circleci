@@ -15,7 +15,7 @@ https://github.com/user-attachments/assets/3c765985-8827-442a-a8dc-5069e01edb74
 
 ## Requirements
 
-- CircleCI API token - you can generate one through the CircleCI. [Learn more](https://circleci.com/docs/managing-api-tokens/) or [click here](https://app.circleci.com/settings/user/tokens) for quick access.
+- CircleCI Personal API Token - you can generate one through the CircleCI. [Learn more](https://circleci.com/docs/managing-api-tokens/) or [click here](https://app.circleci.com/settings/user/tokens) for quick access.
 
 For NPX installation:
 
@@ -48,6 +48,14 @@ Add the following to your cursor MCP config:
   }
 }
 ```
+To locate this file:
+
+macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+
+Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+
+[Claude Desktop setup](https://modelcontextprotocol.io/quickstart/user)
+
 
 #### Using Docker
 
@@ -369,6 +377,12 @@ npx -y @smithery/cli install @CircleCI-Public/mcp-server-circleci --client claud
        - Workspace root path
        - Git remote URL
      - Example: "Find flaky tests in my current project"
+
+  The tool can be used in two ways:
+  1. Using text output mode (default):
+     - This will return the flaky tests and their details in a text format
+  2. Using file output mode: (requires the `FILE_OUTPUT_DIRECTORY` environment variable to be set)
+     - This will create a directory with the flaky tests and their details
 
   The tool returns detailed information about flaky tests, including:
 

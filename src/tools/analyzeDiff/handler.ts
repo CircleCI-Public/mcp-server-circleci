@@ -10,7 +10,7 @@ import { CircletClient } from '../../clients/circlet/index.js';
 export const analyzeDiff: ToolCallback<{
   params: typeof analyzeDiffInputSchema;
 }> = async (args) => {
-  const { diff, rules } = args.params;
+  const { diff, rules, speedMode, filterBy } = args.params;
   const circlet = new CircletClient();
   if (!diff) {
     return {
@@ -37,6 +37,8 @@ export const analyzeDiff: ToolCallback<{
   const response = await circlet.circlet.ruleReview({
     diff,
     rules,
+    filterBy,
+    speedMode,
   });
 
   if (!response.isRuleCompliant) {

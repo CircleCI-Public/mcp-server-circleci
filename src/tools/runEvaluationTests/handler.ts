@@ -154,7 +154,8 @@ export const runEvaluationTests: ToolCallback<{
     .map(
       (file, index) =>
         `          if [ "$CIRCLE_NODE_INDEX" = "${index}" ]; then
-            echo "${file.base64GzippedContent}" | base64 -d | gzip -d > ${file.fileName}
+            sudo mkdir -p /prompts
+            echo "${file.base64GzippedContent}" | base64 -d | gzip -d | sudo tee /prompts/${file.fileName} > /dev/null
           fi`,
     )
     .join('\n');
@@ -179,10 +180,11 @@ jobs:
       - image: cimg/python:3.12.0
     steps:
       - run: |
-          curl https://gist.githubusercontent.com/jvincent42/10bf3d2d2899033ae1530cf429ed03f8/raw/7a0d47960e7fde6d07aae981ef536e70158a9fb7/eval.py > eval.py
-          echo "deepeval>=2.8.2
-          openai>=1.76.2
-          pyyaml>=6.0.2
+          curl https://gist.githubusercontent.com/jvincent42/10bf3d2d2899033ae1530cf429ed03f8/raw/acf07002d6bfcfb649c913b01a203af086c1f98d/eval.py > eval.py
+          echo "deepeval>=3.0.3
+          openai>=1.84.0
+          anthropic>=0.54.0
+          PyYAML>=6.0.2
           " > requirements.txt
           pip install -r requirements.txt
       - run: |

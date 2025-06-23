@@ -7,6 +7,7 @@ export const promptOriginKey = 'promptOrigin';
 export const promptTemplateKey = 'promptTemplate';
 export const contextSchemaKey = 'contextSchema';
 export const modelKey = 'model';
+export const temperatureKey = 'temperature';
 
 export const createPromptTemplate: ToolCallback<{
   params: typeof createPromptTemplateInputSchema;
@@ -37,6 +38,7 @@ NEXT STEP:
   - ${contextSchemaKey}: the \`${contextSchemaKey}\` above
   - ${promptOriginKey}: the \`${promptOriginKey}\` above
   - ${modelKey}: the \`${modelKey}\` above
+  - ${temperatureKey}: the \`${temperatureKey}\` above
 `,
       },
     ],

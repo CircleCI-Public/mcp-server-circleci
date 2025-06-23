@@ -5,6 +5,65 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.2] - 2025-06-20
+
+### Added
+
+- Add `file` property to the `RuleReviewSchema` to align with updated endpoint
+
+## [0.11.1] - 2025-06-18
+
+### Fixed
+
+- Fixed bug in `get_flaky_tests` tool where unrelated tests were being returned
+- Fixed bug in `get_flaky_tests` tool where if the output directory cannot be created the tool would respond with an error. We now throw in that case, which makes us fallback to the text output.
+
+## [0.11.0] - 2025-06-18
+
+### Fixed
+
+- Fixed bug in `get_flaky_tests` tool where the same job number was being fetched multiple times
+- Fixed bug in `get_flaky_tests` where the output directory was not being created when using file output mode
+
+## [0.10.2] - 2025-06-18
+
+### Added
+
+- Add `speedMode` and `filterBy` parameters to the `analyze_diff` tool
+
+## [0.10.1] - 2025-06-17
+
+### Fixed
+
+- Add a .gitignore file to the flaky-tests-output directory to ignore all files in the directory
+
+## [0.10.0] - 2025-06-17
+
+### Added
+
+- Added `USE_FILE_OUTPUT` environment variable to `get_flaky_tests` tool
+  - When set to `true`, the tool will write flaky tests to files in the `./flaky-tests-output` directory instead of returning the results in the response
+  - The tool will return the file paths of the written files in the response
+
+## [0.9.2] - 2025-06-17
+
+### Added
+
+- Anthropic support on prompt eval script (w. auto-detection for OpenAI and Anthropic models)
+- Added `temperature` parameter support to prompt template tools
+  - Enhanced `create_prompt_template` tool with configurable temperature setting
+  - Enhanced `recommend_prompt_template_tests` tool with temperature parameter
+  - Default temperature value set to 1.0 for consistent prompt template generation
+
+### Updated
+
+- Updated default model from `gpt-4o-mini` to `gpt-4.1-mini` for prompt template tools
+- Enhanced evaluation script dependencies for improved compatibility
+  - Updated `deepeval` to version 3.0.3+ (from 2.8.2+)
+  - Updated `openai` to version 1.84.0+ (from 1.76.2+)
+  - Added `anthropic` version 0.54.0+ for Anthropic model support
+  - Updated `PyYAML` to version 6.0.2+
+
 ## [0.9.1] - 2025-06-12
 
 ### Added

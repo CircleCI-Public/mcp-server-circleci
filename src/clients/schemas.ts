@@ -47,6 +47,7 @@ const RuleReviewSchema = z.object({
         confidenceScore: z.number(),
         violationInstances: z.array(
           z.object({
+            file: z.string(),
             lineNumbersInDiff: z.array(z.string()),
             violatingCodeSnippet: z.string(),
             explanationOfViolation: z.string(),
@@ -66,7 +67,7 @@ const RuleReviewSchema = z.object({
       }),
     ),
   }),
-  unrelatedRules: z.array(z.string()),
+  unrelatedRules: z.array(z.string()).optional(),
 });
 
 const FollowedProjectSchema = z.object({
@@ -124,6 +125,7 @@ const FlakyTestSchema = z.object({
   flaky_tests: z.array(
     z.object({
       job_number: z.number(),
+      test_name: z.string(),
     }),
   ),
   total_flaky_tests: z.number(),

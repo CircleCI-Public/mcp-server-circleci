@@ -1,7 +1,7 @@
 import { HTTPClient } from '../circleci/httpClient.js';
 import { PromptObject, RuleReview } from '../schemas.js';
 import { z } from 'zod';
-import { PromptOrigin } from '../../tools/shared/constants.js';
+import { PromptOrigin, FilterBy } from '../../tools/shared/constants.js';
 
 export const WorkbenchResponseSchema = z
   .object({
@@ -74,13 +74,19 @@ export class CircletAPI {
   async ruleReview({
     diff,
     rules,
+    speedMode,
+    filterBy,
   }: {
     diff: string;
     rules: string;
+    speedMode: boolean;
+    filterBy: FilterBy;
   }): Promise<RuleReview> {
     const rawResult = await this.client.post<unknown>('/rule-review', {
       changeSet: diff,
       rules,
+      speedMode,
+      filterBy,
     });
     const parsedResult = RuleReview.safeParse(rawResult);
     if (!parsedResult.success) {
