@@ -48,13 +48,6 @@ Add the following to your cursor MCP config:
   }
 }
 ```
-To locate this file:
-
-macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
-
-Windows: `%APPDATA%\Claude\claude_desktop_config.json`
-
-[Claude Desktop setup](https://modelcontextprotocol.io/quickstart/user)
 
 
 #### Using Docker
@@ -188,6 +181,13 @@ Add the following to your claude_desktop_config.json:
   }
 }
 ```
+To locate this file:
+
+macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+
+Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+
+[Claude Desktop setup](https://modelcontextprotocol.io/quickstart/user)
 
 #### Using Docker
 
