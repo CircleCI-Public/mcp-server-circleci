@@ -50,4 +50,5 @@ COPY --from=build /app/node_modules /app/node_modules
 EXPOSE 8080
 
 # Command to run the MCP server
-ENTRYPOINT ["node", "dist/index.js", "start:sse"]
+ENTRYPOINT ["node", "dist/index.js"]
+CMD ["start:sse"]
