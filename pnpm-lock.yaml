@@ -17,6 +17,9 @@ importers:
       csv-parse:
         specifier: 6.0.0
         version: 6.0.0
+      date-fns:
+        specifier: 4.1.0
+        version: 4.1.0
       express:
         specifier: ^4.19.2
         version: 4.21.2
@@ -685,6 +688,9 @@ packages:
 
   csv-parse@6.0.0:
     resolution: {integrity: sha512-6aB9WrymEruVDwQOwa5AuYk4/Gb+HaJgLHGKOA9BXTqgsIFvbdHzQzZOuqNCOooTGciPDaHzTlGkU5P6kYVUYw==}
+
+  date-fns@4.1.0:
+    resolution: {integrity: sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==}
 
   dayjs@1.11.13:
     resolution: {integrity: sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==}
@@ -2267,6 +2273,8 @@ snapshots:
       which: 2.0.2
 
   csv-parse@6.0.0: {}
+
+  date-fns@4.1.0: {}
 
   dayjs@1.11.13: {}
 

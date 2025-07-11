@@ -31,7 +31,7 @@ export const downloadUsageApiData: ToolCallback<{ params: typeof downloadUsageAp
         ]
       };
     }
-  } catch (e) {
+  } catch {
     return {
       content: [
         { type: 'text', text: `ERROR: Invalid date format. Please use YYYY-MM-DD or a recognizable date string.` }
