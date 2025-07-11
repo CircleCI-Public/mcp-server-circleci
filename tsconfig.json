@@ -8,8 +8,16 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "paths": {
+      "@modelcontextprotocol/sdk/*": ["./node_modules/@modelcontextprotocol/sdk/dist/esm/*"]
+    },
+    "types": ["node"],
+    "typeRoots": [
+      "./node_modules/@types"
+    ]
   },
   "include": ["src/**/*"],
-  "exclude": ["node_modules", "**/*.test.ts", "**/*.spec.ts", "vitest.config.ts", "dist"]
+  "exclude": ["**/*.test.ts", "**/*.spec.ts", "vitest.config.ts", "dist"]
 }

@@ -30,6 +30,46 @@ const promptObjectSchema = z
     'a complete prompt template with a template string and a context schema',
   );
 
+const RuleReviewSchema = z.object({
+  isRuleCompliant: z.boolean(),
+  relatedRules: z.object({
+    compliant: z.array(
+      z.object({
+        rule: z.string(),
+        reason: z.string(),
+        confidenceScore: z.number(),
+      }),
+    ),
+    violations: z.array(
+      z.object({
+        rule: z.string(),
+        reason: z.string(),
+        confidenceScore: z.number(),
+        violationInstances: z.array(
+          z.object({
+            file: z.string(),
+            lineNumbersInDiff: z.array(z.string()),
+            violatingCodeSnippet: z.string(),
+            explanationOfViolation: z.string(),
+          }),
+        ),
+      }),
+    ),
+    requiresHumanReview: z.array(
+      z.object({
+        rule: z.string(),
+        reason: z.string(),
+        confidenceScore: z.number(),
+        humanReviewRequired: z.object({
+          pointsOfAmbiguity: z.array(z.string()),
+          questionsForManualReviewer: z.array(z.string()),
+        }),
+      }),
+    ),
+  }),
+  unrelatedRules: z.array(z.string()).optional(),
+});
+
 const FollowedProjectSchema = z.object({
   name: z.string(),
   slug: z.string(),
@@ -85,6 +125,7 @@ const FlakyTestSchema = z.object({
   flaky_tests: z.array(
     z.object({
       job_number: z.number(),
+      test_name: z.string(),
     }),
   ),
   total_flaky_tests: z.number(),
@@ -189,3 +230,6 @@ export type PromptObject = z.infer<typeof PromptObject>;
 
 export const RerunWorkflow = RerunWorkflowSchema;
 export type RerunWorkflow = z.infer<typeof RerunWorkflowSchema>;
+
+export const RuleReview = RuleReviewSchema;
+export type RuleReview = z.infer<typeof RuleReviewSchema>;

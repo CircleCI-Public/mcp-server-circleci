@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import {
   defaultModel,
+  defaultTemperature,
   PromptOrigin,
   PromptWorkbenchToolName,
 } from '../shared/constants.js';
@@ -26,5 +27,11 @@ export const recommendPromptTemplateTestsInputSchema = z.object({
     .default(defaultModel)
     .describe(
       `The model to use for generating actual prompt outputs for testing. Defaults to ${defaultModel}.`,
+    ),
+  temperature: z
+    .number()
+    .default(defaultTemperature)
+    .describe(
+      `The temperature of the prompt template. Explicitly specify the temperature if it can be inferred from the codebase. Otherwise, defaults to ${defaultTemperature}.`,
     ),
 });

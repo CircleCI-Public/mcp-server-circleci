@@ -25,6 +25,8 @@ import { downloadUsageApiDataTool } from './tools/downloadUsageApiData/tool.js';
 import { downloadUsageApiData } from './tools/downloadUsageApiData/handler.js';
 import { findUnderusedResourceClassesTool } from './tools/findUnderusedResourceClasses/tool.js';
 import { findUnderusedResourceClasses } from './tools/findUnderusedResourceClasses/handler.js';
+import { analyzeDiffTool } from './tools/analyzeDiff/tool.js';
+import { analyzeDiff } from './tools/analyzeDiff/handler.js';
 
 // Define the tools with their configurations
 export const CCI_TOOLS = [
@@ -41,6 +43,7 @@ export const CCI_TOOLS = [
   rerunWorkflowTool,
   downloadUsageApiDataTool,
   findUnderusedResourceClassesTool,
+  analyzeDiffTool,
 ];
 
 // Extract the tool names as a union type
@@ -69,4 +72,5 @@ export const CCI_HANDLERS = {
   rerun_workflow: rerunWorkflow,
   download_usage_api_data: downloadUsageApiData,
   find_underused_resource_classes: findUnderusedResourceClasses,
+  analyze_diff: analyzeDiff,
 } satisfies ToolHandlers;

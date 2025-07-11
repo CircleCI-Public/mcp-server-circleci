@@ -142,3 +142,4 @@ dist
 
 # CircleCI usage data exports
 usage-data-*.csv
+.claude
