@@ -1,22 +1,17 @@
 import { ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { downloadUsageApiDataInputSchema } from './inputSchema.js';
 import { getUsageApiData } from '../../lib/usage-api/getUsageApiData.js';
-import mcpErrorOutput from '../../lib/mcpErrorOutput.js';
+import { parseUserDate } from '../../lib/usage-api/parseUserDate.js';
 
 export const downloadUsageApiData: ToolCallback<{ params: typeof downloadUsageApiDataInputSchema }> = async (args) => {
   const params = args.params || {};
+  const parsed = downloadUsageApiDataInputSchema.parse(params);
+  // Normalize dates using parseUserDate
+  const normalizedStart = parseUserDate(parsed.startDate) || parsed.startDate;
+  const normalizedEnd = parseUserDate(parsed.endDate) || parsed.endDate;
   // Debug log for troubleshooting jobId propagation
-  console.error('DEBUG: handler received params', params);
-  const { orgId, startDate, endDate, outputDir, jobId } = params;
-  // orgId, startDate, endDate, and outputDir are all enforced by schema validation
-  if (!orgId || !startDate || !endDate || !outputDir) {
-    return mcpErrorOutput('SIMPLE ERROR: Missing required parameters: orgId, startDate, endDate, outputDir.');
-  }
-  const result = await getUsageApiData({ orgId, startDate, endDate, outputDir, jobId });
-  // Flatten the content array into a single string if needed
-  if (result && result.content && Array.isArray(result.content)) {
-    const allText = result.content.map((c: any) => c.text).join('\n\n');
-    return { ...result, content: [{ type: 'text', text: allText }] };
-  }
+  console.error('DEBUG: handler received params', { ...parsed, startDate: normalizedStart, endDate: normalizedEnd });
+  const { orgId, outputDir, jobId } = parsed;
+  const result = await getUsageApiData({ orgId, startDate: normalizedStart, endDate: normalizedEnd, outputDir, jobId });
   return result;
 }; 
