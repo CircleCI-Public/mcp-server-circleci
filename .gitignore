@@ -139,3 +139,6 @@ dist
 
 # VSCode settings
 .DS_Store
+
+# CircleCI usage data exports
+usage-data-*.csv
