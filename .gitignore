@@ -136,4 +136,10 @@ dist
 .pnp.*
 
 .cursor
+
+# VSCode settings
+.DS_Store
+
+# CircleCI usage data exports
+usage-data-*.csv
 .claude

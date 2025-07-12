@@ -900,6 +900,39 @@ Click the Save button.
 
   The tool integrates with your existing cursor rules setup and provides immediate feedback on code quality, helping you catch issues early in the development process.
 
+- `download_usage_api_data`
+
+  Downloads usage data from the CircleCI Usage API for a given organization and date range (max 32 days per request). Accepts flexible, natural language date input (e.g., "March 2025" or "last month").
+
+  **Required parameters:**
+  - orgId: Organization ID
+  - startDate: Start date (YYYY-MM-DD or natural language)
+  - endDate: End date (YYYY-MM-DD or natural language)
+  - outputDir: Directory to save the CSV file
+
+  The tool will save the resulting CSV in the specified directory. If the date range exceeds 32 days, the request will be rejected with an error. Always specify an output directory that is easy to find (project root, Downloads, or current directory).
+
+  This is useful for:
+  - Downloading detailed CircleCI usage data for reporting or analysis
+  - Auditing resource consumption by time period
+  - Feeding usage data into the resource analysis tool below
+
+- `find_underused_resource_classes`
+
+  Analyzes a CircleCI usage data CSV file to find jobs/resource classes with average or max CPU/RAM usage below a given threshold (default 40%).
+
+  **Required parameter:**
+  - csvFilePath: Path to the usage data CSV file (from the usage API)
+  **Optional parameter:**
+  - threshold: Usage percentage threshold (number, default 40)
+
+  The tool expects the CSV to have columns: job_name, resource_class, median_cpu_utilization_pct, max_cpu_utilization_pct, median_ram_utilization_pct, max_ram_utilization_pct (case-insensitive). It returns a summary report listing all jobs/resource classes where any of these metrics is below the threshold.
+
+  This is useful for:
+  - Identifying oversized or underused resource classes
+  - Optimizing CircleCI job resource allocation
+  - Reducing CI costs by right-sizing jobs
+
 # Development
 
 ## Getting Started
