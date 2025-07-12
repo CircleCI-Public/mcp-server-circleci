@@ -34,6 +34,10 @@ FROM node:lts-alpine
 ENV NODE_ENV=production
 WORKDIR /app
 
+#Debug Build Info
+ARG BUILD_ID=""
+ENV BUILD_ID=$BUILD_ID
+
 # Install pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
@@ -46,8 +50,8 @@ RUN pnpm install --prod --frozen-lockfile
 COPY --from=build /app/dist /app/dist
 COPY --from=build /app/node_modules /app/node_modules
 
-# Docker container to listen on port 8080
-EXPOSE 8080
+# Docker container to listen on port 8000
+EXPOSE 8000
 
 # Command to run the MCP server
-ENTRYPOINT ["node", "dist/index.js", "start:sse"]
+ENTRYPOINT ["node", "dist/index.js"]
