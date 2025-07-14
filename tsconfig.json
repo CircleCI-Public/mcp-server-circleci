@@ -16,7 +16,8 @@
     "types": ["node"],
     "typeRoots": [
       "./node_modules/@types"
-    ]
+    ],
+    "resolveJsonModule": true
   },
   "include": ["src/**/*"],
   "exclude": ["**/*.test.ts", "**/*.spec.ts", "vitest.config.ts", "dist"]

@@ -94,7 +94,7 @@ Add the following to your cursor MCP config:
   ],
   "servers": {
     "circleci-mcp-server-remote": {
-      "url": "http://your-circleci-remote-mcp-server-endpoint:8080/mcp"
+      "url": "http://your-circleci-remote-mcp-server-endpoint:8000/mcp"
     }
   }
 }
@@ -192,7 +192,7 @@ To install CircleCI MCP Server for VS Code in `.vscode/mcp.json` using a self-ma
   "servers": {
     "circleci-mcp-server-remote": {
       "type": "sse",
-      "url": "http://your-circleci-remote-mcp-server-endpoint:8080/mcp"
+      "url": "http://your-circleci-remote-mcp-server-endpoint:8000/mcp"
     }
   }
 }
@@ -275,7 +275,7 @@ Create a script file such as 'circleci-remote-mcp.sh':
 ```bash
 #!/bin/bash
 export CIRCLECI_TOKEN="your-circleci-token"
-npx mcp-remote http://your-circleci-remote-mcp-server-endpoint:8080/mcp --allow-http 
+npx mcp-remote http://your-circleci-remote-mcp-server-endpoint:8000/mcp --allow-http 
 ```
 
 Make it executable:
@@ -332,7 +332,7 @@ https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/tutorials#set-up
 After installing Claude Code, run the following command:
 
 ```bash
-claude mcp add circleci-mcp-server -e CIRCLECI_TOKEN=your-circleci-token -- npx mcp-remote http://your-circleci-remote-mcp-server-endpoint:8080/mcp --allow-http
+claude mcp add circleci-mcp-server -e CIRCLECI_TOKEN=your-circleci-token -- npx mcp-remote http://your-circleci-remote-mcp-server-endpoint:8000/mcp --allow-http
 ```
 
 See the guide below for more information on using MCP servers with Claude Code:
@@ -398,7 +398,7 @@ Add the following to your windsurf mcp_config.json:
       "command": "npx",
       "args": [
         "mcp-remote",
-        "http://your-circleci-remote-mcp-server-endpoint:8080/mcp",
+        "http://your-circleci-remote-mcp-server-endpoint:8000/mcp",
         "--allow-http"
       ],
       "disabled": false,
@@ -463,7 +463,7 @@ Create a script file such as 'circleci-remote-mcp.sh':
 ```bash
 #!/bin/bash
 export CIRCLECI_TOKEN="your-circleci-token"
-npx mcp-remote http://your-circleci-remote-mcp-server-endpoint:8080/mcp --allow-http
+npx mcp-remote http://your-circleci-remote-mcp-server-endpoint:8000/mcp --allow-http
 ```
 
 Make it executable:
@@ -511,7 +511,7 @@ Create a script file such as 'circleci-remote-mcp.sh':
 
 ```bash
 #!/bin/bash
-npx mcp-remote http://your-circleci-remote-mcp-server-endpoint:8080/mcp --allow-http
+npx mcp-remote http://your-circleci-remote-mcp-server-endpoint:8000/mcp --allow-http
 ```
 
 Make it executable:
@@ -938,10 +938,10 @@ To run the container locally:
 docker run --rm -i -e CIRCLECI_TOKEN=your-circleci-token -e CIRCLECI_BASE_URL=https://circleci.com circleci:mcp-server-circleci
 ```
 
-To run the container as a self-managed remote MCP server:
+To run the container as a self-managed remote MCP server you need to add the environment variable `start=remote` to the docker run command. You can also define the port to use with the environment variable `port=<port>` or else the default port `8000` will be used:
 
 ```bash
-docker run --rm -i -e CIRCLECI_TOKEN=your-circleci-token -e CIRCLECI_BASE_URL=https://circleci.com circleci:mcp-server-circleci -e start:sse
+docker run --rm -i -e CIRCLECI_TOKEN=your-circleci-token -e CIRCLECI_BASE_URL=https://circleci.com circleci:mcp-server-circleci -e start=remote -e port=8000
 ```
 
 ## Development with MCP Inspector
