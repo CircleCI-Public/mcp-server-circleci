@@ -1,5 +1,3 @@
-import { CCI_HANDLERS, CCI_TOOLS, ToolHandler } from '../circleci-tools.js';
-
 import express from 'express';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
@@ -26,7 +24,6 @@ class DebugSSETransport extends SSEServerTransport {
  * - DELETE /mcp: Session termination
  */
 export const createUnifiedTransport = (server: McpServer) => {
-
   const app = express();
   app.use(express.json());
 
@@ -41,7 +38,10 @@ export const createUnifiedTransport = (server: McpServer) => {
   app.get('/mcp', (req, res) => {
     (async () => {
       if (process.env.debug === 'true') {
-        const sessionId = req.header('Mcp-Session-Id') || req.header('mcp-session-id') || req.query.sessionId as string;
+        const sessionId =
+          req.header('Mcp-Session-Id') ||
+          req.header('mcp-session-id') ||
+          (req.query.sessionId as string);
         console.log(`[DEBUG] [GET /mcp] Incoming session:`, sessionId);
       }
       // Create SSE transport (stateless)
@@ -66,7 +66,10 @@ export const createUnifiedTransport = (server: McpServer) => {
         if (process.env.debug === 'true') {
           const names = Object.keys((server as any)._registeredTools ?? {});
           console.log(`[DEBUG] visible tools:`, names);
-          console.log(`[DEBUG] incoming request body:`, JSON.stringify(req.body));
+          console.log(
+            `[DEBUG] incoming request body:`,
+            JSON.stringify(req.body),
+          );
         }
 
         // For each POST, create a temporary, stateless transport to handle the request/response cycle.
@@ -88,7 +91,9 @@ export const createUnifiedTransport = (server: McpServer) => {
         // started listening on the SSE stream).
         if (req.body?.method === 'initialize') {
           if (process.env.debug === 'true') {
-            console.log('[DEBUG] initialize handled -> sending tools/list_changed again');
+            console.log(
+              '[DEBUG] initialize handled -> sending tools/list_changed again',
+            );
           }
           await server.sendToolListChanged();
         }
@@ -114,7 +119,10 @@ export const createUnifiedTransport = (server: McpServer) => {
 
   // DELETE /mcp → stateless: acknowledge only
   app.delete('/mcp', (req, res) => {
-    const sessionId = req.header('Mcp-Session-Id') || req.header('mcp-session-id') || req.query.sessionId as string;
+    const sessionId =
+      req.header('Mcp-Session-Id') ||
+      req.header('mcp-session-id') ||
+      (req.query.sessionId as string);
     if (process.env.debug === 'true') {
       console.log(`[DEBUG] [DELETE /mcp] Incoming sessionId:`, sessionId);
     }
@@ -123,6 +131,8 @@ export const createUnifiedTransport = (server: McpServer) => {
 
   const port = process.env.port || 8000;
   app.listen(port, () => {
-    console.log(`CircleCI MCP unified HTTP+SSE server listening on http://0.0.0.0:${port}`);
+    console.log(
+      `CircleCI MCP unified HTTP+SSE server listening on http://0.0.0.0:${port}`,
+    );
   });
 };
