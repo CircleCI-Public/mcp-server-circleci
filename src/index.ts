@@ -2,14 +2,9 @@
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-import { z } from 'zod';
 import { CCI_HANDLERS, CCI_TOOLS } from './circleci-tools.js';
 import { createUnifiedTransport } from './transports/unified.js';
 import { createStdioTransport } from './transports/stdio.js';
-
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
 const server = new McpServer(
   { name: 'mcp-server-circleci', version: '1.0.0' },
@@ -25,7 +20,11 @@ if (process.env.debug === 'true') {
     srv.notification = async (...args: any[]) => {
       try {
         const [{ method, params }] = args;
-        console.log('[DEBUG] outgoing notification:', method, JSON.stringify(params));
+        console.log(
+          '[DEBUG] outgoing notification:',
+          method,
+          JSON.stringify(params),
+        );
       } catch {
         /* ignore */
       }
@@ -38,13 +37,15 @@ if (process.env.debug === 'true') {
     srv.request = async (...args: any[]) => {
       const [payload] = args;
       const result = await origRequest(...args);
-      console.log('[DEBUG] response to', payload?.method, JSON.stringify(result).slice(0, 200));
+      console.log(
+        '[DEBUG] response to',
+        payload?.method,
+        JSON.stringify(result).slice(0, 200),
+      );
       return result;
     };
   }
 }
-
-
 
 // Register all CircleCI tools once
 if (process.env.debug === 'true') {
@@ -68,9 +69,7 @@ CCI_TOOLS.forEach((tool) => {
   );
 });
 
-
 async function main() {
-
   if (process.env.start === 'remote') {
     console.log('Starting CircleCI MCP unified HTTP+SSE server...');
     createUnifiedTransport(server);
