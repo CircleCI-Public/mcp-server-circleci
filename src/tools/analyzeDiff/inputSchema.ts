@@ -18,6 +18,6 @@ export const analyzeDiffInputSchema = z.object({
   rules: z
     .string()
     .describe(
-      'Rules to use for analysis, found in .cursorrules or the .cursor/rules directory. Combine all rules from multiple files by separating them with ---',
+      'Rules to use for analysis, found in the rules subdirectory of the IDE workspace settings. Combine all rules from multiple files by separating them with ---',
     ),
 });

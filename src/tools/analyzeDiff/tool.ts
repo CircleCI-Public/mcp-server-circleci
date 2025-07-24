@@ -12,7 +12,7 @@ export const analyzeDiffTool = {
     - speedMode: boolean - A mode that can be enabled to speed up the analysis. Default value is false.
     - filterBy: enum - "${FilterBy.violations}" | "${FilterBy.compliants}" | "${FilterBy.humanReviewRequired}" | "${FilterBy.none}" - A filter that can be applied to set the focus of the analysis. Default is ${FilterBy.none}.
     - diff: string - A git diff string.
-    - rules: string - The rules to use for the analysis, found in a rules directory in the IDE dot directory. ---
+    - rules: string - Rules to use for analysis, found in the rules subdirectory of the IDE workspace settings. Combine all rules from multiple files by separating them with ---
 
   Returns:
   - A list of rule violations found in the git diff.
