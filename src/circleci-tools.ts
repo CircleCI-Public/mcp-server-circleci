@@ -23,6 +23,8 @@ import { rerunWorkflowTool } from './tools/rerunWorkflow/tool.js';
 import { rerunWorkflow } from './tools/rerunWorkflow/handler.js';
 import { analyzeDiffTool } from './tools/analyzeDiff/tool.js';
 import { analyzeDiff } from './tools/analyzeDiff/handler.js';
+import { getJobArtifactsTool } from './tools/getJobArtifacts/tool.js';
+import { getJobArtifacts } from './tools/getJobArtifacts/handler.js';
 
 // Define the tools with their configurations
 export const CCI_TOOLS = [
@@ -38,6 +40,7 @@ export const CCI_TOOLS = [
   runEvaluationTestsTool,
   rerunWorkflowTool,
   analyzeDiffTool,
+  getJobArtifactsTool,
 ];
 
 // Extract the tool names as a union type
@@ -65,4 +68,5 @@ export const CCI_HANDLERS = {
   run_evaluation_tests: runEvaluationTests,
   rerun_workflow: rerunWorkflow,
   analyze_diff: analyzeDiff,
+  get_job_artifacts: getJobArtifacts,
 } satisfies ToolHandlers;
