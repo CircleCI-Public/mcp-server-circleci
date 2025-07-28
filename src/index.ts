@@ -57,12 +57,11 @@ if (process.env.debug === 'true') {
 CCI_TOOLS.forEach((tool) => {
   const handler = CCI_HANDLERS[tool.name];
   if (!handler) throw new Error(`Handler for tool ${tool.name} not found`);
-  const toolName = `tools/${tool.name}`;
   if (process.env.debug === 'true') {
-    console.log(`[DEBUG] [Startup] Registering tool: ${toolName}`);
+    console.log(`[DEBUG] [Startup] Registering tool: ${tool.name}`);
   }
   server.tool(
-    toolName,
+    tool.name,
     tool.description,
     { params: tool.inputSchema.optional() },
     handler as any,
