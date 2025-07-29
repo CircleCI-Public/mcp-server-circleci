@@ -7,6 +7,7 @@ import { WorkflowsAPI } from './workflows.js';
 import { TestsAPI } from './tests.js';
 import { ConfigValidateAPI } from './configValidate.js';
 import { ProjectsAPI } from './projects.js';
+import { DeploysAPI } from './deploys.js';
 export type TCircleCIClient = InstanceType<typeof CircleCIClients>;
 
 export const getBaseURL = (useAPISubdomain = false) => {
@@ -114,6 +115,7 @@ export class CircleCIClients {
   public tests: TestsAPI;
   public configValidate: ConfigValidateAPI;
   public projects: ProjectsAPI;
+  public deploys: DeploysAPI;
 
   constructor({
     token,
@@ -141,5 +143,6 @@ export class CircleCIClients {
     this.tests = new TestsAPI(v2httpClient);
     this.configValidate = new ConfigValidateAPI(apiSubdomainV2httpClient);
     this.projects = new ProjectsAPI(v2httpClient);
+    this.deploys = new DeploysAPI(v2httpClient);
   }
 }

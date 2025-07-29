@@ -853,6 +853,34 @@ Click the Save button.
   - Quickly running pipelines without visiting the CircleCI web UI
   - Running pipelines from a specific branch
 
+- `run_rollback_pipeline`
+
+  Run a rollback pipeline for a CircleCI project. This tool guides you through the full rollback process, adapting to the information you provide and prompting for any missing details.
+
+  **Initial Step:**
+  - First, call the `list_followed_projects` tool to retrieve the list of projects the user follows.
+  - Then, ask the user to select a project by providing either a `projectID` or the exact `projectSlug` as returned by `list_followed_projects`.
+
+  **Typical Flow:**
+  1. **Start:** User initiates a rollback request.
+  2. **Project Selection:** If a `projectSlug` or `projectID` is not provided, call `list_followed_projects` and prompt the user to select a project using the exact value returned.
+  3. **Execute the tool and list the versions.**
+  4. **Environment & Component Selection:**
+      - If the project has multiple environments or components, present up to 20 options for the user to choose from.
+      - If there is only one environment and one component, proceed automatically.
+  5. **Version Selection:**
+      - Present the user with available versions to rollback to, based on the selected environment and component.
+      - Ask for both the current deployed version and the target version to rollback to.
+  6. **Optional Details:**
+      - Prompt the user for an optional reason for the rollback (e.g., "Critical bug fix").
+      - Optionally, allow the user to specify a namespace (e.g., for Kubernetes) and any additional parameters as key-value pairs.
+  7. **Confirmation:**
+      - Summarize the rollback request and confirm with the user before submitting.
+
+  **Returns:**
+  - On success: The rollback ID.
+  - On error: A clear message describing what is missing or what went wrong.
+
 - `rerun_workflow`
 
   Reruns a workflow from its start or from the failed job.
