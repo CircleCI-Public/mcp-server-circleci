@@ -38,10 +38,19 @@ export const runRollbackPipelineTool = {
     - Never attempt to guess or construct project slugs or URLs; always use values provided by the user or from \`listFollowedProjects\`.
     - Do not prompt for missing parameters until versions have been listed.
     - Do not call this tool with incomplete parameters.
+    - If the selected project lacks rollback pipeline configuration, provide a definitive error message without suggesting alternative projects.
 
     **Returns:**
     - On success: The rollback ID.
     - On error: A clear message describing what is missing or what went wrong.
+    - If the selected project does not have a rollback pipeline configured: The tool will provide a clear error message specific to that project and will NOT suggest trying another project.
+
+    **Important Note:**
+    - This tool is designed to work only with the specific project provided by the user.
+    - If a project does not have rollback capability configured, the tool will NOT suggest alternatives or recommend trying other projects.
+    - The assistant should NOT suggest trying different projects when a project lacks rollback configuration.
+    - Each project must have its own rollback pipeline configuration to be eligible for rollback operations.
+    - When a project cannot be rolled back, provide only the configuration guidance for THAT specific project.
 
     If neither option is fully satisfied, prompt the user for the missing information before making the tool call.
   `,
