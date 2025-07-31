@@ -340,7 +340,7 @@ CIRCLECI_BASE_URL="https://circleci.com" # Optional - required for on-prem custo
 debug="true" # Optional - for debugging requests and responses made to the mcp server
 ```
 
-Add the following to your Q Developer MCP config json replacing the placeholders under with your values <>:
+Add the following to your Claude Desktop MCP config json replacing the placeholders under with your values <>:
 
 ```json
 {
