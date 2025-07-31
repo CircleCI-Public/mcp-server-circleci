@@ -78,20 +78,48 @@ Add the following to your cursor MCP config:
 }
 ```
 
-#### Using a Self-Managed Remote MCP Server
+#### Using Amazon Bedrock AgentCore Runtime to host your CircleCI MCP Server:
+
+Use [JSON Web Token (JWT) as the authentication inbound identity type](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-oauth.html) and add the following environment variables to Amazon Bedrock AgentCore Runtime when creating or updating the runtime [Learn more](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-getting-started.html):
+
+```bash
+CIRCLECI_TOKEN="your-circleci-token"
+start="remote"
+CIRCLECI_BASE_URL="https://circleci.com" # Optional - required for on-prem customers only
+debug="true" # Optional - for debugging requests and responses made to the mcp server
+```
+
+Add the following to your cursor MCP config json replacing the placeholders under with your values <>:
+
+```json
+{
+  "mcpServers": {
+    "circleci-mcp-server-bedrock": {
+      "url": "https://bedrock-agentcore.<AWS-REGION>.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3A<AWS-REGION>%3A<YOUR-AWS-ACCOUNT-ID>%3Aruntime%2F<YOUR-BEDROCK-AGENTCORE-RUNTIME-ID>/invocations?qualifier=<YOUR-BEDROCK-AGENTCORE-RUNTIME-ENDPOINT-NAME-OR-USE-DEFAULT>",
+      "headers": {
+        "Authorization": "Bearer <YOUR_OAUTH_TOKEN_FOR_AWS_BEDROCK_AGENTCORE_RUNTIME>"
+      }
+    }
+  }
+}
+```
+
+#### Using a Self-Managed Container Runtime to host your CircleCI MCP Server:
+
+Add the following environment variables to your self-managed container execution environment:
+
+```bash
+CIRCLECI_TOKEN="your-circleci-token"
+start="remote"
+CIRCLECI_BASE_URL="https://circleci.com" # Optional - required for on-prem customers only
+debug="true" # Optional - for debugging requests and responses made to the mcp server
+port="8000" # Optional - for specifying the port to use
+```
 
 Add the following to your cursor MCP config:
 
 ```json
 {
-  "inputs": [
-    {
-      "type": "promptString",
-      "id": "circleci-token", 
-      "description": "CircleCI API Token",
-      "password": true
-    }
-  ],
   "servers": {
     "circleci-mcp-server-remote": {
       "url": "http://your-circleci-remote-mcp-server-endpoint:8000/mcp"
@@ -160,7 +188,6 @@ To install CircleCI MCP Server for VS Code in `.vscode/mcp.json` using Docker:
     }
   ],
   "servers": {
-    // https://github.com/ppl-ai/modelcontextprotocol/
     "circleci-mcp-server": {
       "type": "stdio",
       "command": "docker",
@@ -183,15 +210,51 @@ To install CircleCI MCP Server for VS Code in `.vscode/mcp.json` using Docker:
 }
 ```
 
-#### Using a Self-Managed Remote MCP Server
+#### Using Amazon Bedrock AgentCore Runtime to host your CircleCI MCP Server:
 
-To install CircleCI MCP Server for VS Code in `.vscode/mcp.json` using a self-managed remote MCP server:
+Use [JSON Web Token (JWT) as the authentication inbound identity type](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-oauth.html) and add the following environment variables to Amazon Bedrock AgentCore Runtime when creating or updating the runtime [Learn more](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-getting-started.html):
+
+```bash
+CIRCLECI_TOKEN="your-circleci-token"
+start="remote"
+CIRCLECI_BASE_URL="https://circleci.com" # Optional - required for on-prem customers only
+debug="true" # Optional - for debugging requests and responses made to the mcp server
+```
+
+Add the following to your VS Code MCP config in `.vscode/mcp.json` replacing the placeholders under with your values <>:
+
+```json
+{
+  "servers": {
+    "circleci-mcp-server-bedrock": {
+      "url": "https://bedrock-agentcore.<AWS-REGION>.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3A<AWS-REGION>%3A<YOUR-AWS-ACCOUNT-ID>%3Aruntime%2F<YOUR-BEDROCK-AGENTCORE-RUNTIME-ID>/invocations?qualifier=<YOUR-BEDROCK-AGENTCORE-RUNTIME-ENDPOINT-NAME-OR-USE-DEFAULT>",
+      "headers": {
+        "Authorization": "Bearer <YOUR_OAUTH_TOKEN_FOR_AWS_BEDROCK_AGENTCORE_RUNTIME>"
+      }
+    }
+  }
+}
+```
+
+#### Using a Self-Managed Container Runtime to host your CircleCI MCP Server:
+
+Add the following environment variables to your self-managed container execution environment:
+
+```bash
+CIRCLECI_TOKEN="your-circleci-token"
+start="remote"
+CIRCLECI_BASE_URL="https://circleci.com" # Optional - required for on-prem customers only
+debug="true" # Optional - for debugging requests and responses made to the mcp server
+port="8000" # Optional - for specifying the port to use
+```
+
+Add the following to your VS Code MCP config in `.vscode/mcp.json`:
 
 ```json
 {
   "servers": {
     "circleci-mcp-server-remote": {
-      "type": "sse",
+      "type": "http",
       "url": "http://your-circleci-remote-mcp-server-endpoint:8000/mcp"
     }
   }
@@ -266,6 +329,43 @@ This will create a configuration file at:
 See the guide below for more information on using MCP servers with Claude Desktop:
 https://modelcontextprotocol.io/quickstart/user
 
+#### Using Amazon Bedrock AgentCore Runtime to host your CircleCI MCP Server:
+
+Use [JSON Web Token (JWT) as the authentication inbound identity type](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-oauth.html) and add the following environment variables to Amazon Bedrock AgentCore Runtime when creating or updating the runtime [Learn more](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-getting-started.html):
+
+```bash
+CIRCLECI_TOKEN="your-circleci-token"
+start="remote"
+CIRCLECI_BASE_URL="https://circleci.com" # Optional - required for on-prem customers only
+debug="true" # Optional - for debugging requests and responses made to the mcp server
+```
+
+Add the following to your Claude Desktop MCP config json replacing the placeholders under with your values <>:
+
+```json
+{
+  "mcpServers": {
+    "circleci-mcp-bedrock-agentcore": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@latest",
+        "https://bedrock-agentcore.<AWS-REGION>.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3A<AWS-REGION>%3A<YOUR-AWS-ACCOUNT-ID>%3Aruntime%2F<YOUR-BEDROCK-AGENTCORE-RUNTIME-ID>/invocations?qualifier=<YOUR-BEDROCK-AGENTCORE-RUNTIME-ENDPOINT-NAME-OR-USE-DEFAULT>",
+        "--allow-http",
+        "--header",
+        "Content-Type: application/json",
+        "--header",
+        "Accept: application/json, text/event-stream",
+        "--header",
+        "Authorization: Bearer <YOUR_OAUTH_TOKEN_FOR_AWS_BEDROCK_AGENTCORE_RUNTIME>"
+      ],
+      "env": {},
+      "disabled": false
+    }
+  }
+}
+```
+
 #### Using a Self-Managed Remote MCP Server
 
 Create a wrapper script first
@@ -326,6 +426,23 @@ claude mcp add circleci-mcp-server -e CIRCLECI_TOKEN=your-circleci-token -e CIRC
 
 See the guide below for more information on using MCP servers with Claude Code:
 https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/tutorials#set-up-model-context-protocol-mcp
+
+#### Using Amazon Bedrock AgentCore Runtime to host your CircleCI MCP Server:
+
+Use [JSON Web Token (JWT) as the authentication inbound identity type](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-oauth.html) and add the following environment variables to Amazon Bedrock AgentCore Runtime when creating or updating the runtime [Learn more](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-getting-started.html):
+
+```bash
+CIRCLECI_TOKEN="your-circleci-token"
+start="remote"
+CIRCLECI_BASE_URL="https://circleci.com" # Optional - required for on-prem customers only
+debug="true" # Optional - for debugging requests and responses made to the mcp server
+```
+
+Execute the following command to add the CircleCI MCP Server to Claude Code replacing the placeholders under with your values <>:
+
+```bash
+claude mcp add --transport http secure-server https://bedrock-agentcore.<AWS-REGION>.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3A<AWS-REGION>%3A<YOUR-AWS-ACCOUNT-ID>%3Aruntime%2F<YOUR-BEDROCK-AGENTCORE-RUNTIME-ID>/invocations?qualifier=<YOUR-BEDROCK-AGENTCORE-RUNTIME-ENDPOINT-NAME-OR-USE-DEFAULT> --header "Authorization: Bearer <YOUR_OAUTH_TOKEN_FOR_AWS_BEDROCK_AGENTCORE_RUNTIME>"
+```
 
 #### Using Self-Managed Remote MCP Server
 
@@ -454,6 +571,43 @@ Edit your global configuration file ~/.aws/amazonq/mcp.json or create a new one 
 }
 ```
 
+#### Using Amazon Bedrock AgentCore Runtime to host your CircleCI MCP Server:
+
+Use [JSON Web Token (JWT) as the authentication inbound identity type](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-oauth.html) and add the following environment variables to Amazon Bedrock AgentCore Runtime when creating or updating the runtime [Learn more](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-getting-started.html):
+
+```bash
+CIRCLECI_TOKEN="your-circleci-token"
+start="remote"
+CIRCLECI_BASE_URL="https://circleci.com" # Optional - required for on-prem customers only
+debug="true" # Optional - for debugging requests and responses made to the mcp server
+```
+
+Add the following to your Q Developer MCP config json replacing the placeholders under with your values <>:
+
+```json
+{
+  "mcpServers": {
+    "circleci-mcp-bedrock-agentcore": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@latest",
+        "https://bedrock-agentcore.<AWS-REGION>.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3A<AWS-REGION>%3A<YOUR-AWS-ACCOUNT-ID>%3Aruntime%2F<YOUR-BEDROCK-AGENTCORE-RUNTIME-ID>/invocations?qualifier=<YOUR-BEDROCK-AGENTCORE-RUNTIME-ENDPOINT-NAME-OR-USE-DEFAULT>",
+        "--allow-http",
+        "--header",
+        "Content-Type: application/json",
+        "--header",
+        "Accept: application/json, text/event-stream",
+        "--header",
+        "Authorization: Bearer <YOUR_OAUTH_TOKEN_FOR_AWS_BEDROCK_AGENTCORE_RUNTIME>"
+      ],
+      "env": {},
+      "disabled": false
+    }
+  }
+}
+```
+
 #### Using a Self-Managed Remote MCP Server
 
 Create a wrapper script first
@@ -498,6 +652,43 @@ Edit your global configuration file ~/.aws/amazonq/mcp.json or create a new one 
         "CIRCLECI_BASE_URL": "https://circleci.com" // Optional - required for on-prem customers only
       },
       "timeout": 60000
+    }
+  }
+}
+```
+
+#### Using Amazon Bedrock AgentCore Runtime to host your CircleCI MCP Server:
+
+Use [JSON Web Token (JWT) as the authentication inbound identity type](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-oauth.html) and add the following environment variables to Amazon Bedrock AgentCore Runtime when creating or updating the runtime [Learn more](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/runtime-getting-started.html):
+
+```bash
+CIRCLECI_TOKEN="your-circleci-token"
+start="remote"
+CIRCLECI_BASE_URL="https://circleci.com" # Optional - required for on-prem customers only
+debug="true" # Optional - for debugging requests and responses made to the mcp server
+```
+
+Add the following to your Q Developer MCP config json replacing the placeholders under with your values <>:
+
+```json
+{
+  "mcpServers": {
+    "circleci-mcp-bedrock-agentcore": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@latest",
+        "https://bedrock-agentcore.<AWS-REGION>.amazonaws.com/runtimes/arn%3Aaws%3Abedrock-agentcore%3A<AWS-REGION>%3A<YOUR-AWS-ACCOUNT-ID>%3Aruntime%2F<YOUR-BEDROCK-AGENTCORE-RUNTIME-ID>/invocations?qualifier=<YOUR-BEDROCK-AGENTCORE-RUNTIME-ENDPOINT-NAME-OR-USE-DEFAULT>",
+        "--allow-http",
+        "--header",
+        "Content-Type: application/json",
+        "--header",
+        "Accept: application/json, text/event-stream",
+        "--header",
+        "Authorization: Bearer <YOUR_OAUTH_TOKEN_FOR_AWS_BEDROCK_AGENTCORE_RUNTIME>"
+      ],
+      "env": {},
+      "disabled": false
     }
   }
 }

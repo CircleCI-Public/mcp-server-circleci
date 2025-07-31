@@ -1,6 +1,6 @@
 {
   "name": "@circleci/mcp-server-circleci",
-  "version": "0.12.0",
+  "version": "0.11.2",
   "description": "A Model Context Protocol (MCP) server implementation for CircleCI, enabling natural language interactions with CircleCI functionality through MCP-enabled clients",
   "type": "module",
   "access": "public",
@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
-    "@types/express": "5.0.3",
+    "@types/express": "^4.17.21",
     "@types/node": "^22",
     "@types/parse-github-url": "^1.0.3",
     "@typescript-eslint/eslint-plugin": "^8.25.0",

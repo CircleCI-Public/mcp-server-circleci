@@ -5,12 +5,6 @@ ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 WORKDIR /app
 
-# Production dependencies stage
-FROM base AS prod-deps
-COPY package.json pnpm-lock.yaml ./
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
-    pnpm install --prod --frozen-lockfile --ignore-scripts
-
 # Build stage
 FROM base AS build
 # Install build dependencies
@@ -20,14 +14,12 @@ COPY package.json pnpm-lock.yaml ./
 # Install all dependencies including devDependencies for building
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm install --frozen-lockfile --ignore-scripts=false
-# Install express types and ensure all dependencies are available
-RUN pnpm add -D @types/express
 # Copy source files
 COPY . .
 # Build the application
 RUN pnpm run build
-# Install production dependencies for the final image
-RUN pnpm install --prod --frozen-lockfile
+# Prune dev dependencies to create a production node_modules
+RUN pnpm prune --prod
 
 # Final stage - clean minimal image
 FROM node:lts-alpine
@@ -41,14 +33,10 @@ ENV BUILD_ID=$BUILD_ID
 # Install pnpm
 RUN corepack enable && corepack prepare pnpm@latest --activate
 
-# Copy package files and install only production dependencies
-COPY package.json pnpm-lock.yaml ./
-# Install production dependencies
-RUN pnpm install --prod --frozen-lockfile
-
-# Copy built files and node_modules
-COPY --from=build /app/dist /app/dist
+# Copy production dependencies and built files from the build stage
 COPY --from=build /app/node_modules /app/node_modules
+COPY --from=build /app/dist /app/dist
+COPY package.json ./
 
 # Docker container to listen on port 8000
 EXPOSE 8000
