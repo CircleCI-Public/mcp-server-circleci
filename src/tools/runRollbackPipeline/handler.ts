@@ -76,7 +76,7 @@ export const runRollbackPipeline: ToolCallback<{
 
   if (!deploySettings || !deploySettings.rollback_pipeline_definition_id) {
     return mcpErrorOutput(
-      'No rollback pipeline defined for this project. See https://circleci.com/docs/deploy/rollback-a-project-using-the-rollback-pipeline/ for more information.',
+      'This project does not have a rollback pipeline configured. Rollback is not available for this specific project. To enable rollback functionality, a rollback pipeline must be configured in the project\'s CircleCI settings. See https://circleci.com/docs/deploy/set-up-rollbacks/',
     );
   }
 
