@@ -13,15 +13,24 @@ export const runRollbackPipelineTool = {
     1. **Start:** User initiates a rollback request.
     2. **Project Selection:** If a \`projectSlug\` or \`projectID\` is not provided, call \`listFollowedProjects\` and prompt the user to select a project using the exact value returned.
     3. **Execute the tool and list the versions.**
-    4. **Version Selection:** 
-       - Present the user with available versions to rollback to, based on the selected environment and component.
+    4. **Workflow Rerun:** 
+       - Inform the user of the fact that no rollback pipeline is defined for this project.
+       - Ask the user if they want to rerun a workflow.
+       - If the user wants to rerun a workflow, execute the tool with rollback_type set to \`WORKFLOW_RERUN\`. Do not propose to choose another project.
+    6. **Component Selection:** 
+       - If the project has multiple components, present up to 20 options for the user to choose from.
+       - If there is only one component, proceed automatically and do not ask the user to select a component.
+    7. **Environment Selection:** 
+       - If the project has multiple environments, present up to 20 options for the user to choose from.
+       - If there is only one environment, proceed automatically and do not ask the user to select an environment.
+    8. **Version Selection:** 
+       - Present the user with available versions to rollback to, based on the selected environment and component. Include the namespace for each version.
        - Ask for both the current deployed version and the target version to rollback to.
-    5. **Environment & Component Selection:** 
-       - If the project has multiple environments or components, present up to 20 options for the user to choose from.
-       - If there is only one environment and one component, proceed automatically and do not ask the user to select an environment or component.
-    6. **Optional Details:** 
-       - Prompt the user for an optional reason for the rollback (e.g., "Critical bug fix").
-    7. **Confirmation:** 
+    9. **Optional Details:** 
+       - If the rollback type is \`PIPELINE\`, prompt the user for an optional reason for the rollback (e.g., "Critical bug fix").
+       - If the rollback type is \`WORKFLOW_RERUN\`, provide the workflow ID of the selected version to the tool.
+       - provide the namespace for the selected version to the tool.
+    10. **Confirmation:** 
        - Summarize the rollback request and confirm with the user before submitting.
 
     **Parameters:**
@@ -41,7 +50,7 @@ export const runRollbackPipelineTool = {
     - If the selected project lacks rollback pipeline configuration, provide a definitive error message without suggesting alternative projects.
 
     **Returns:**
-    - On success: The rollback ID.
+  - On success: The rollback ID or a confirmation in case of workflow rerun.
     - On error: A clear message describing what is missing or what went wrong.
     - If the selected project does not have a rollback pipeline configured: The tool will provide a clear error message specific to that project and will NOT suggest trying another project.
 
