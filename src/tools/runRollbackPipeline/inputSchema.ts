@@ -6,6 +6,14 @@ import {
 export const runRollbackPipelineInputSchema = z.object({
   projectSlug: z.string().describe(projectSlugDescription).optional(),
   projectID: z.string().uuid().describe('The ID of the CircleCI project (UUID)').optional(),
+  rollback_type: z
+    .enum(['PIPELINE', 'WORKFLOW_RERUN'])
+    .describe('The type of rollback operation to perform')
+    .default('PIPELINE'),
+  workflow_id: z
+    .string()
+    .describe('The ID of the workflow to rerun')
+    .optional(),
   environment_name: z
     .string()
     .describe('The environment name')
