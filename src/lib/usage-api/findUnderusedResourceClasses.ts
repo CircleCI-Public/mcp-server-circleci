@@ -55,9 +55,10 @@ export function groupRecordsByJob(records: any[]): Map<string, any[]> {
   return groupMap;
 }
 
+const avg = (arr: number[]) => arr.length > 0 ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
+const sum = (arr: number[]) => arr.reduce((a, b) => a + b, 0);
+
 function calculateAverages(group: any[]): { avgCpu: number; maxCpu: number; avgRam: number; maxRam: number; totalComputeCredits: number, hasData: boolean } {
-    const avg = (arr: number[]) => arr.length > 0 ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
-    const sum = (arr: number[]) => arr.reduce((a, b) => a + b, 0);
 
     const medianCpuArr = group.map((r: any) => parseFloat(r.median_cpu_utilization_pct)).filter(isFinite);
     const maxCpuArr = group.map((r: any) => parseFloat(r.max_cpu_utilization_pct)).filter(isFinite);
@@ -89,10 +90,10 @@ export function analyzeJobGroups(groupedRecords: Map<string, any[]>, threshold: 
     if(!hasData) continue;
 
     if (
-      (isFinite(avgCpu) && avgCpu < threshold) &&
-      (isFinite(maxCpu) && maxCpu < threshold) &&
-      (isFinite(avgRam) && avgRam < threshold) &&
-      (isFinite(maxRam) && maxRam < threshold)
+      avgCpu < threshold &&
+      maxCpu < threshold &&
+      avgRam < threshold &&
+      maxRam < threshold
     ) {
       underused.push({
         projectName,
