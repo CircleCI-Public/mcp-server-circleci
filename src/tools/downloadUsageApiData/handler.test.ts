@@ -1,52 +1,67 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { downloadUsageApiData } from './handler.js';
-import { gzipSync } from 'zlib';
-import * as clientModule from '../../clients/client.js';
+import * as getUsageApiDataModule from '../../lib/usage-api/getUsageApiData.js';
 
-vi.mock('../../clients/client.js');
-
-globalThis.fetch = vi.fn();
+vi.mock('../../lib/usage-api/getUsageApiData.js');
 
 describe('downloadUsageApiData handler', () => {
   const ORG_ID = 'org123';
-  const START = '2024-06-01';
-  const END = '2024-06-30';
   const OUTPUT_DIR = '/tmp';
-  const JOB_ID = 'mock-job-id';
-  const DOWNLOAD_URL = 'https://example.com/usage.csv.gz';
-  const GZIPPED_CSV = gzipSync('project_name,workflow_name,job_name,resource_class,median_cpu_utilization_pct,max_cpu_utilization_pct,median_ram_utilization_pct,max_ram_utilization_pct\nproj,flow,build,medium,10,20,15,18');
 
-  let startUsageExportJobMock: any;
-  let getUsageExportJobStatusMock: any;
+  let getUsageApiDataSpy: any;
 
   beforeEach(() => {
-    process.env.CIRCLECI_TOKEN = 'dummy-token';
-    startUsageExportJobMock = vi.fn().mockResolvedValue({ usage_export_job_id: JOB_ID });
-    getUsageExportJobStatusMock = vi.fn().mockResolvedValue({ state: 'completed', download_urls: [DOWNLOAD_URL] });
-    (clientModule.getCircleCIClient as any).mockReturnValue({
-      usage: {
-        startUsageExportJob: startUsageExportJobMock,
-        getUsageExportJobStatus: getUsageExportJobStatusMock,
-      },
-    });
-    (fetch as any).mockReset();
+    vi.clearAllMocks();
+    getUsageApiDataSpy = vi.spyOn(getUsageApiDataModule, 'getUsageApiData').mockResolvedValue({
+      content: [{ type: 'text', text: 'Success' }],
+    } as any);
   });
 
-  it('returns a success message and resource on happy path', async () => {
-    (fetch as any).mockResolvedValueOnce({
-      ok: true,
-      arrayBuffer: async () => GZIPPED_CSV,
-      text: async () => '',
+  it('should call getUsageApiData with correctly formatted dates', async () => {
+    const startDate = '2024-06-01';
+    const endDate = '2024-06-15';
+    
+    await downloadUsageApiData({ params: { orgId: ORG_ID, startDate, endDate, outputDir: OUTPUT_DIR } }, undefined as any);
+
+    expect(getUsageApiDataSpy).toHaveBeenCalledWith({
+      orgId: ORG_ID,
+      startDate: '2024-06-01T00:00:00Z',
+      endDate: '2024-06-15T23:59:59Z',
+      outputDir: OUTPUT_DIR,
+      jobId: undefined,
     });
-    const result = await downloadUsageApiData({ params: { orgId: ORG_ID, startDate: START, endDate: END, outputDir: OUTPUT_DIR } }, undefined as any);
-    expect(result.isError).toBeFalsy();
-    expect(result.content[0].text).toContain('usage');
   });
 
-  it('returns an error if job creation fails', async () => {
-    startUsageExportJobMock.mockRejectedValueOnce(new Error('fail'));
-    const result = await downloadUsageApiData({ params: { orgId: ORG_ID, startDate: START, endDate: END, outputDir: OUTPUT_DIR } }, undefined as any);
-    expect(result.isError).toBeTruthy();
-    expect(result.content[0].text).toContain('fail');
+  it('should return an error if the date range is over 32 days', async () => {
+    const startDate = '2024-01-01';
+    const endDate = '2024-02-02';
+
+    const result = await downloadUsageApiData({ params: { orgId: ORG_ID, startDate, endDate, outputDir: OUTPUT_DIR } }, undefined as any);
+
+    expect(getUsageApiDataSpy).not.toHaveBeenCalled();
+    expect((result as any).isError).toBe(true);
+    expect((result as any).content[0].text).toContain('maximum allowed date range for the usage API is 32 days');
+  });
+
+  it('should return an error for an invalid date format', async () => {
+    const startDate = 'not-a-date';
+    const endDate = '2024-06-15';
+
+    const result = await downloadUsageApiData({ params: { orgId: ORG_ID, startDate, endDate, outputDir: OUTPUT_DIR } }, undefined as any);
+
+    expect(getUsageApiDataSpy).not.toHaveBeenCalled();
+    expect((result as any).isError).toBe(true);
+    expect((result as any).content[0].text).toContain('Invalid date format');
+  });
+
+  it('should return an error if the end date is before the start date', async () => {
+    const startDate = '2024-06-15';
+    const endDate = '2024-06-01';
+
+    const result = await downloadUsageApiData({ params: { orgId: ORG_ID, startDate, endDate, outputDir: OUTPUT_DIR } }, undefined as any);
+
+    expect(getUsageApiDataSpy).not.toHaveBeenCalled();
+    expect((result as any).isError).toBe(true);
+    expect((result as any).content[0].text).toContain('end date must be after or equal to the start date');
   });
 }); 

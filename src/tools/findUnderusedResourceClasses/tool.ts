@@ -7,7 +7,8 @@ export const findUnderusedResourceClassesTool = {
     This helps identify underused resource classes that may be oversized for their workload.
 
     Required parameter:
-    - csvFilePath: Path to the usage data CSV file (string)
+    - csvFilePath: Path to the usage data CSV file (string). IMPORTANT: This must be an absolute path. If you are given a relative path, you must resolve it to an absolute path before calling this tool.
+
     Optional parameter:
     - threshold: Usage percentage threshold (number, default 40)
 
@@ -15,4 +16,4 @@ export const findUnderusedResourceClassesTool = {
     It returns a summary report listing all jobs/resource classes where any of these metrics is below the threshold.
   `,
   inputSchema: findUnderusedResourceClassesInputSchema,
-}; 
+};

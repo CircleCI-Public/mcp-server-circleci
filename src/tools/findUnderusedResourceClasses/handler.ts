@@ -19,4 +19,4 @@ export const findUnderusedResourceClasses: ToolCallback<{ params: typeof findUnd
   } catch (e: any) {
     return mcpErrorOutput(`ERROR: ${e && e.message ? e.message : e}`);
   }
-}; 
+};
