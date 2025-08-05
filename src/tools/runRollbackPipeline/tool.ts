@@ -5,40 +5,29 @@ export const runRollbackPipelineTool = {
   description: `
     Run a rollback pipeline for a CircleCI project. This tool guides you through the full rollback process, adapting to the information you provide and prompting for any missing details.
 
-    **Initial Step:**
-    - First, call the \`listFollowedProjects\` tool to retrieve the list of projects the user follows.
-    - Then, ask the user to select a project by providing either a \`projectID\` or the exact \`projectSlug\` as returned by \`listFollowedProjects\`.
+    **Initial Requirements:**
+    - You need either a \`projectSlug\` (from \`listFollowedProjects\`) or a \`projectID\`. The tool will automatically resolve the project information from either of these.
 
     **Typical Flow:**
     1. **Start:** User initiates a rollback request.
-    2. **Project Selection:** If a \`projectSlug\` or \`projectID\` is not provided, call \`listFollowedProjects\` and prompt the user to select a project using the exact value returned.
-    3. **Execute the tool and list the versions.**
-    4. **Workflow Rerun:** 
-       - Inform the user of the fact that no rollback pipeline is defined for this project.
-       - Ask the user if they want to rerun a workflow.
-       - If the user wants to rerun a workflow, execute the tool with rollback_type set to \`WORKFLOW_RERUN\`. Do not propose to choose another project.
-    6. **Component Selection:** 
-       - If the project has multiple components, present up to 20 options for the user to choose from.
-       - If there is only one component, proceed automatically and do not ask the user to select a component.
-    7. **Environment Selection:** 
-       - If the project has multiple environments, present up to 20 options for the user to choose from.
-       - If there is only one environment, proceed automatically and do not ask the user to select an environment.
-    8. **Version Selection:** 
-       - Present the user with available versions to rollback to, based on the selected environment and component. Include the namespace for each version.
-       - Ask for both the current deployed version and the target version to rollback to.
-    9. **Optional Details:** 
-       - If the rollback type is \`PIPELINE\`, prompt the user for an optional reason for the rollback (e.g., "Critical bug fix").
-       - If the rollback type is \`WORKFLOW_RERUN\`, provide the workflow ID of the selected version to the tool.
-       - provide the namespace for the selected version to the tool.
-    10. **Confirmation:** 
-       - Summarize the rollback request and confirm with the user before submitting.
+    2. **Project Selection:** If project id or project slug are not provided, call \`listFollowedProjects\` to get the list of projects the user follows and present the full list of projects to the user so that they can select the project they want to rollback.
+    3. **Project Information:** Provide either \`projectSlug\` or \`projectID\`. The tool will automatically resolve the project information as needed.
+    4. **Version Selection:** If component environment and version are not provided, call \`listComponentVersions\` to get the list of versions for the selected component and environment. If there is only one version, proceed automatically and do not ask the user to select a version. Otherwise, present the user with the full list of versions and ask them to select one. Always return all available values without categorizing them.
+    5. **Rollback Reason** ask the user for an optional reason for the rollback (e.g., "Critical bug fix"). Skip this step is the user explicitly requests a rollback by workflow rerun.
+    6. **Rollback pipeline check** if the tool reports that no rollback pipeline is defined, ask the user if they want to trigger a rollback by workflow rerun or suggest to setup a rollback pipeline following the documentation at https://circleci.com/docs/deploy/rollback-a-project-using-the-rollback-pipeline/.
+    7. **Confirmation:** Summarize the rollback request and confirm with the user before submitting.
+    8. **Pipeline Rollback:**  if the user requested a rollback by pipeline, call \`runRollbackPipeline\` passing all parameters including the namespace associated with the version to the tool.
+    9. **Workflow Rerun** If the user requested a rollback by workflow rerun, call \`rerunWorkflow\` passing the workflow ID of the selected version to the tool.
+    10.**Completion:** Report the outcome of the operation.
 
     **Parameters:**
-    - Either \`projectSlug\` (e.g., "gh/organization/repository") or \`projectID\` (UUID) must be provided.
-    - \`environment_name\` (optional at first if multiple environments): The target environment (e.g., "production", "staging").
-    - \`component_name\` (optional at first components): The component to rollback (e.g., "frontend", "backend").
-    - \`current_version\` (optional at first): The currently deployed version.
-    - \`target_version\` (optional at first): The version to rollback to.
+    - \`projectSlug\` (optional): The project slug from \`listFollowedProjects\` (e.g., "gh/organization/project"). Either this or \`projectID\` must be provided.
+    - \`projectID\` (optional): The CircleCI project ID (UUID). Either this or \`projectSlug\` must be provided.
+    - \`environmentName\` (required): The target environment (e.g., "production", "staging").
+    - \`componentName\` (required): The component to rollback (e.g., "frontend", "backend").
+    - \`currentVersion\` (required): The currently deployed version.
+    - \`targetVersion\` (required): The version to rollback to.
+    - \`namespace\` (required): The namespace of the component.
     - \`reason\` (optional): Reason for the rollback.
     - \`parameters\` (optional): Additional rollback parameters as key-value pairs.
 
@@ -50,18 +39,19 @@ export const runRollbackPipelineTool = {
     - If the selected project lacks rollback pipeline configuration, provide a definitive error message without suggesting alternative projects.
 
     **Returns:**
-  - On success: The rollback ID or a confirmation in case of workflow rerun.
+    - On success: The rollback ID or a confirmation in case of workflow rerun.
     - On error: A clear message describing what is missing or what went wrong.
     - If the selected project does not have a rollback pipeline configured: The tool will provide a clear error message specific to that project and will NOT suggest trying another project.
 
     **Important Note:**
     - This tool is designed to work only with the specific project provided by the user.
-    - If a project does not have rollback capability configured, the tool will NOT suggest alternatives or recommend trying other projects.
+    - If a project does not have rollback capability configured, the tool will NOT recommend trying other projects.
     - The assistant should NOT suggest trying different projects when a project lacks rollback configuration.
     - Each project must have its own rollback pipeline configuration to be eligible for rollback operations.
     - When a project cannot be rolled back, provide only the configuration guidance for THAT specific project.
-
-    If neither option is fully satisfied, prompt the user for the missing information before making the tool call.
+    - The tool automatically resolves project information from either \`projectSlug\` or \`projectID\`.
+    If no version is found, the tool will suggest the user to set up deploy markers following the documentation at:
+    https://circleci.com/docs/deploy/configure-deploy-markers/
   `,
   inputSchema: runRollbackPipelineInputSchema,
 };
