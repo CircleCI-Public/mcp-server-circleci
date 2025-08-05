@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/circleci-public-mcp-server-circleci-badge.png)](https://mseep.ai/app/circleci-public-mcp-server-circleci)
+
 # CircleCI MCP Server
 
 [![GitHub](https://img.shields.io/github/license/CircleCI-Public/mcp-server-circleci)](https://github.com/CircleCI-Public/mcp-server-circleci/blob/main/LICENSE)
