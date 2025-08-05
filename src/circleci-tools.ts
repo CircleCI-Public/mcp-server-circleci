@@ -27,6 +27,8 @@ import { findUnderusedResourceClassesTool } from './tools/findUnderusedResourceC
 import { findUnderusedResourceClasses } from './tools/findUnderusedResourceClasses/handler.js';
 import { analyzeDiffTool } from './tools/analyzeDiff/tool.js';
 import { analyzeDiff } from './tools/analyzeDiff/handler.js';
+import { runRollbackPipelineTool } from './tools/runRollbackPipeline/tool.js';
+import { runRollbackPipeline } from './tools/runRollbackPipeline/handler.js';
 
 // Define the tools with their configurations
 export const CCI_TOOLS = [
@@ -44,6 +46,7 @@ export const CCI_TOOLS = [
   downloadUsageApiDataTool,
   findUnderusedResourceClassesTool,
   analyzeDiffTool,
+  runRollbackPipelineTool,
 ];
 
 // Extract the tool names as a union type
@@ -73,4 +76,5 @@ export const CCI_HANDLERS = {
   download_usage_api_data: downloadUsageApiData,
   find_underused_resource_classes: findUnderusedResourceClasses,
   analyze_diff: analyzeDiff,
+  run_rollback_pipeline: runRollbackPipeline,
 } satisfies ToolHandlers;

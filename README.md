@@ -94,7 +94,7 @@ Add the following to your cursor MCP config:
   ],
   "servers": {
     "circleci-mcp-server-remote": {
-      "url": "http://your-circleci-remote-mcp-server-endpoint:8080/mcp"
+      "url": "http://your-circleci-remote-mcp-server-endpoint:8000/mcp"
     }
   }
 }
@@ -192,7 +192,7 @@ To install CircleCI MCP Server for VS Code in `.vscode/mcp.json` using a self-ma
   "servers": {
     "circleci-mcp-server-remote": {
       "type": "sse",
-      "url": "http://your-circleci-remote-mcp-server-endpoint:8080/mcp"
+      "url": "http://your-circleci-remote-mcp-server-endpoint:8000/mcp"
     }
   }
 }
@@ -275,7 +275,7 @@ Create a script file such as 'circleci-remote-mcp.sh':
 ```bash
 #!/bin/bash
 export CIRCLECI_TOKEN="your-circleci-token"
-npx mcp-remote http://your-circleci-remote-mcp-server-endpoint:8080/mcp --allow-http 
+npx mcp-remote http://your-circleci-remote-mcp-server-endpoint:8000/mcp --allow-http 
 ```
 
 Make it executable:
@@ -332,7 +332,7 @@ https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/tutorials#set-up
 After installing Claude Code, run the following command:
 
 ```bash
-claude mcp add circleci-mcp-server -e CIRCLECI_TOKEN=your-circleci-token -- npx mcp-remote http://your-circleci-remote-mcp-server-endpoint:8080/mcp --allow-http
+claude mcp add circleci-mcp-server -e CIRCLECI_TOKEN=your-circleci-token -- npx mcp-remote http://your-circleci-remote-mcp-server-endpoint:8000/mcp --allow-http
 ```
 
 See the guide below for more information on using MCP servers with Claude Code:
@@ -398,7 +398,7 @@ Add the following to your windsurf mcp_config.json:
       "command": "npx",
       "args": [
         "mcp-remote",
-        "http://your-circleci-remote-mcp-server-endpoint:8080/mcp",
+        "http://your-circleci-remote-mcp-server-endpoint:8000/mcp",
         "--allow-http"
       ],
       "disabled": false,
@@ -463,7 +463,7 @@ Create a script file such as 'circleci-remote-mcp.sh':
 ```bash
 #!/bin/bash
 export CIRCLECI_TOKEN="your-circleci-token"
-npx mcp-remote http://your-circleci-remote-mcp-server-endpoint:8080/mcp --allow-http
+npx mcp-remote http://your-circleci-remote-mcp-server-endpoint:8000/mcp --allow-http
 ```
 
 Make it executable:
@@ -511,7 +511,7 @@ Create a script file such as 'circleci-remote-mcp.sh':
 
 ```bash
 #!/bin/bash
-npx mcp-remote http://your-circleci-remote-mcp-server-endpoint:8080/mcp --allow-http
+npx mcp-remote http://your-circleci-remote-mcp-server-endpoint:8000/mcp --allow-http
 ```
 
 Make it executable:
@@ -853,6 +853,42 @@ Click the Save button.
   - Quickly running pipelines without visiting the CircleCI web UI
   - Running pipelines from a specific branch
 
+- `run_rollback_pipeline`
+
+  Run a rollback pipeline for a CircleCI project. This tool guides you through the full rollback process, adapting to the information you provide and prompting for any missing details.
+
+  **Initial Step:**
+  - First, call the `list_followed_projects` tool to retrieve the list of projects the user follows.
+  - Then, ask the user to select a project by providing either a `projectID` or the exact `projectSlug` as returned by `list_followed_projects`.
+
+    **Typical Flow:**
+    1. **Start:** User initiates a rollback request.
+    2. **Project Selection:** If a \`projectSlug\` or \`projectID\` is not provided, call \`listFollowedProjects\` and prompt the user to select a project using the exact value returned.
+    3. **Execute the tool and list the versions.**
+    4. **Workflow Rerun:** 
+       - Inform the user of the fact that no rollback pipeline is defined for this project.
+       - Ask the user if they want to rerun a workflow.
+       - If the user wants to rerun a workflow, execute the tool with rollback_type set to \`WORKFLOW_RERUN\`. Do not propose to choose another project.
+    6. **Component Selection:** 
+       - If the project has multiple components, present up to 20 options for the user to choose from.
+       - If there is only one component, proceed automatically and do not ask the user to select a component.
+    7. **Environment Selection:** 
+       - If the project has multiple environments, present up to 20 options for the user to choose from.
+       - If there is only one environment, proceed automatically and do not ask the user to select an environment.
+    8. **Version Selection:** 
+       - Present the user with available versions to rollback to, based on the selected environment and component. Include the namespace for each version.
+       - Ask for both the current deployed version and the target version to rollback to.
+    9. **Optional Details:** 
+       - If the rollback type is \`PIPELINE\`, prompt the user for an optional reason for the rollback (e.g., "Critical bug fix").
+       - If the rollback type is \`WORKFLOW_RERUN\`, provide the workflow ID of the selected version to the tool.
+       - provide the namespace for the selected version to the tool.
+    10. **Confirmation:** 
+       - Summarize the rollback request and confirm with the user before submitting.
+
+  **Returns:**
+  - On success: The rollback ID or a confirmation in case of workflow rerun.
+  - On error: A clear message describing what is missing or what went wrong.
+
 - `rerun_workflow`
 
   Reruns a workflow from its start or from the failed job.
@@ -971,10 +1007,10 @@ To run the container locally:
 docker run --rm -i -e CIRCLECI_TOKEN=your-circleci-token -e CIRCLECI_BASE_URL=https://circleci.com circleci:mcp-server-circleci
 ```
 
-To run the container as a self-managed remote MCP server:
+To run the container as a self-managed remote MCP server you need to add the environment variable `start=remote` to the docker run command. You can also define the port to use with the environment variable `port=<port>` or else the default port `8000` will be used:
 
 ```bash
-docker run --rm -i -e CIRCLECI_TOKEN=your-circleci-token -e CIRCLECI_BASE_URL=https://circleci.com circleci:mcp-server-circleci -e start:sse
+docker run --rm -i -e CIRCLECI_TOKEN=your-circleci-token -e CIRCLECI_BASE_URL=https://circleci.com circleci:mcp-server-circleci -e start=remote -e port=8000
 ```
 
 ## Development with MCP Inspector

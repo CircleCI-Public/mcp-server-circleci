@@ -25,4 +25,23 @@ export class ProjectsAPI {
 
     return parsedResult.data;
   }
+
+  /**
+   * Get project info by project ID (uses project ID as slug)
+   * @param projectID The project ID
+   * @returns The project info
+   * @throws Error if the request fails
+   */
+  async getProjectByID({ projectID }: { projectID: string }): Promise<Project> {
+    // For some integrations, project ID can be used directly as project slug
+    const rawResult = await this.client.get<unknown>(`/project/${projectID}`);
+
+    const parsedResult = Project.safeParse(rawResult);
+
+    if (!parsedResult.success) {
+      throw new Error('Failed to parse project response');
+    }
+
+    return parsedResult.data;
+  }
 }

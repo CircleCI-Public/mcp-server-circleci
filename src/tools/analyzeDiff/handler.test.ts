@@ -190,7 +190,7 @@ Rule 4: All functions must have JSDoc comments`,
         speedMode: false,
         filterBy: FilterBy.none,
         diff: '+const x = 5;\n+console.log(x);',
-        rules: `# Cursor Rules Example
+        rules: `# IDE Rules Example
 
 ## Rule: No Console Logs
 Description: Remove all console.log statements before committing code.
