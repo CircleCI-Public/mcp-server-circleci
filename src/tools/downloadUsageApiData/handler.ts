@@ -6,6 +6,11 @@ import { differenceInCalendarDays, parseISO } from 'date-fns';
 import mcpErrorOutput from '../../lib/mcpErrorOutput.js';
 
 export const downloadUsageApiData: ToolCallback<{ params: typeof downloadUsageApiDataInputSchema }> = async (args) => {
+  const { CIRCLECI_BASE_URL } = process.env;
+  if (CIRCLECI_BASE_URL && CIRCLECI_BASE_URL !== 'https://circleci.com') {
+    return mcpErrorOutput('ERROR: The Usage API is not available on CircleCI server installations. This tool is only available for CircleCI cloud users.');
+  }
+
   const params = args.params || {};
   const parsed = downloadUsageApiDataInputSchema.parse(params);
 
