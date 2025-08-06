@@ -55,7 +55,7 @@ export async function handleExistingJob({ client, orgId, jobId, outputDir, start
     return mcpErrorOutput(`ERROR: Could not fetch job status for jobId ${jobId}.\n${e?.stack || e}`);
   }
 
-  const state = jobStatus?.state?.toLowerCase();
+    const state = jobStatus?.state?.toLowerCase();
 
   switch (state) {
     case 'completed': {
