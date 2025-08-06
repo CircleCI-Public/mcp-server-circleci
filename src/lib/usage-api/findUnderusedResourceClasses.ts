@@ -20,6 +20,8 @@ export function readAndParseCSV(csvFilePath: string): any[] {
     return parse(csvContent, {
       columns: (headers: string[]) => headers.map(normalizeHeader),
       skip_empty_lines: true,
+      relax_column_count: true,
+      skip_records_with_error: true,
     });
   } catch (e: any) {
     throw new Error(`Failed to parse CSV.\n${e?.stack || e}`);
