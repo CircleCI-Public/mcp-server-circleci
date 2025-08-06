@@ -23,7 +23,7 @@ export const downloadUsageApiData: ToolCallback<{ params: typeof downloadUsageAp
 
     const days = differenceInCalendarDays(end, start) + 1;
     if (days > 32) {
-      return mcpErrorOutput(`ERROR: The maximum allowed date range for the usage API is 32 days. You requested ${days} days. Please reduce your date range or split your request into multiple 32-day chunks.`);
+      return mcpErrorOutput(`ERROR: The maximum allowed date range for the usage API is 32 days.`);
     }
     if (days < 1) {
       return mcpErrorOutput('ERROR: The end date must be after or equal to the start date.');
