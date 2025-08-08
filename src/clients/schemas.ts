@@ -311,3 +311,18 @@ export type DeployEnvironmentResponse = z.infer<typeof DeployEnvironmentResponse
 
 export const DeployComponentVersionsResponse = DeployComponentVersionsResponseSchema;
 export type DeployComponentVersionsResponse = z.infer<typeof DeployComponentVersionsResponseSchema>;
+
+const UsageExportJobStartSchema = z.object({
+  usage_export_job_id: z.string().uuid(),
+});
+
+const UsageExportJobStatusSchema = z.object({
+  state: z.string(),
+  download_urls: z.array(z.string().url()).optional().nullable(),
+});
+
+export const UsageExportJobStart = UsageExportJobStartSchema;
+export type UsageExportJobStart = z.infer<typeof UsageExportJobStartSchema>;
+
+export const UsageExportJobStatus = UsageExportJobStatusSchema;
+export type UsageExportJobStatus = z.infer<typeof UsageExportJobStatusSchema>;

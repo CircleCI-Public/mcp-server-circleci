@@ -10,7 +10,16 @@ importers:
     dependencies:
       '@modelcontextprotocol/sdk':
         specifier: ^1.15.1
-        version: 1.15.1
+        version: 1.17.1
+      chrono-node:
+        specifier: 2.8.3
+        version: 2.8.3
+      csv-parse:
+        specifier: 6.0.0
+        version: 6.0.0
+      date-fns:
+        specifier: 4.1.0
+        version: 4.1.0
       express:
         specifier: ^4.19.2
         version: 4.21.2
@@ -290,8 +299,8 @@ packages:
   '@jridgewell/sourcemap-codec@1.5.0':
     resolution: {integrity: sha512-gv3ZRaISU3fjPAgNsriBRqGWQL6quFx04YMPW/zD8XMLsU32mhCCbfbO6KZFLjvYpCZ8zyDEgqsgf+PwPaM7GQ==}
 
-  '@modelcontextprotocol/sdk@1.15.1':
-    resolution: {integrity: sha512-W/XlN9c528yYn+9MQkVjxiTPgPxoxt+oczfjHBDsJx0+59+O7B75Zhsp0B16Xbwbz8ANISDajh6+V7nIcPMc5w==}
+  '@modelcontextprotocol/sdk@1.17.1':
+    resolution: {integrity: sha512-CPle1OQehbWqd25La9Ack5B07StKIxh4+Bf19qnpZKJC1oI22Y0czZHbifjw1UoczIfKBwBDAp/dFxvHG13B5A==}
     engines: {node: '>=18'}
 
   '@nodelib/fs.scandir@2.1.5':
@@ -628,6 +637,10 @@ packages:
     resolution: {integrity: sha512-7VT13fmjotKpGipCW9JEQAusEPE+Ei8nl6/g4FBAmIm0GOOLMua9NDDo/DWp0ZAxCr3cPq5ZpBqmPAQgDda2Pw==}
     engines: {node: '>= 8.10.0'}
 
+  chrono-node@2.8.3:
+    resolution: {integrity: sha512-YukiXak31pshonVWaeJ9cZ4xxWIlbsyn5qYUkG5pQ+usZ6l22ASXDIk0kHUQkIBNOCLRevFkHJjnGKXwZNtyZw==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+
   color-convert@2.0.1:
     resolution: {integrity: sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ==}
     engines: {node: '>=7.0.0'}
@@ -676,6 +689,15 @@ packages:
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
+
+  csv-parse@6.0.0:
+    resolution: {integrity: sha512-6aB9WrymEruVDwQOwa5AuYk4/Gb+HaJgLHGKOA9BXTqgsIFvbdHzQzZOuqNCOooTGciPDaHzTlGkU5P6kYVUYw==}
+
+  date-fns@4.1.0:
+    resolution: {integrity: sha512-Ukq0owbQXxa/U3EGtsdVBkR1w7KOQ5gIBqdH2hkvknzZPYvBxb/aa6E8L7tmjFtkwZBu3UXBbjIgPo/Ez4xaNg==}
+
+  dayjs@1.11.13:
+    resolution: {integrity: sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==}
 
   debug@2.6.9:
     resolution: {integrity: sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==}
@@ -1816,7 +1838,7 @@ snapshots:
 
   '@jridgewell/sourcemap-codec@1.5.0': {}
 
-  '@modelcontextprotocol/sdk@1.15.1':
+  '@modelcontextprotocol/sdk@1.17.1':
     dependencies:
       ajv: 6.12.6
       content-type: 1.0.5
@@ -2206,6 +2228,10 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.3
 
+  chrono-node@2.8.3:
+    dependencies:
+      dayjs: 1.11.13
+
   color-convert@2.0.1:
     dependencies:
       color-name: 1.1.4
@@ -2250,6 +2276,12 @@ snapshots:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
+
+  csv-parse@6.0.0: {}
+
+  date-fns@4.1.0: {}
+
+  dayjs@1.11.13: {}
 
   debug@2.6.9:
     dependencies:

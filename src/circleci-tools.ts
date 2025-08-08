@@ -21,6 +21,10 @@ import { runEvaluationTestsTool } from './tools/runEvaluationTests/tool.js';
 import { runEvaluationTests } from './tools/runEvaluationTests/handler.js';
 import { rerunWorkflowTool } from './tools/rerunWorkflow/tool.js';
 import { rerunWorkflow } from './tools/rerunWorkflow/handler.js';
+import { downloadUsageApiDataTool } from './tools/downloadUsageApiData/tool.js';
+import { downloadUsageApiData } from './tools/downloadUsageApiData/handler.js';
+import { findUnderusedResourceClassesTool } from './tools/findUnderusedResourceClasses/tool.js';
+import { findUnderusedResourceClasses } from './tools/findUnderusedResourceClasses/handler.js';
 import { analyzeDiffTool } from './tools/analyzeDiff/tool.js';
 import { analyzeDiff } from './tools/analyzeDiff/handler.js';
 import { runRollbackPipelineTool } from './tools/runRollbackPipeline/tool.js';
@@ -39,6 +43,8 @@ export const CCI_TOOLS = [
   listFollowedProjectsTool,
   runEvaluationTestsTool,
   rerunWorkflowTool,
+  downloadUsageApiDataTool,
+  findUnderusedResourceClassesTool,
   analyzeDiffTool,
   runRollbackPipelineTool,
 ];
@@ -67,6 +73,8 @@ export const CCI_HANDLERS = {
   list_followed_projects: listFollowedProjects,
   run_evaluation_tests: runEvaluationTests,
   rerun_workflow: rerunWorkflow,
+  download_usage_api_data: downloadUsageApiData,
+  find_underused_resource_classes: findUnderusedResourceClasses,
   analyze_diff: analyzeDiff,
   run_rollback_pipeline: runRollbackPipeline,
 } satisfies ToolHandlers;
