@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.0] - 2025-08-08
+
+### Added
+
+- Added `download_usage_api_data` tool to start and retrieve CircleCI usage export jobs
+
+- Added `find_underused_resource_classes` tool to analyze usage CSV for underused resource classes (default threshold 40%)
+
 ## [0.12.0] - 2025-08-01
 
 ### Added

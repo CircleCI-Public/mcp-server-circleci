@@ -53,7 +53,7 @@ describe('Usage API Data Fetching', () => {
         arrayBuffer: () => Promise.resolve(MOCK_GZIPPED_CSV),
       });
 
-      const result = await downloadAndSaveUsageData(DOWNLOAD_URL, OUTPUT_DIR, START_DATE, END_DATE);
+      const result = await downloadAndSaveUsageData(DOWNLOAD_URL, OUTPUT_DIR, { startDate: START_DATE, endDate: END_DATE });
 
       expect(fetch).toHaveBeenCalledWith(DOWNLOAD_URL);
       expect(fs.writeFileSync).toHaveBeenCalledWith(
@@ -70,7 +70,7 @@ describe('Usage API Data Fetching', () => {
         arrayBuffer: () => Promise.resolve(MOCK_GZIPPED_CSV),
       });
 
-      await downloadAndSaveUsageData(DOWNLOAD_URL, OUTPUT_DIR, START_DATE, END_DATE);
+      await downloadAndSaveUsageData(DOWNLOAD_URL, OUTPUT_DIR, { startDate: START_DATE, endDate: END_DATE });
 
       expect(fs.mkdirSync).toHaveBeenCalledWith(OUTPUT_DIR, { recursive: true });
     });
@@ -83,7 +83,7 @@ describe('Usage API Data Fetching', () => {
             text: async () => 'Internal Server Error'
         });
         
-        const result = await downloadAndSaveUsageData(DOWNLOAD_URL, OUTPUT_DIR, START_DATE, END_DATE);
+        const result = await downloadAndSaveUsageData(DOWNLOAD_URL, OUTPUT_DIR, { startDate: START_DATE, endDate: END_DATE });
         expect(result.content[0].text).toContain('ERROR: Failed to download CSV');
     });
   });

@@ -4,10 +4,12 @@ export const downloadUsageApiDataInputSchema = z.object({
   orgId: z.string().describe('The ID of the CircleCI organization'),
   startDate: z
     .string()
-    .describe('The start date for the usage data in YYYY-MM-DD format. Time is optional and defaults T00:00:00Z'),
+    .optional()
+    .describe('Optional. The start date for the usage data in YYYY-MM-DD format (or natural language). Used when starting a new export job.'),
   endDate: z
     .string()
-    .describe('The end date for the usage data in YYYY-MM-DD format. It must be within 32 days of the start date. Time is optional and defaults T23:59:59Z'),
+    .optional()
+    .describe('Optional. The end date for the usage data in YYYY-MM-DD format (or natural language). Used when starting a new export job.'),
   jobId: z
     .string()
     .optional()

@@ -938,36 +938,62 @@ Click the Save button.
 
 - `download_usage_api_data`
 
-  Downloads usage data from the CircleCI Usage API for a given organization and date range (max 32 days per request). Accepts flexible, natural language date input (e.g., "March 2025" or "last month").
+  Downloads usage data from the CircleCI Usage API for a given organization. Accepts flexible, natural language date input (e.g., "March 2025" or "last month"). Cloud-only feature.
 
-  **Required parameters:**
+  This tool can be used in one of two ways:
+
+  1) Start a new export job for a date range (max 32 days) by providing:
   - orgId: Organization ID
   - startDate: Start date (YYYY-MM-DD or natural language)
   - endDate: End date (YYYY-MM-DD or natural language)
   - outputDir: Directory to save the CSV file
 
-  The tool will save the resulting CSV in the specified directory. If the date range exceeds 32 days, the request will be rejected with an error. Always specify an output directory that is easy to find (project root, Downloads, or current directory).
+  2) Check/download an existing export job by providing:
+  - orgId: Organization ID
+  - jobId: Usage export job ID
+  - outputDir: Directory to save the CSV file
+
+  The tool provides:
+  - A csv containing the CircleCI Usage API data from the specified time frame
 
   This is useful for:
   - Downloading detailed CircleCI usage data for reporting or analysis
-  - Auditing resource consumption by time period
-  - Feeding usage data into the resource analysis tool below
+  - Feeding usage data into the `find_underused_resource_classes` tool
+
+  Example usage scenarios:
+- Scenario 1:
+  1. "Download usage data for org abc123 from June into ~/Downloads"
+  2. "Check status"
+
+- Scenario 2:
+  1. "Download usage data for org abc123 for last month to my Downloads folder"
+  2. "Check usage download status"
+  3. "Check status again"
+
+- Scenario 3:
+  1. "Check my usage export job usage-job-9f2d7c and download it if ready"
 
 - `find_underused_resource_classes`
 
   Analyzes a CircleCI usage data CSV file to find jobs/resource classes with average or max CPU/RAM usage below a given threshold (default 40%).
 
-  **Required parameter:**
-  - csvFilePath: Path to the usage data CSV file (from the usage API)
-  **Optional parameter:**
-  - threshold: Usage percentage threshold (number, default 40)
+  This tool can be used by providing:
+  - A csv containing CircleCI Usage API data, which can be obtained by using the `download_usage_api_data` tool.
 
-  The tool expects the CSV to have columns: job_name, resource_class, median_cpu_utilization_pct, max_cpu_utilization_pct, median_ram_utilization_pct, max_ram_utilization_pct (case-insensitive). It returns a summary report listing all jobs/resource classes where any of these metrics is below the threshold.
+  The tool provides:
+  - A markdown list of all jobs that are below the threshold, delineated by project and workflow.
 
   This is useful for:
-  - Identifying oversized or underused resource classes
-  - Optimizing CircleCI job resource allocation
-  - Reducing CI costs by right-sizing jobs
+  - Finding jobs that are using less than half of the compute provided to them on average
+  - Generating a list of low hanging cost optimizations
+
+  Example usage scenarios:
+  - Scenario 1:
+    1. "Find underused resource classes in the file you just downloaded"
+  - Scenario 2:
+    1. "Find underused resource classes in ~/Downloads/usage-data-2025-06-01_2025-06-30.csv"
+  - Scenario 3:
+    1. "Analyze /Users/you/Projects/acme/usage-data-job-9f2d7c.csv with threshold 30"
 
 # Development
 

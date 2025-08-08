@@ -64,4 +64,30 @@ describe('downloadUsageApiData handler', () => {
     expect((result as any).isError).toBe(true);
     expect((result as any).content[0].text).toContain('end date must be after or equal to the start date');
   });
+
+  it('should allow polling existing job with only jobId and no dates', async () => {
+    const result = await downloadUsageApiData(
+      { params: { orgId: ORG_ID, jobId: 'job-abc', outputDir: OUTPUT_DIR } },
+      undefined as any,
+    );
+
+    expect(getUsageApiDataSpy).toHaveBeenCalledWith({
+      orgId: ORG_ID,
+      startDate: undefined,
+      endDate: undefined,
+      outputDir: OUTPUT_DIR,
+      jobId: 'job-abc',
+    });
+    expect((result as any).content[0].text).toContain('Success');
+  });
+
+  it('should error when neither jobId nor both dates are provided', async () => {
+    const result = await downloadUsageApiData(
+      { params: { orgId: ORG_ID, outputDir: OUTPUT_DIR } },
+      undefined as any,
+    );
+    expect(getUsageApiDataSpy).not.toHaveBeenCalled();
+    expect((result as any).isError).toBe(true);
+    expect((result as any).content[0].text).toContain('Provide either jobId');
+  });
 }); 

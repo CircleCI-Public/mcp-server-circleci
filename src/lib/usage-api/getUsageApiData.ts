@@ -18,7 +18,11 @@ function resolveOutputDir(outputDir: string): string {
   return outputDir;
 }
 
-export async function downloadAndSaveUsageData(downloadUrl: string, outputDir: string, startDate: string, endDate: string) {
+export async function downloadAndSaveUsageData(
+  downloadUrl: string,
+  outputDir: string,
+  opts: { startDate?: string; endDate?: string; jobId?: string }
+) {
   try {
     const gzippedCsvResponse = await fetch(downloadUrl);
     if (!gzippedCsvResponse.ok) {
@@ -28,7 +32,15 @@ export async function downloadAndSaveUsageData(downloadUrl: string, outputDir: s
     const gzBuffer = Buffer.from(await gzippedCsvResponse.arrayBuffer());
     const csv = gunzipSync(gzBuffer);
 
-    const fileName = `usage-data-${startDate.slice(0, 10)}_${endDate.slice(0, 10)}.csv`;
+    const fileName = (() => {
+      if (opts.startDate && opts.endDate) {
+        return `usage-data-${opts.startDate.slice(0, 10)}_${opts.endDate.slice(0, 10)}.csv`;
+      }
+      if (opts.jobId) {
+        return `usage-data-job-${opts.jobId}.csv`;
+      }
+      return `usage-data-${Date.now()}.csv`;
+    })();
     const usageDataDir = path.resolve(resolveOutputDir(outputDir));
     const filePath = path.join(usageDataDir, fileName);
 
@@ -37,17 +49,13 @@ export async function downloadAndSaveUsageData(downloadUrl: string, outputDir: s
     }
     fs.writeFileSync(filePath, csv);
     
-    return {
-      content: [
-        { type: 'text' as const, text: `Usage data CSV downloaded and saved to: ${filePath}\n\nFolder: ${usageDataDir}\nFile: ${fileName}\n\nDEBUG INFO:\noutputDir before resolve: ${outputDir}\nusageDataDir after resolve: ${usageDataDir}` }
-      ],
-    };
+    return { content: [{ type: 'text' as const, text: `Usage data CSV downloaded and saved to: ${filePath}` }] };
   } catch (e: any) {
     return mcpErrorOutput(`ERROR: Failed to download or save usage data.\nError: ${e?.stack || e}`);
   }
 }
 
-export async function handleExistingJob({ client, orgId, jobId, outputDir, startDate, endDate }: { client: CircleCIClient, orgId: string, jobId: string, outputDir: string, startDate: string, endDate: string }) {
+export async function handleExistingJob({ client, orgId, jobId, outputDir, startDate, endDate }: { client: CircleCIClient, orgId: string, jobId: string, outputDir: string, startDate?: string, endDate?: string }) {
   let jobStatus: any;
   try {
     jobStatus = await client.usage.getUsageExportJobStatus(orgId, jobId);
@@ -65,7 +73,7 @@ export async function handleExistingJob({ client, orgId, jobId, outputDir, start
       if (!downloadUrl) {
         return mcpErrorOutput(`ERROR: No download_url found in job status.\nJob status: ${JSON.stringify(jobStatus, null, 2)}`);
       }
-      return await downloadAndSaveUsageData(downloadUrl, outputDir, startDate, endDate);
+      return await downloadAndSaveUsageData(downloadUrl, outputDir, { startDate, endDate, jobId });
     }
     case 'created':
     case 'pending':
@@ -101,7 +109,7 @@ export async function startNewUsageExportJob({ client, orgId, startDate, endDate
   };
 }
 
-export async function getUsageApiData({ orgId, startDate, endDate, jobId, outputDir }: { orgId: string, startDate: string, endDate: string, jobId?: string, outputDir: string }) {
+export async function getUsageApiData({ orgId, startDate, endDate, jobId, outputDir }: { orgId: string, startDate?: string, endDate?: string, jobId?: string, outputDir: string }) {
   if (!outputDir) {
     return mcpErrorOutput('ERROR: outputDir is required. Please specify a directory to save the usage data CSV.');
   }
@@ -110,6 +118,9 @@ export async function getUsageApiData({ orgId, startDate, endDate, jobId, output
   if (jobId) {
     return await handleExistingJob({ client, orgId, jobId, outputDir, startDate, endDate });
   } else {
+    if (!startDate || !endDate) {
+      return mcpErrorOutput('ERROR: startDate and endDate are required when starting a new usage export job.');
+    }
     return await startNewUsageExportJob({ client, orgId, startDate, endDate });
   }
 } 

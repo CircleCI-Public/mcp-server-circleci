@@ -4,8 +4,11 @@ import mcpErrorOutput from '../../lib/mcpErrorOutput.js';
 import { findUnderusedResourceClassesFromCSV } from '../../lib/usage-api/findUnderusedResourceClasses.js';
 
 export const findUnderusedResourceClasses: ToolCallback<{ params: typeof findUnderusedResourceClassesInputSchema }> = async (args) => {
-  const params = args.params || {};
-  const { csvFilePath, threshold = 40 } = params;
+  const { 
+    csvFilePath, 
+    threshold 
+  } = args.params;
+
   if (!csvFilePath) {
     return mcpErrorOutput('ERROR: csvFilePath is required.');
   }
