@@ -34,7 +34,6 @@ export class DeploysAPI {
   }: {
     componentID: string;
     environmentID: string;
-    workflowID?: string;
   }): Promise<DeployComponentVersionsResponse> {
     const rawResult = await this.client.get<unknown>(
       `/deploy/components/${componentID}/versions?environment-id=${environmentID}`

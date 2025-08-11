@@ -855,39 +855,35 @@ Click the Save button.
 
 - `run_rollback_pipeline`
 
-  Run a rollback pipeline for a CircleCI project. This tool guides you through the full rollback process, adapting to the information you provide and prompting for any missing details.
+  This tool allows for triggering a rollback for a project.
+  It requires the following parameters;
 
-  **Initial Step:**
-  - First, call the `list_followed_projects` tool to retrieve the list of projects the user follows.
-  - Then, ask the user to select a project by providing either a `projectID` or the exact `projectSlug` as returned by `list_followed_projects`.
+  - `project_id` - The ID of the CircleCI project (UUID)
+  - `environmentName` - The environment name
+  - `componentName` - The component name
+  - `currentVersion` - The current version
+  - `targetVersion` - The target version
+  - `namespace` - The namespace of the component
+  - `reason` - The reason for the rollback (optional)
+  - `parameters` - The extra parameters for the rollback pipeline (optional)
 
-    **Typical Flow:**
-    1. **Start:** User initiates a rollback request.
-    2. **Project Selection:** If a \`projectSlug\` or \`projectID\` is not provided, call \`listFollowedProjects\` and prompt the user to select a project using the exact value returned.
-    3. **Execute the tool and list the versions.**
-    4. **Workflow Rerun:** 
-       - Inform the user of the fact that no rollback pipeline is defined for this project.
-       - Ask the user if they want to rerun a workflow.
-       - If the user wants to rerun a workflow, execute the tool with rollback_type set to \`WORKFLOW_RERUN\`. Do not propose to choose another project.
-    6. **Component Selection:** 
-       - If the project has multiple components, present up to 20 options for the user to choose from.
-       - If there is only one component, proceed automatically and do not ask the user to select a component.
-    7. **Environment Selection:** 
-       - If the project has multiple environments, present up to 20 options for the user to choose from.
-       - If there is only one environment, proceed automatically and do not ask the user to select an environment.
-    8. **Version Selection:** 
-       - Present the user with available versions to rollback to, based on the selected environment and component. Include the namespace for each version.
-       - Ask for both the current deployed version and the target version to rollback to.
-    9. **Optional Details:** 
-       - If the rollback type is \`PIPELINE\`, prompt the user for an optional reason for the rollback (e.g., "Critical bug fix").
-       - If the rollback type is \`WORKFLOW_RERUN\`, provide the workflow ID of the selected version to the tool.
-       - provide the namespace for the selected version to the tool.
-    10. **Confirmation:** 
-       - Summarize the rollback request and confirm with the user before submitting.
+  If not all the parameters are provided right away, the toll will make use of other tools to try and retrieve all the required info.
+  The rollback can be performed in two different way, depending on whether a rollback pipeline definition has been configured for the project:
 
-  **Returns:**
-  - On success: The rollback ID or a confirmation in case of workflow rerun.
-  - On error: A clear message describing what is missing or what went wrong.
+  - Pipeline Rollback: will trigger the rollback pipeline.
+  - Workflow Rerun: will trigger the rerun of a previous workflow.
+
+  A typical interaction with this tool will follow this pattern:
+
+  1. Project Selection - Retrieve list of followed projects and prompt user to select one
+  2. Environment Selection - List available environments and select target (auto-select if only one exists)
+  3. Component Selection - List available components and select target (auto-select if only one exists)
+  4. Version Selection - Display available versions, user selects non-live version for rollback
+  5. Rollback Mode Detection - Check if rollback pipeline is configured for the selected project
+  6. Execute Rollback - Two options available:
+    - Pipeline Rollback: Prompt for optional reason, execute rollback pipeline
+    - Workflow Rerun**: Rerun workflow using selected version's workflow ID
+  7. Confirmation - Summarize rollback request and confirm before execution
 
 - `rerun_workflow`
 
@@ -935,6 +931,51 @@ Click the Save button.
   - Catching rule violations before code review
 
   The tool integrates with your existing cursor rules setup and provides immediate feedback on code quality, helping you catch issues early in the development process.
+
+- `list_component_versions`
+
+  Lists all versions for a specific CircleCI component in an environment. This tool retrieves version history including deployment status, commit information, and timestamps for a component.
+  The tool will prompt the user to select the component and environment from a list if not provided.
+
+  Example output:
+
+  ```
+  Versions for the component: {
+    "items": [
+      {
+        "name": "v1.2.0",
+        "namespace": "production",
+        "environment_id": "env-456def",
+        "is_live": true,
+        "pipeline_id": "12345678-1234-1234-1234-123456789abc",
+        "workflow_id": "87654321-4321-4321-4321-cba987654321",
+        "job_id": "11111111-1111-1111-1111-111111111111",
+        "job_number": 42,
+        "last_deployed_at": "2023-01-01T00:00:00Z"
+      },
+      {
+        "name": "v1.1.0",
+        "namespace": "production", 
+        "environment_id": "env-456def",
+        "is_live": false,
+        "pipeline_id": "22222222-2222-2222-2222-222222222222",
+        "workflow_id": "33333333-3333-3333-3333-333333333333",
+        "job_id": "44444444-4444-4444-4444-444444444444",
+        "job_number": 38,
+        "last_deployed_at": "2023-01-03T00:00:00Z"
+      }
+    ]
+  }
+  ```
+
+  This is useful for:
+
+  - Identifying which versions were deployed for a component
+  - Finding the currently live version in an environment
+  - Selecting target versions for rollback operations
+  - Getting deployment details like pipeline, workflow, and job information
+  - Listing all environments
+  - Listing all components
 
 - `download_usage_api_data`
 

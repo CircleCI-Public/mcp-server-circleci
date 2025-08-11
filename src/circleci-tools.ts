@@ -30,6 +30,9 @@ import { analyzeDiff } from './tools/analyzeDiff/handler.js';
 import { runRollbackPipelineTool } from './tools/runRollbackPipeline/tool.js';
 import { runRollbackPipeline } from './tools/runRollbackPipeline/handler.js';
 
+import { listComponentVersionsTool } from './tools/listComponentVersions/tool.js';
+import { listComponentVersions } from './tools/listComponentVersions/handler.js';
+
 // Define the tools with their configurations
 export const CCI_TOOLS = [
   getBuildFailureLogsTool,
@@ -47,6 +50,7 @@ export const CCI_TOOLS = [
   findUnderusedResourceClassesTool,
   analyzeDiffTool,
   runRollbackPipelineTool,
+  listComponentVersionsTool,
 ];
 
 // Extract the tool names as a union type
@@ -77,4 +81,5 @@ export const CCI_HANDLERS = {
   find_underused_resource_classes: findUnderusedResourceClasses,
   analyze_diff: analyzeDiff,
   run_rollback_pipeline: runRollbackPipeline,
+  list_component_versions: listComponentVersions,
 } satisfies ToolHandlers;
