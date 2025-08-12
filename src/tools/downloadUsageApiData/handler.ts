@@ -1,0 +1,55 @@
+import { ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { downloadUsageApiDataInputSchema } from './inputSchema.js';
+import { getUsageApiData } from '../../lib/usage-api/getUsageApiData.js';
+import { parseDateTimeString } from '../../lib/usage-api/parseDateTimeString.js';
+import { differenceInCalendarDays, parseISO } from 'date-fns';
+import mcpErrorOutput from '../../lib/mcpErrorOutput.js';
+
+export const downloadUsageApiData: ToolCallback<{ params: typeof downloadUsageApiDataInputSchema }> = async (args) => {
+  const { CIRCLECI_BASE_URL } = process.env;
+  if (CIRCLECI_BASE_URL && CIRCLECI_BASE_URL !== 'https://circleci.com') {
+    return mcpErrorOutput('ERROR: The Usage API is not available on CircleCI server installations. This tool is only available for CircleCI cloud users.');
+  }
+
+  const {
+    orgId,
+    startDate,
+    endDate,
+    outputDir,
+    jobId,
+  } = args.params;
+
+  const hasDates = Boolean(startDate) && Boolean(endDate);
+  const hasJobId = Boolean(jobId);
+
+  if (!hasJobId && !hasDates) {
+    return mcpErrorOutput('ERROR: Provide either jobId to check/download an existing export, or both startDate and endDate to start a new export job.');
+  }
+
+  const normalizedStartDate = startDate
+    ? (parseDateTimeString(startDate, { defaultTime: 'start-of-day' }) ?? undefined)
+    : undefined;
+  const normalizedEndDate = endDate
+    ? (parseDateTimeString(endDate, { defaultTime: 'end-of-day' }) ?? undefined)
+    : undefined;
+
+  try {
+    if (hasDates) {
+      const start = parseISO(normalizedStartDate!);
+      const end = parseISO(normalizedEndDate!);
+
+      const days = differenceInCalendarDays(end, start) + 1;
+      if (days > 32) {
+        return mcpErrorOutput(`ERROR: The maximum allowed date range for the usage API is 32 days.`);
+      }
+      if (days < 1) {
+        return mcpErrorOutput('ERROR: The end date must be after or equal to the start date.');
+      }
+    }
+
+    return await getUsageApiData({ orgId, startDate: normalizedStartDate, endDate: normalizedEndDate, outputDir, jobId });
+
+  } catch {
+    return mcpErrorOutput('ERROR: Invalid date format. Please use YYYY-MM-DD or a recognizable date string.');
+  }
+}; 

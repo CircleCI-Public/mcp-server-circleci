@@ -977,6 +977,64 @@ Click the Save button.
   - Listing all environments
   - Listing all components
 
+- `download_usage_api_data`
+
+  Downloads usage data from the CircleCI Usage API for a given organization. Accepts flexible, natural language date input (e.g., "March 2025" or "last month"). Cloud-only feature.
+
+  This tool can be used in one of two ways:
+
+  1) Start a new export job for a date range (max 32 days) by providing:
+  - orgId: Organization ID
+  - startDate: Start date (YYYY-MM-DD or natural language)
+  - endDate: End date (YYYY-MM-DD or natural language)
+  - outputDir: Directory to save the CSV file
+
+  2) Check/download an existing export job by providing:
+  - orgId: Organization ID
+  - jobId: Usage export job ID
+  - outputDir: Directory to save the CSV file
+
+  The tool provides:
+  - A csv containing the CircleCI Usage API data from the specified time frame
+
+  This is useful for:
+  - Downloading detailed CircleCI usage data for reporting or analysis
+  - Feeding usage data into the `find_underused_resource_classes` tool
+
+  Example usage scenarios:
+- Scenario 1:
+  1. "Download usage data for org abc123 from June into ~/Downloads"
+  2. "Check status"
+
+- Scenario 2:
+  1. "Download usage data for org abc123 for last month to my Downloads folder"
+  2. "Check usage download status"
+  3. "Check status again"
+
+- Scenario 3:
+  1. "Check my usage export job usage-job-9f2d7c and download it if ready"
+
+- `find_underused_resource_classes`
+
+  Analyzes a CircleCI usage data CSV file to find jobs/resource classes with average or max CPU/RAM usage below a given threshold (default 40%).
+
+  This tool can be used by providing:
+  - A csv containing CircleCI Usage API data, which can be obtained by using the `download_usage_api_data` tool.
+
+  The tool provides:
+  - A markdown list of all jobs that are below the threshold, delineated by project and workflow.
+
+  This is useful for:
+  - Finding jobs that are using less than half of the compute provided to them on average
+  - Generating a list of low hanging cost optimizations
+
+  Example usage scenarios:
+  - Scenario 1:
+    1. "Find underused resource classes in the file you just downloaded"
+  - Scenario 2:
+    1. "Find underused resource classes in ~/Downloads/usage-data-2025-06-01_2025-06-30.csv"
+  - Scenario 3:
+    1. "Analyze /Users/you/Projects/acme/usage-data-job-9f2d7c.csv with threshold 30"
 
 # Development
 

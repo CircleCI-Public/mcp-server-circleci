@@ -39,6 +39,9 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.15.1",
+    "chrono-node": "2.8.3",
+    "csv-parse": "6.0.0",
+    "date-fns": "4.1.0",
     "express": "^4.19.2",
     "parse-github-url": "^1.0.3",
     "zod": "^3.24.2",
