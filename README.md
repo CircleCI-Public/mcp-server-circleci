@@ -39,7 +39,7 @@ Add the following to your cursor MCP config:
   "mcpServers": {
     "circleci-mcp-server": {
       "command": "npx",
-      "args": ["-y", "@circleci/mcp-server-circleci"],
+      "args": ["-y", "@circleci/mcp-server-circleci@latest"],
       "env": {
         "CIRCLECI_TOKEN": "your-circleci-token",
         "CIRCLECI_BASE_URL": "https://circleci.com" // Optional - required for on-prem customers only
@@ -128,7 +128,7 @@ To install CircleCI MCP Server for VS Code in `.vscode/mcp.json`:
     "circleci-mcp-server": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@circleci/mcp-server-circleci"],
+      "args": ["-y", "@circleci/mcp-server-circleci@latest"],
       "env": {
         "CIRCLECI_TOKEN": "${input:circleci-token}",
         "CIRCLECI_BASE_URL": "${input:circleci-base-url}"
@@ -209,7 +209,7 @@ Add the following to your claude_desktop_config.json:
   "mcpServers": {
     "circleci-mcp-server": {
       "command": "npx",
-      "args": ["-y", "@circleci/mcp-server-circleci"],
+      "args": ["-y", "@circleci/mcp-server-circleci@latest"],
       "env": {
         "CIRCLECI_TOKEN": "your-circleci-token",
         "CIRCLECI_BASE_URL": "https://circleci.com" // Optional - required for on-prem customers only
@@ -313,7 +313,7 @@ https://modelcontextprotocol.io/quickstart/user
 After installing Claude Code, run the following command:
 
 ```bash
-claude mcp add circleci-mcp-server -e CIRCLECI_TOKEN=your-circleci-token -- npx -y @circleci/mcp-server-circleci
+claude mcp add circleci-mcp-server -e CIRCLECI_TOKEN=your-circleci-token -- npx -y @circleci/mcp-server-circleci@latest
 ```
 
 #### Using Docker in a local MCP Server
@@ -349,7 +349,7 @@ Add the following to your windsurf mcp_config.json:
   "mcpServers": {
     "circleci-mcp-server": {
       "command": "npx",
-      "args": ["-y", "@circleci/mcp-server-circleci"],
+      "args": ["-y", "@circleci/mcp-server-circleci@latest"],
       "env": {
         "CIRCLECI_TOKEN": "your-circleci-token",
         "CIRCLECI_BASE_URL": "https://circleci.com" // Optional - required for on-prem customers only
@@ -442,7 +442,7 @@ Edit your global configuration file ~/.aws/amazonq/mcp.json or create a new one 
       "command": "npx",
       "args": [
         "-y",
-        "@circleci/mcp-server-circleci"
+        "@circleci/mcp-server-circleci@latest"
       ],
       "env": {
         "CIRCLECI_TOKEN": "YOUR_CIRCLECI_TOKEN",
@@ -491,7 +491,7 @@ Edit your global configuration file ~/.aws/amazonq/mcp.json or create a new one 
       "command": "npx",
       "args": [
         "-y",
-        "@circleci/mcp-server-circleci"
+        "@circleci/mcp-server-circleci@latest"
       ],
       "env": {
         "CIRCLECI_TOKEN": "YOUR_CIRCLECI_TOKEN",
