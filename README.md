@@ -1046,9 +1046,13 @@ Click the Save button.
    ```bash
    npx clear-npx-cache
    npm cache clean --force
+   ```
+
 2. **Force latest version:** Add `@latest` to your config:
    ```json
    "args": ["-y", "@circleci/mcp-server-circleci@latest"]
+   ```
+
 3. **Restart your IDE completely** (not just reload window)
 
 ## Authentication Issues
