@@ -1090,7 +1090,7 @@ Click the Save button.
 
 ## Advanced Debugging
 
-* **Test package directly:** `npx @circleci/mcp-server-circleci --help`
+* **Test package directly:** `npx @circleci/mcp-server-circleci@latest --help`
 * **Verbose logging:** `DEBUG=* npx @circleci/mcp-server-circleci@latest`
 * **Docker fallback:** Try Docker installation if npx fails consistently
 
