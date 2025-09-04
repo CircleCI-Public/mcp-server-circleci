@@ -1,6 +1,6 @@
 {
   "name": "@circleci/mcp-server-circleci",
-  "version": "0.11.2",
+  "version": "0.14.0",
   "description": "A Model Context Protocol (MCP) server implementation for CircleCI, enabling natural language interactions with CircleCI functionality through MCP-enabled clients",
   "type": "module",
   "access": "public",
@@ -38,13 +38,18 @@
     "bump:major": "pnpm version major --no-git-tag-version"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "1.8.0",
+    "@modelcontextprotocol/sdk": "^1.15.1",
+    "chrono-node": "2.8.3",
+    "csv-parse": "6.0.0",
+    "date-fns": "4.1.0",
+    "express": "^4.19.2",
     "parse-github-url": "^1.0.3",
     "zod": "^3.24.2",
     "zod-to-json-schema": "^3.24.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
+    "@types/express": "5.0.3",
     "@types/node": "^22",
     "@types/parse-github-url": "^1.0.3",
     "@typescript-eslint/eslint-plugin": "^8.25.0",

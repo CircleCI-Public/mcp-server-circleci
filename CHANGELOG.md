@@ -5,6 +5,54 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.14.0] - 2025-08-11
+
+### Added
+
+- Added `download_usage_api_data` tool to start and retrieve CircleCI usage export jobs
+
+- Added `find_underused_resource_classes` tool to analyze usage CSV for underused resource classes (default threshold 40%)
+
+## [0.13.0] - 2025-08-05
+
+### Added
+
+- Added `listComponentVersions` tool to list all versions for a CircleCI component
+
+### Changed
+
+- Simplified `runRollbackPipeline` tool by moving part of its inner logic to `listComponentVersions`.
+
+## [0.12.2] - 2025-08-01
+
+### Added
+
+- Added support for rerunning workflow in `runRollbackPipeline` when no rollback pipeline is defined.
+
+## [0.12.1] - 2025-07-30
+
+### Fixed
+
+- Fixed `runRollbackPipeline` tool to not suggest other projects
+
+## [0.12.0] - 2025-07-29
+
+### Added
+
+- Added `runRollbackPipeline` tool to run a rollback pipeline
+
+## [0.11.4] - 2025-07-28
+
+### Fixed
+
+- Remove `tool/` prefix from tool list entries, this was breaking tool name resolution in some MCP clients.
+
+## [0.11.3] - 2025-07-24
+
+### Changed
+
+- Make the diff reviewer tool work with other IDE based rule systems.
+
 ## [0.11.2] - 2025-06-20
 
 ### Added

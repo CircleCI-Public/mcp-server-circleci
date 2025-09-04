@@ -30,7 +30,7 @@ For Docker installation:
 
 ### Cursor
 
-#### Using NPX
+#### Using NPX in a local MCP Server
 
 Add the following to your cursor MCP config:
 
@@ -50,7 +50,7 @@ Add the following to your cursor MCP config:
 ```
 
 
-#### Using Docker
+#### Using Docker in a local MCP Server
 
 Add the following to your cursor MCP config:
 
@@ -78,9 +78,31 @@ Add the following to your cursor MCP config:
 }
 ```
 
+#### Using a Self-Managed Remote MCP Server
+
+Add the following to your cursor MCP config:
+
+```json
+{
+  "inputs": [
+    {
+      "type": "promptString",
+      "id": "circleci-token", 
+      "description": "CircleCI API Token",
+      "password": true
+    }
+  ],
+  "servers": {
+    "circleci-mcp-server-remote": {
+      "url": "http://your-circleci-remote-mcp-server-endpoint:8000/mcp"
+    }
+  }
+}
+```
+
 ### VS Code
 
-#### Using NPX
+#### Using NPX in a local MCP Server
 
 To install CircleCI MCP Server for VS Code in `.vscode/mcp.json`:
 
@@ -116,7 +138,7 @@ To install CircleCI MCP Server for VS Code in `.vscode/mcp.json`:
 }
 ```
 
-#### Using Docker
+#### Using Docker in a local MCP Server
 
 To install CircleCI MCP Server for VS Code in `.vscode/mcp.json` using Docker:
 
@@ -161,9 +183,24 @@ To install CircleCI MCP Server for VS Code in `.vscode/mcp.json` using Docker:
 }
 ```
 
+#### Using a Self-Managed Remote MCP Server
+
+To install CircleCI MCP Server for VS Code in `.vscode/mcp.json` using a self-managed remote MCP server:
+
+```json
+{
+  "servers": {
+    "circleci-mcp-server-remote": {
+      "type": "sse",
+      "url": "http://your-circleci-remote-mcp-server-endpoint:8000/mcp"
+    }
+  }
+}
+```
+
 ### Claude Desktop
 
-#### Using NPX
+#### Using NPX in a local MCP Server
 
 Add the following to your claude_desktop_config.json:
 
@@ -185,11 +222,13 @@ To locate this file:
 
 macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
 
+
 Windows: `%APPDATA%\Claude\claude_desktop_config.json`
 
 [Claude Desktop setup](https://modelcontextprotocol.io/quickstart/user)
 
-#### Using Docker
+
+#### Using Docker in a local MCP Server
 
 Add the following to your claude_desktop_config.json:
 
@@ -227,9 +266,49 @@ This will create a configuration file at:
 See the guide below for more information on using MCP servers with Claude Desktop:
 https://modelcontextprotocol.io/quickstart/user
 
+#### Using a Self-Managed Remote MCP Server
+
+Create a wrapper script first
+
+Create a script file such as 'circleci-remote-mcp.sh':
+
+```bash
+#!/bin/bash
+export CIRCLECI_TOKEN="your-circleci-token"
+npx mcp-remote http://your-circleci-remote-mcp-server-endpoint:8000/mcp --allow-http 
+```
+
+Make it executable:
+
+```bash
+chmod +x circleci-remote-mcp.sh
+```
+
+Then add the following to your claude_desktop_config.json:
+
+```json
+{
+  "mcpServers": {
+    "circleci-remote-mcp-server": {
+      "command": "/full/path/to/circleci-remote-mcp.sh"
+    }
+  }
+}
+```
+
+To find/create this file, first open your Claude Desktop settings. Then click on "Developer" in the left-hand bar of the Settings pane, and then click on "Edit Config"
+
+This will create a configuration file at:
+
+- macOS: ~/Library/Application Support/Claude/claude_desktop_config.json
+- Windows: %APPDATA%\Claude\claude_desktop_config.json
+
+See the guide below for more information on using MCP servers with Claude Desktop:
+https://modelcontextprotocol.io/quickstart/user
+
 ### Claude Code
 
-#### Using NPX
+#### Using NPX in a local MCP Server
 
 After installing Claude Code, run the following command:
 
@@ -237,7 +316,7 @@ After installing Claude Code, run the following command:
 claude mcp add circleci-mcp-server -e CIRCLECI_TOKEN=your-circleci-token -- npx -y @circleci/mcp-server-circleci
 ```
 
-#### Using Docker
+#### Using Docker in a local MCP Server
 
 After installing Claude Code, run the following command:
 
@@ -248,9 +327,20 @@ claude mcp add circleci-mcp-server -e CIRCLECI_TOKEN=your-circleci-token -e CIRC
 See the guide below for more information on using MCP servers with Claude Code:
 https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/tutorials#set-up-model-context-protocol-mcp
 
+#### Using Self-Managed Remote MCP Server
+
+After installing Claude Code, run the following command:
+
+```bash
+claude mcp add circleci-mcp-server -e CIRCLECI_TOKEN=your-circleci-token -- npx mcp-remote http://your-circleci-remote-mcp-server-endpoint:8000/mcp --allow-http
+```
+
+See the guide below for more information on using MCP servers with Claude Code:
+https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/tutorials#set-up-model-context-protocol-mcp
+
 ### Windsurf
 
-#### Using NPX
+#### Using NPX in a local MCP Server
 
 Add the following to your windsurf mcp_config.json:
 
@@ -269,7 +359,7 @@ Add the following to your windsurf mcp_config.json:
 }
 ```
 
-#### Using Docker
+#### Using Docker in a local MCP Server
 
 Add the following to your windsurf mcp_config.json:
 
@@ -297,6 +387,27 @@ Add the following to your windsurf mcp_config.json:
 }
 ```
 
+#### Using Self-Managed Remote MCP Server
+
+Add the following to your windsurf mcp_config.json:
+
+```json
+{
+  "mcpServers": {
+    "circleci": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "http://your-circleci-remote-mcp-server-endpoint:8000/mcp",
+        "--allow-http"
+      ],
+      "disabled": false,
+      "alwaysAllow": []
+    }
+  }
+}
+```
+
 See the guide below for more information on using MCP servers with windsurf:
 https://docs.windsurf.com/windsurf/mcp
 
@@ -307,6 +418,125 @@ To install CircleCI MCP Server for Claude Desktop automatically via [Smithery](h
 ```bash
 npx -y @smithery/cli install @CircleCI-Public/mcp-server-circleci --client claude
 ```
+
+### Amazon Q Developer CLi
+
+MCP client configuration in Amazon Q Developer is stored in JSON format, in a file named mcp.json.
+
+Amazon Q Developer CLI supports two levels of MCP configuration:
+
+Global Configuration: ~/.aws/amazonq/mcp.json - Applies to all workspaces
+
+Workspace Configuration: .amazonq/mcp.json - Specific to the current workspace
+
+Both files are optional; neither, one, or both can exist. If both files exist, Amazon Q Developer reads MCP configuration from both and combines them, taking the union of their contents. If there is a conflict (i.e., a server defined in the global config is also present in the workspace config), a warning is displayed and only the server entry in the workspace config is used.
+
+#### Using NPX in a local MCP Server
+
+Edit your global configuration file ~/.aws/amazonq/mcp.json or create a new one in the current workspace .amazonq/mcp.json with the following content:
+
+```json
+{
+  "mcpServers": {
+    "circleci-local": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@circleci/mcp-server-circleci"
+      ],
+      "env": {
+        "CIRCLECI_TOKEN": "YOUR_CIRCLECI_TOKEN",
+        "CIRCLECI_BASE_URL": "https://circleci.com" // Optional - required for on-prem customers only
+      },
+      "timeout": 60000
+    }
+  }
+}
+```
+
+#### Using a Self-Managed Remote MCP Server
+
+Create a wrapper script first
+
+Create a script file such as 'circleci-remote-mcp.sh':
+
+```bash
+#!/bin/bash
+export CIRCLECI_TOKEN="your-circleci-token"
+npx mcp-remote http://your-circleci-remote-mcp-server-endpoint:8000/mcp --allow-http
+```
+
+Make it executable:
+
+```bash
+chmod +x circleci-remote-mcp.sh
+```
+
+Then add it:
+
+```bash
+q mcp add --name circleci --command "/full/path/to/circleci-remote-mcp.sh"
+```
+
+### Amazon Q Developer in the IDE
+
+#### Using NPX in a local MCP Server
+
+Edit your global configuration file ~/.aws/amazonq/mcp.json or create a new one in the current workspace .amazonq/mcp.json with the following content:
+
+```json
+{
+  "mcpServers": {
+    "circleci-local": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@circleci/mcp-server-circleci"
+      ],
+      "env": {
+        "CIRCLECI_TOKEN": "YOUR_CIRCLECI_TOKEN",
+        "CIRCLECI_BASE_URL": "https://circleci.com" // Optional - required for on-prem customers only
+      },
+      "timeout": 60000
+    }
+  }
+}
+```
+
+#### Using a Self-Managed Remote MCP Server
+
+Create a wrapper script first
+
+Create a script file such as 'circleci-remote-mcp.sh':
+
+```bash
+#!/bin/bash
+npx mcp-remote http://your-circleci-remote-mcp-server-endpoint:8000/mcp --allow-http
+```
+
+Make it executable:
+
+```bash
+chmod +x circleci-remote-mcp.sh
+```
+
+Then add it to the Q Developer in your IDE:
+
+Access the MCP configuration UI (https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/mcp-ide.html#mcp-ide-configuration-access-ui).
+
+Choose the plus (+) symbol.
+
+Select the scope: global or local.
+
+If you select global scope, the MCP server configuration is stored in ~/.aws/amazonq/mcp.json and available across all your projects. If you select local scope, the configuration is stored in .amazonq/mcp.json within your current project.
+
+In the Name field, enter the name of the CircleCI remote MCP server (e.g. circleci-remote-mcp).
+
+Select the transport protocol (stdio).
+
+In the Command field, enter the shell command created previously that the MCP server will run when it initializes (e.g. /full/path/to/circleci-remote-mcp.sh).
+
+Click the Save button.
 
 # Features
 
@@ -623,6 +853,38 @@ npx -y @smithery/cli install @CircleCI-Public/mcp-server-circleci --client claud
   - Quickly running pipelines without visiting the CircleCI web UI
   - Running pipelines from a specific branch
 
+- `run_rollback_pipeline`
+
+  This tool allows for triggering a rollback for a project.
+  It requires the following parameters;
+
+  - `project_id` - The ID of the CircleCI project (UUID)
+  - `environmentName` - The environment name
+  - `componentName` - The component name
+  - `currentVersion` - The current version
+  - `targetVersion` - The target version
+  - `namespace` - The namespace of the component
+  - `reason` - The reason for the rollback (optional)
+  - `parameters` - The extra parameters for the rollback pipeline (optional)
+
+  If not all the parameters are provided right away, the toll will make use of other tools to try and retrieve all the required info.
+  The rollback can be performed in two different way, depending on whether a rollback pipeline definition has been configured for the project:
+
+  - Pipeline Rollback: will trigger the rollback pipeline.
+  - Workflow Rerun: will trigger the rerun of a previous workflow.
+
+  A typical interaction with this tool will follow this pattern:
+
+  1. Project Selection - Retrieve list of followed projects and prompt user to select one
+  2. Environment Selection - List available environments and select target (auto-select if only one exists)
+  3. Component Selection - List available components and select target (auto-select if only one exists)
+  4. Version Selection - Display available versions, user selects non-live version for rollback
+  5. Rollback Mode Detection - Check if rollback pipeline is configured for the selected project
+  6. Execute Rollback - Two options available:
+    - Pipeline Rollback: Prompt for optional reason, execute rollback pipeline
+    - Workflow Rerun**: Rerun workflow using selected version's workflow ID
+  7. Confirmation - Summarize rollback request and confirm before execution
+
 - `rerun_workflow`
 
   Reruns a workflow from its start or from the failed job.
@@ -670,6 +932,110 @@ npx -y @smithery/cli install @CircleCI-Public/mcp-server-circleci --client claud
 
   The tool integrates with your existing cursor rules setup and provides immediate feedback on code quality, helping you catch issues early in the development process.
 
+- `list_component_versions`
+
+  Lists all versions for a specific CircleCI component in an environment. This tool retrieves version history including deployment status, commit information, and timestamps for a component.
+  The tool will prompt the user to select the component and environment from a list if not provided.
+
+  Example output:
+
+  ```
+  Versions for the component: {
+    "items": [
+      {
+        "name": "v1.2.0",
+        "namespace": "production",
+        "environment_id": "env-456def",
+        "is_live": true,
+        "pipeline_id": "12345678-1234-1234-1234-123456789abc",
+        "workflow_id": "87654321-4321-4321-4321-cba987654321",
+        "job_id": "11111111-1111-1111-1111-111111111111",
+        "job_number": 42,
+        "last_deployed_at": "2023-01-01T00:00:00Z"
+      },
+      {
+        "name": "v1.1.0",
+        "namespace": "production", 
+        "environment_id": "env-456def",
+        "is_live": false,
+        "pipeline_id": "22222222-2222-2222-2222-222222222222",
+        "workflow_id": "33333333-3333-3333-3333-333333333333",
+        "job_id": "44444444-4444-4444-4444-444444444444",
+        "job_number": 38,
+        "last_deployed_at": "2023-01-03T00:00:00Z"
+      }
+    ]
+  }
+  ```
+
+  This is useful for:
+
+  - Identifying which versions were deployed for a component
+  - Finding the currently live version in an environment
+  - Selecting target versions for rollback operations
+  - Getting deployment details like pipeline, workflow, and job information
+  - Listing all environments
+  - Listing all components
+
+- `download_usage_api_data`
+
+  Downloads usage data from the CircleCI Usage API for a given organization. Accepts flexible, natural language date input (e.g., "March 2025" or "last month"). Cloud-only feature.
+
+  This tool can be used in one of two ways:
+
+  1) Start a new export job for a date range (max 32 days) by providing:
+  - orgId: Organization ID
+  - startDate: Start date (YYYY-MM-DD or natural language)
+  - endDate: End date (YYYY-MM-DD or natural language)
+  - outputDir: Directory to save the CSV file
+
+  2) Check/download an existing export job by providing:
+  - orgId: Organization ID
+  - jobId: Usage export job ID
+  - outputDir: Directory to save the CSV file
+
+  The tool provides:
+  - A csv containing the CircleCI Usage API data from the specified time frame
+
+  This is useful for:
+  - Downloading detailed CircleCI usage data for reporting or analysis
+  - Feeding usage data into the `find_underused_resource_classes` tool
+
+  Example usage scenarios:
+- Scenario 1:
+  1. "Download usage data for org abc123 from June into ~/Downloads"
+  2. "Check status"
+
+- Scenario 2:
+  1. "Download usage data for org abc123 for last month to my Downloads folder"
+  2. "Check usage download status"
+  3. "Check status again"
+
+- Scenario 3:
+  1. "Check my usage export job usage-job-9f2d7c and download it if ready"
+
+- `find_underused_resource_classes`
+
+  Analyzes a CircleCI usage data CSV file to find jobs/resource classes with average or max CPU/RAM usage below a given threshold (default 40%).
+
+  This tool can be used by providing:
+  - A csv containing CircleCI Usage API data, which can be obtained by using the `download_usage_api_data` tool.
+
+  The tool provides:
+  - A markdown list of all jobs that are below the threshold, delineated by project and workflow.
+
+  This is useful for:
+  - Finding jobs that are using less than half of the compute provided to them on average
+  - Generating a list of low hanging cost optimizations
+
+  Example usage scenarios:
+  - Scenario 1:
+    1. "Find underused resource classes in the file you just downloaded"
+  - Scenario 2:
+    1. "Find underused resource classes in ~/Downloads/usage-data-2025-06-01_2025-06-30.csv"
+  - Scenario 3:
+    1. "Analyze /Users/you/Projects/acme/usage-data-job-9f2d7c.csv with threshold 30"
+
 # Development
 
 ## Getting Started
@@ -702,10 +1068,16 @@ docker build -t circleci/mcp-server-circleci .
 
 This will create a Docker image tagged as `circleci/mcp-server-circleci` that you can use with any MCP client.
 
-To run the container:
+To run the container locally:
 
 ```bash
 docker run --rm -i -e CIRCLECI_TOKEN=your-circleci-token -e CIRCLECI_BASE_URL=https://circleci.com circleci/mcp-server-circleci
+```
+
+To run the container as a self-managed remote MCP server you need to add the environment variable `start=remote` to the docker run command. You can also define the port to use with the environment variable `port=<port>` or else the default port `8000` will be used:
+
+```bash
+docker run --rm -i -e CIRCLECI_TOKEN=your-circleci-token -e CIRCLECI_BASE_URL=https://circleci.com circleci:mcp-server-circleci -e start=remote -e port=8000
 ```
 
 ## Development with MCP Inspector

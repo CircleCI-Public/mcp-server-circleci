@@ -21,8 +21,17 @@ import { runEvaluationTestsTool } from './tools/runEvaluationTests/tool.js';
 import { runEvaluationTests } from './tools/runEvaluationTests/handler.js';
 import { rerunWorkflowTool } from './tools/rerunWorkflow/tool.js';
 import { rerunWorkflow } from './tools/rerunWorkflow/handler.js';
+import { downloadUsageApiDataTool } from './tools/downloadUsageApiData/tool.js';
+import { downloadUsageApiData } from './tools/downloadUsageApiData/handler.js';
+import { findUnderusedResourceClassesTool } from './tools/findUnderusedResourceClasses/tool.js';
+import { findUnderusedResourceClasses } from './tools/findUnderusedResourceClasses/handler.js';
 import { analyzeDiffTool } from './tools/analyzeDiff/tool.js';
 import { analyzeDiff } from './tools/analyzeDiff/handler.js';
+import { runRollbackPipelineTool } from './tools/runRollbackPipeline/tool.js';
+import { runRollbackPipeline } from './tools/runRollbackPipeline/handler.js';
+
+import { listComponentVersionsTool } from './tools/listComponentVersions/tool.js';
+import { listComponentVersions } from './tools/listComponentVersions/handler.js';
 
 // Define the tools with their configurations
 export const CCI_TOOLS = [
@@ -37,7 +46,11 @@ export const CCI_TOOLS = [
   listFollowedProjectsTool,
   runEvaluationTestsTool,
   rerunWorkflowTool,
+  downloadUsageApiDataTool,
+  findUnderusedResourceClassesTool,
   analyzeDiffTool,
+  runRollbackPipelineTool,
+  listComponentVersionsTool,
 ];
 
 // Extract the tool names as a union type
@@ -64,5 +77,9 @@ export const CCI_HANDLERS = {
   list_followed_projects: listFollowedProjects,
   run_evaluation_tests: runEvaluationTests,
   rerun_workflow: rerunWorkflow,
+  download_usage_api_data: downloadUsageApiData,
+  find_underused_resource_classes: findUnderusedResourceClasses,
   analyze_diff: analyzeDiff,
+  run_rollback_pipeline: runRollbackPipeline,
+  list_component_versions: listComponentVersions,
 } satisfies ToolHandlers;
