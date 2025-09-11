@@ -1036,6 +1036,74 @@ Click the Save button.
   - Scenario 3:
     1. "Analyze /Users/you/Projects/acme/usage-data-job-9f2d7c.csv with threshold 30"
 
+## Troubleshooting
+
+### Quick Fixes
+
+**Most Common Issues:**
+
+1. **Clear package caches:**
+   ```bash
+   npx clear-npx-cache
+   npm cache clean --force
+   ```
+
+2. **Force latest version:** Add `@latest` to your config:
+   ```json
+   "args": ["-y", "@circleci/mcp-server-circleci@latest"]
+   ```
+
+3. **Restart your IDE completely** (not just reload window)
+
+## Authentication Issues
+
+* **Invalid token errors:** Verify your `CIRCLECI_TOKEN` in Personal API Tokens
+* **Permission errors:** Ensure token has read access to your projects
+* **Environment variables not loading:** Test with `echo $CIRCLECI_TOKEN` (Mac/Linux) or `echo %CIRCLECI_TOKEN%` (Windows)
+
+## Connection and Network Issues
+
+* **Base URL:** Confirm `CIRCLECI_BASE_URL` is `https://circleci.com`
+* **Corporate networks:** Configure npm proxy settings if behind firewall
+* **Firewall blocking:** Check if security software blocks package downloads
+
+## System Requirements
+
+* **Node.js version:** Ensure ≥ 18.0.0 with `node --version`
+* **Update Node.js:** Consider latest LTS if experiencing compatibility issues
+* **Package manager:** Verify npm/pnpm is working: `npm --version`
+
+## IDE-Specific Issues
+
+* **Config file location:** Double-check path for your OS
+* **Syntax errors:** Validate JSON syntax in config file
+* **Console logs:** Check IDE developer console for specific errors
+* **Try different IDE:** Test config in another supported editor to isolate issue
+
+## Process Issues
+
+* **Hanging processes:** Kill existing MCP processes:
+  ```bash
+  # Mac/Linux: 
+  pkill -f "mcp-server-circleci"
+  
+  # Windows: 
+  taskkill /f /im node.exe
+
+* **Port conflicts:** Restart IDE if connection seems blocked
+
+## Advanced Debugging
+
+* **Test package directly:** `npx @circleci/mcp-server-circleci@latest --help`
+* **Verbose logging:** `DEBUG=* npx @circleci/mcp-server-circleci@latest`
+* **Docker fallback:** Try Docker installation if npx fails consistently
+
+## Still Need Help?
+
+1. Check GitHub issues for similar problems
+2. Include your OS, Node version, and IDE when reporting issues
+3. Share relevant error messages from IDE console
+
 # Development
 
 ## Getting Started
