@@ -25,7 +25,8 @@ export default tseslint.config(
       },
     },
     rules: {
-      'no-console': 'off',
+      // No output to stdout that isn't MCP, allow stderr
+      'no-console': ['error', { allow: ['error'] }],
       '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unsafe-member-access': 'off',

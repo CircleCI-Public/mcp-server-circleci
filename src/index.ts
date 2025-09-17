@@ -20,7 +20,7 @@ if (process.env.debug === 'true') {
     srv.notification = async (...args: any[]) => {
       try {
         const [{ method, params }] = args;
-        console.log(
+        console.error(
           '[DEBUG] outgoing notification:',
           method,
           JSON.stringify(params),
@@ -37,7 +37,7 @@ if (process.env.debug === 'true') {
     srv.request = async (...args: any[]) => {
       const [payload] = args;
       const result = await origRequest(...args);
-      console.log(
+      console.error(
         '[DEBUG] response to',
         payload?.method,
         JSON.stringify(result).slice(0, 200),
@@ -49,7 +49,7 @@ if (process.env.debug === 'true') {
 
 // Register all CircleCI tools once
 if (process.env.debug === 'true') {
-  console.log('[DEBUG] [Startup] Registering CircleCI MCP tools...');
+  console.error('[DEBUG] [Startup] Registering CircleCI MCP tools...');
 }
 // Ensure we advertise support for tools/list in capabilities (SDK only sets listChanged)
 (server as any).server.registerCapabilities({ tools: { list: true } });
@@ -58,7 +58,7 @@ CCI_TOOLS.forEach((tool) => {
   const handler = CCI_HANDLERS[tool.name];
   if (!handler) throw new Error(`Handler for tool ${tool.name} not found`);
   if (process.env.debug === 'true') {
-    console.log(`[DEBUG] [Startup] Registering tool: ${tool.name}`);
+    console.error(`[DEBUG] [Startup] Registering tool: ${tool.name}`);
   }
   server.tool(
     tool.name,
@@ -70,10 +70,10 @@ CCI_TOOLS.forEach((tool) => {
 
 async function main() {
   if (process.env.start === 'remote') {
-    console.log('Starting CircleCI MCP unified HTTP+SSE server...');
+    console.error('Starting CircleCI MCP unified HTTP+SSE server...');
     createUnifiedTransport(server);
   } else {
-    console.log('Starting CircleCI MCP server in stdio mode...');
+    console.error('Starting CircleCI MCP server in stdio mode...');
     createStdioTransport(server);
   }
 }
