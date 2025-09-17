@@ -11,7 +11,7 @@ class DebugSSETransport extends SSEServerTransport {
   }
   override async send(payload: any) {
     if (process.env.debug === 'true') {
-      console.log('[DEBUG] SSE out ->', JSON.stringify(payload));
+      console.error('[DEBUG] SSE out ->', JSON.stringify(payload));
     }
     return super.send(payload);
   }
@@ -42,12 +42,12 @@ export const createUnifiedTransport = (server: McpServer) => {
           req.header('Mcp-Session-Id') ||
           req.header('mcp-session-id') ||
           (req.query.sessionId as string);
-        console.log(`[DEBUG] [GET /mcp] Incoming session:`, sessionId);
+        console.error(`[DEBUG] [GET /mcp] Incoming session:`, sessionId);
       }
       // Create SSE transport (stateless)
       const transport = new DebugSSETransport('/mcp', res);
       if (process.env.debug === 'true') {
-        console.log(`[DEBUG] [GET /mcp] Created SSE transport.`);
+        console.error(`[DEBUG] [GET /mcp] Created SSE transport.`);
       }
       await server.connect(transport);
       // Notify newly connected client of current tool catalogue
@@ -65,8 +65,8 @@ export const createUnifiedTransport = (server: McpServer) => {
       try {
         if (process.env.debug === 'true') {
           const names = Object.keys((server as any)._registeredTools ?? {});
-          console.log(`[DEBUG] visible tools:`, names);
-          console.log(
+          console.error(`[DEBUG] visible tools:`, names);
+          console.error(
             `[DEBUG] incoming request body:`,
             JSON.stringify(req.body),
           );
@@ -91,7 +91,7 @@ export const createUnifiedTransport = (server: McpServer) => {
         // started listening on the SSE stream).
         if (req.body?.method === 'initialize') {
           if (process.env.debug === 'true') {
-            console.log(
+            console.error(
               '[DEBUG] initialize handled -> sending tools/list_changed again',
             );
           }
@@ -124,14 +124,14 @@ export const createUnifiedTransport = (server: McpServer) => {
       req.header('mcp-session-id') ||
       (req.query.sessionId as string);
     if (process.env.debug === 'true') {
-      console.log(`[DEBUG] [DELETE /mcp] Incoming sessionId:`, sessionId);
+      console.error(`[DEBUG] [DELETE /mcp] Incoming sessionId:`, sessionId);
     }
     res.status(204).end();
   });
 
   const port = process.env.port || 8000;
   app.listen(port, () => {
-    console.log(
+    console.error(
       `CircleCI MCP unified HTTP+SSE server listening on http://0.0.0.0:${port}`,
     );
   });
