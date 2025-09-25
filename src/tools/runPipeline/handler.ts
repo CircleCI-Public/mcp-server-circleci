@@ -20,7 +20,7 @@ export const runPipeline: ToolCallback<{
     projectURL,
     pipelineChoiceName,
     projectSlug: inputProjectSlug,
-  } = args.params;
+  } = args.params || {};
 
   let projectSlug: string | undefined;
   let branchFromURL: string | undefined;

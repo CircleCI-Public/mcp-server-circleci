@@ -5,7 +5,7 @@ import { getCircleCIClient } from '../../clients/client.js';
 export const configHelper: ToolCallback<{
   params: typeof configHelperInputSchema;
 }> = async (args) => {
-  const { configFile } = args.params;
+  const { configFile } = args.params || {};
 
   const circleci = getCircleCIClient();
   const configValidate = await circleci.configValidate.validateConfig({

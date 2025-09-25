@@ -7,7 +7,7 @@ export const findUnderusedResourceClasses: ToolCallback<{ params: typeof findUnd
   const { 
     csvFilePath, 
     threshold 
-  } = args.params;
+  } = args.params || {};
 
   if (!csvFilePath) {
     return mcpErrorOutput('ERROR: csvFilePath is required.');

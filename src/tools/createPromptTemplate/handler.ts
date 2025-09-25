@@ -12,7 +12,7 @@ export const temperatureKey = 'temperature';
 export const createPromptTemplate: ToolCallback<{
   params: typeof createPromptTemplateInputSchema;
 }> = async (args) => {
-  const { prompt, promptOrigin, model } = args.params;
+  const { prompt, promptOrigin, model } = args.params || {};
 
   const circlet = new CircletClient();
   const promptObject = await circlet.circlet.createPromptTemplate(
