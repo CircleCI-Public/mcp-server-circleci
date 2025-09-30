@@ -17,7 +17,7 @@ export const downloadUsageApiData: ToolCallback<{ params: typeof downloadUsageAp
     endDate,
     outputDir,
     jobId,
-  } = args.params || {};
+  } = args.params ?? {};
 
   const hasDates = Boolean(startDate) && Boolean(endDate);
   const hasJobId = Boolean(jobId);

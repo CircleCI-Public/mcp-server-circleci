@@ -20,7 +20,7 @@ export const runEvaluationTests: ToolCallback<{
     pipelineChoiceName,
     projectSlug: inputProjectSlug,
     promptFiles,
-  } = args.params || {};
+  } = args.params ?? {};
 
   let projectSlug: string | undefined;
   let branchFromURL: string | undefined;

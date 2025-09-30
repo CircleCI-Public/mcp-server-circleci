@@ -21,7 +21,7 @@ const recommendedTestsKey = 'recommendedTests';
 export const recommendPromptTemplateTests: ToolCallback<{
   params: typeof recommendPromptTemplateTestsInputSchema;
 }> = async (args) => {
-  const { template, contextSchema, promptOrigin } = args.params || {};
+  const { template, contextSchema, promptOrigin } = args.params ?? {};
 
   const circlet = new CircletClient();
   const result = await circlet.circlet.recommendPromptTemplateTests({

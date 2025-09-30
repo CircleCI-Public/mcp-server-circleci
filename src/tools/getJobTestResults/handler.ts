@@ -21,7 +21,7 @@ export const getJobTestResults: ToolCallback<{
     projectURL,
     filterByTestsResult,
     projectSlug: inputProjectSlug,
-  } = args.params || {};
+  } = args.params ?? {};
 
   let pipelineNumber: number | undefined;
   let projectSlug: string | undefined;

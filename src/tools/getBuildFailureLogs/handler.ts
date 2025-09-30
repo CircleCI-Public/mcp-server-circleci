@@ -19,7 +19,7 @@ export const getBuildFailureLogs: ToolCallback<{
     branch,
     projectURL,
     projectSlug: inputProjectSlug,
-  } = args.params || {};
+  } = args.params ?? {};
 
   let projectSlug: string | undefined;
   let pipelineNumber: number | undefined;

@@ -18,7 +18,7 @@ export const getLatestPipelineStatus: ToolCallback<{
     branch,
     projectURL,
     projectSlug: inputProjectSlug,
-  } = args.params || {};
+  } = args.params ?? {};
 
   let projectSlug: string | null | undefined;
   let branchFromURL: string | null | undefined;

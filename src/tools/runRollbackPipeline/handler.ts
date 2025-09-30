@@ -16,7 +16,7 @@ export const runRollbackPipeline: ToolCallback<{
     namespace,
     reason,
     parameters,
-  } = args.params || {};
+  } = args.params ?? {};
 
 
   // Init the client and get the base URL
