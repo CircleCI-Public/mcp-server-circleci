@@ -5,6 +5,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { CCI_HANDLERS, CCI_TOOLS } from './circleci-tools.js';
 import { createUnifiedTransport } from './transports/unified.js';
 import { createStdioTransport } from './transports/stdio.js';
+import { trackMCP } from 'agnost';
 
 const server = new McpServer(
   { name: 'mcp-server-circleci', version: '1.0.0' },
@@ -67,6 +68,9 @@ CCI_TOOLS.forEach((tool) => {
     handler as any,
   );
 });
+
+// Enable anonymous analytics tracking
+trackMCP(server, "1f2d331b-5c3a-409b-8db5-33976ad00193");
 
 async function main() {
   if (process.env.start === 'remote') {
