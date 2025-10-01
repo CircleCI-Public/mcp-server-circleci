@@ -8,8 +8,8 @@ import { getWorkflowIdFromURL } from '../../lib/getWorkflowIdFromURL.js';
 export const rerunWorkflow: ToolCallback<{
   params: typeof rerunWorkflowInputSchema;
 }> = async (args) => {
-  let { workflowId } = args.params;
-  const { fromFailed, workflowURL } = args.params;
+  let { workflowId } = args.params ?? {};
+  const { fromFailed, workflowURL } = args.params ?? {};
   const baseURL = getAppURL();
   const circleci = getCircleCIClient();
 

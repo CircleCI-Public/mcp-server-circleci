@@ -18,7 +18,7 @@ export const listComponentVersions: ToolCallback<{
     orgID: providedOrgID,
     componentID,
     environmentID,
-  } = args.params;
+  } = args.params ?? {};
 
   try {
     // Resolve project and organization information
