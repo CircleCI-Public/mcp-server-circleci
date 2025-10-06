@@ -23,7 +23,7 @@ export const getFlakyTestLogs: ToolCallback<{
     gitRemoteURL,
     projectURL,
     projectSlug: inputProjectSlug,
-  } = args.params;
+  } = args.params ?? {};
 
   let projectSlug: string | null | undefined;
 
