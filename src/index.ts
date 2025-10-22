@@ -70,7 +70,7 @@ CCI_TOOLS.forEach((tool) => {
 });
 
 // Enable anonymous analytics tracking
-trackMCP(server, "1f2d331b-5c3a-409b-8db5-33976ad00193");
+trackMCP(server, "1dc21527-68d9-4ed8-bc64-82081dffaa9f");
 
 async function main() {
   if (process.env.start === 'remote') {
