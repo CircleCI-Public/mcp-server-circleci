@@ -914,6 +914,49 @@ Click the Save button.
   - Quickly rerunning a workflow from its start or from the failed job without visiting the web UI
   - Debugging flaky tests by enabling SSH access on the last job with a simple command
 
+- `get_ssh_details`
+
+  Retrieves SSH connection details for jobs that were rerun with SSH enabled.
+
+  **Usage:**
+
+  Use this tool after rerunning a workflow with `enableSsh: true`. Wait 30-60 seconds for the job to start before calling this tool.
+
+  **Input Parameters:**
+
+  1. **Workflow Identification** (provide ONE):
+     - `workflowId`: The UUID of the workflow
+     - `workflowURL`: Full workflow URL from CircleCI
+
+  2. **Job Selection** (optional):
+     - `jobNumber`: Specific job number to get SSH details for
+     - If omitted: Automatically finds the last job with SSH enabled
+
+  **Returns:**
+
+  - SSH connection command (e.g., `ssh -p 54782 52.90.XXX.XXX`)
+  - Job information (name, number, URL)
+  - Usage notes about SSH session duration
+
+  **Common Errors:**
+
+  - "SSH step not found" → Job still starting, wait 30-60 seconds and retry
+  - "No SSH-enabled jobs found" → Workflow not rerun with `enableSsh: true`
+
+  **Example Workflow:**
+
+  1. `rerun_workflow(enableSsh: true)` → Returns workflow URL
+  2. Wait 30-60 seconds for job to start
+  3. `get_ssh_details(workflowURL: "...")` → Returns SSH command
+  4. Use SSH command to connect to the job environment
+
+  This is particularly useful for:
+
+  - Getting SSH access after rerunning a workflow for debugging
+  - Investigating flaky tests directly in the CI environment
+  - Troubleshooting environment-specific issues
+  - No need to manually find SSH details in the CircleCI UI
+
 - `analyze_diff`
 
   Analyzes git diffs against cursor rules to identify rule violations.

@@ -66,6 +66,26 @@ export const rerunWorkflow: ToolCallback<{
   });
 
   const workflowUrl = `${baseURL}/pipelines/workflows/${newWorkflow.workflow_id}`;
+
+  if (enableSsh) {
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `Workflow rerun with SSH enabled!
+
+Workflow: ${workflowUrl}
+
+To get SSH connection details:
+1. Wait 30-60 seconds for the job to start
+2. Use: get_ssh_details with the workflow URL above
+
+The SSH session remains active for 10 minutes after job completion.`,
+        },
+      ],
+    };
+  }
+
   return {
     content: [
       {

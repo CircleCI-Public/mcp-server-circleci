@@ -391,7 +391,15 @@ describe('rerunWorkflow', () => {
         content: [
           {
             type: 'text',
-            text: `New workflowId is ${newWorkflowId} and [View Workflow in CircleCI](https://app.circleci.com/pipelines/workflows/11111111-1111-1111-1111-111111111111)`,
+            text: `Workflow rerun with SSH enabled!
+
+Workflow: https://app.circleci.com/pipelines/workflows/${newWorkflowId}
+
+To get SSH connection details:
+1. Wait 30-60 seconds for the job to start
+2. Use: get_ssh_details with the workflow URL above
+
+The SSH session remains active for 10 minutes after job completion.`,
           },
         ],
       });
