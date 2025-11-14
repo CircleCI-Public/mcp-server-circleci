@@ -94,20 +94,28 @@ export class WorkflowsAPI {
    * Rerun workflow from failed job or start
    * @param workflowId The workflowId
    * @param fromFailed Whether to rerun from failed job or start
+   * @param enableSsh Enable SSH access for debugging the rerun jobs
+   * @param jobs Array of job IDs to rerun
    * @returns A new workflowId
    * @throws Error if the request fails
    */
   async rerunWorkflow({
     workflowId,
     fromFailed,
+    enableSsh,
+    jobs,
   }: {
     workflowId: string;
     fromFailed?: boolean;
+    enableSsh?: boolean;
+    jobs?: string[];
   }): Promise<RerunWorkflow> {
     const rawResult = await this.client.post<unknown>(
       `/workflow/${workflowId}/rerun`,
       {
         from_failed: fromFailed,
+        enable_ssh: enableSsh,
+        jobs,
       },
     );
     const parsedResult = RerunWorkflow.safeParse(rawResult);

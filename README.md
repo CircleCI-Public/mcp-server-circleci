@@ -887,13 +887,32 @@ Click the Save button.
 
 - `rerun_workflow`
 
-  Reruns a workflow from its start or from the failed job.
+  Reruns a workflow with various options: from start, from failed jobs, or with SSH enabled for debugging.
 
-  The tool returns the ID of the newly-created workflow, and a link to monitor the new workflow.
+  **Rerun Options:**
+
+  1. **Rerun from failed** (for recovery):
+     - Reruns only the failed jobs and their dependencies
+     - Example: "Rerun the failed workflow from the failed job"
+
+  2. **Rerun with SSH enabled** (for debugging):
+     - Automatically reruns the LAST job in the workflow with SSH access enabled
+     - Perfect for debugging flaky tests or investigating CI issues
+     - Example: "Rerun the workflow with SSH enabled"
+
+  3. **Full workflow rerun** (default):
+     - Reruns the entire workflow from the beginning
+     - Example: "Rerun the workflow"
+
+  **Parameter Constraints:**
+  - `fromFailed` cannot be used with `enableSsh`
+
+  The tool returns the ID of the newly-created workflow and a link to monitor the new workflow.
 
   This is particularly useful for:
 
-  - Quickly rerunning a workflow from its start or from the failed job without visiting the CircleCI web UI
+  - Quickly rerunning a workflow from its start or from the failed job without visiting the web UI
+  - Debugging flaky tests by enabling SSH access on the last job with a simple command
 
 - `analyze_diff`
 
