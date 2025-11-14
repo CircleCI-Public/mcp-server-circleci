@@ -127,7 +127,7 @@ describe('getSshDetails', () => {
       error: '',
     };
 
-    const { mockCircleCIClient, mockCircleCIPrivateClient } = setupMockClient(
+    const { mockCircleCIClient } = setupMockClient(
       mockJobs,
       mockJobDetails,
       mockStepOutput,

@@ -23,8 +23,8 @@ function extractSshCommand(output: string): string {
 export const getSshDetails: ToolCallback<{
   params: typeof getSshDetailsInputSchema;
 }> = async (args) => {
-  let { workflowId, jobNumber } = args.params ?? {};
-  const { workflowURL } = args.params ?? {};
+  let { workflowId } = args.params ?? {};
+  const { jobNumber, workflowURL } = args.params ?? {};
   const baseURL = getAppURL();
   const circleci = getCircleCIClient();
   const circleciPrivate = getCircleCIPrivateClient();
