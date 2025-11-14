@@ -5,6 +5,16 @@ import mcpErrorOutput from '../../lib/mcpErrorOutput.js';
 import { getAppURL } from '../../clients/circleci/index.js';
 import { getWorkflowIdFromURL } from '../../lib/getWorkflowIdFromURL.js';
 
+const JOB_NOT_READY_MESSAGE = `Job not found or not ready yet.
+
+The workflow may have just been rerun. Please wait 30-60 seconds for the job to start and try again.`;
+
+const SSH_STEP_NOT_FOUND_MESSAGE = (jobNumber: number) => `SSH step not found for job ${jobNumber}. The job may still be starting.
+
+Please wait 30-60 seconds and try again.
+
+If the problem persists, check that the job was rerun with SSH enabled.`;
+
 // Helper to extract SSH command from step output
 function extractSshCommand(output: string): string {
   // Example output: "You can now SSH into this box...\n    $ ssh -p 54782 52.90.XXX.XXX"
@@ -131,11 +141,7 @@ The job may still be starting. If you just rerun the workflow, wait 30-60 second
         content: [
           {
             type: 'text',
-            text: `SSH step not found for job ${targetJob.job_number}. The job may still be starting.
-
-Please wait 30-60 seconds and try again.
-
-If the problem persists, check that the job was rerun with SSH enabled.`,
+            text: SSH_STEP_NOT_FOUND_MESSAGE(targetJob.job_number),
           },
         ],
       };
@@ -179,9 +185,7 @@ Your SSH key must be added to CircleCI account settings.`,
         content: [
           {
             type: 'text',
-            text: `Job not found or not ready yet.
-
-The workflow may have just been rerun. Please wait 30-60 seconds for the job to start and try again.`,
+            text: JOB_NOT_READY_MESSAGE,
           },
         ],
       };
