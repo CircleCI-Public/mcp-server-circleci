@@ -20,6 +20,7 @@ export const runPipeline: ToolCallback<{
     projectURL,
     pipelineChoiceName,
     projectSlug: inputProjectSlug,
+    parameters,
   } = args.params ?? {};
 
   let projectSlug: string | undefined;
@@ -118,6 +119,7 @@ export const runPipeline: ToolCallback<{
     branch: foundBranch,
     definitionId: runPipelineDefinitionId,
     configContent,
+    parameters,
   });
 
   return {

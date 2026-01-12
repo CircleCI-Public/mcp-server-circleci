@@ -49,7 +49,6 @@ Add the following to your cursor MCP config:
 }
 ```
 
-
 #### Using Docker in a local MCP Server
 
 Add the following to your cursor MCP config:
@@ -87,7 +86,7 @@ Add the following to your cursor MCP config:
   "inputs": [
     {
       "type": "promptString",
-      "id": "circleci-token", 
+      "id": "circleci-token",
       "description": "CircleCI API Token",
       "password": true
     }
@@ -218,15 +217,14 @@ Add the following to your claude_desktop_config.json:
   }
 }
 ```
+
 To locate this file:
 
 macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
 
-
 Windows: `%APPDATA%\Claude\claude_desktop_config.json`
 
 [Claude Desktop setup](https://modelcontextprotocol.io/quickstart/user)
-
 
 #### Using Docker in a local MCP Server
 
@@ -275,7 +273,7 @@ Create a script file such as 'circleci-remote-mcp.sh':
 ```bash
 #!/bin/bash
 export CIRCLECI_TOKEN="your-circleci-token"
-npx mcp-remote http://your-circleci-remote-mcp-server-endpoint:8000/mcp --allow-http 
+npx mcp-remote http://your-circleci-remote-mcp-server-endpoint:8000/mcp --allow-http
 ```
 
 Make it executable:
@@ -440,10 +438,7 @@ Edit your global configuration file ~/.aws/amazonq/mcp.json or create a new one 
   "mcpServers": {
     "circleci-local": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@circleci/mcp-server-circleci@latest"
-      ],
+      "args": ["-y", "@circleci/mcp-server-circleci@latest"],
       "env": {
         "CIRCLECI_TOKEN": "YOUR_CIRCLECI_TOKEN",
         "CIRCLECI_BASE_URL": "https://circleci.com" // Optional - required for on-prem customers only
@@ -489,10 +484,7 @@ Edit your global configuration file ~/.aws/amazonq/mcp.json or create a new one 
   "mcpServers": {
     "circleci-local": {
       "command": "npx",
-      "args": [
-        "-y",
-        "@circleci/mcp-server-circleci@latest"
-      ],
+      "args": ["-y", "@circleci/mcp-server-circleci@latest"],
       "env": {
         "CIRCLECI_TOKEN": "YOUR_CIRCLECI_TOKEN",
         "CIRCLECI_BASE_URL": "https://circleci.com" // Optional - required for on-prem customers only
@@ -609,6 +601,7 @@ Click the Save button.
      - Example: "Find flaky tests in my current project"
 
   The tool can be used in two ways:
+
   1. Using text output mode (default):
      - This will return the flaky tests and their details in a text format
   2. Using file output mode: (requires the `FILE_OUTPUT_DIRECTORY` environment variable to be set)
@@ -846,12 +839,20 @@ Click the Save button.
        - Branch name
      - Example: "Run the pipeline for my current project on the main branch"
 
+  The tool supports optional pipeline parameters:
+
+  - You can pass parameters to the pipeline by providing a key-value object
+  - Example: "Run the pipeline with parameters: { \"deploy_feature_beta\": true, \"environment\": \"staging\" }"
+  - Parameters are only included in the request if provided
+  - Supports any JSON-serializable values (boolean, string, number, array, object)
+
   The tool returns a link to monitor the pipeline execution.
 
   This is particularly useful for:
 
   - Quickly running pipelines without visiting the CircleCI web UI
   - Running pipelines from a specific branch
+  - Triggering pipelines with custom parameters for different deployment scenarios
 
 - `run_rollback_pipeline`
 
@@ -881,8 +882,10 @@ Click the Save button.
   4. Version Selection - Display available versions, user selects non-live version for rollback
   5. Rollback Mode Detection - Check if rollback pipeline is configured for the selected project
   6. Execute Rollback - Two options available:
-    - Pipeline Rollback: Prompt for optional reason, execute rollback pipeline
-    - Workflow Rerun**: Rerun workflow using selected version's workflow ID
+
+  - Pipeline Rollback: Prompt for optional reason, execute rollback pipeline
+  - Workflow Rerun\*\*: Rerun workflow using selected version's workflow ID
+
   7. Confirmation - Summarize rollback request and confirm before execution
 
 - `rerun_workflow`
@@ -955,7 +958,7 @@ Click the Save button.
       },
       {
         "name": "v1.1.0",
-        "namespace": "production", 
+        "namespace": "production",
         "environment_id": "env-456def",
         "is_live": false,
         "pipeline_id": "22222222-2222-2222-2222-222222222222",
@@ -983,35 +986,43 @@ Click the Save button.
 
   This tool can be used in one of two ways:
 
-  1) Start a new export job for a date range (max 32 days) by providing:
+  1. Start a new export job for a date range (max 32 days) by providing:
+
   - orgId: Organization ID
   - startDate: Start date (YYYY-MM-DD or natural language)
   - endDate: End date (YYYY-MM-DD or natural language)
   - outputDir: Directory to save the CSV file
 
-  2) Check/download an existing export job by providing:
+  2. Check/download an existing export job by providing:
+
   - orgId: Organization ID
   - jobId: Usage export job ID
   - outputDir: Directory to save the CSV file
 
   The tool provides:
+
   - A csv containing the CircleCI Usage API data from the specified time frame
 
   This is useful for:
+
   - Downloading detailed CircleCI usage data for reporting or analysis
   - Feeding usage data into the `find_underused_resource_classes` tool
 
   Example usage scenarios:
+
 - Scenario 1:
+
   1. "Download usage data for org abc123 from June into ~/Downloads"
   2. "Check status"
 
 - Scenario 2:
+
   1. "Download usage data for org abc123 for last month to my Downloads folder"
   2. "Check usage download status"
   3. "Check status again"
 
 - Scenario 3:
+
   1. "Check my usage export job usage-job-9f2d7c and download it if ready"
 
 - `find_underused_resource_classes`
@@ -1019,16 +1030,20 @@ Click the Save button.
   Analyzes a CircleCI usage data CSV file to find jobs/resource classes with average or max CPU/RAM usage below a given threshold (default 40%).
 
   This tool can be used by providing:
+
   - A csv containing CircleCI Usage API data, which can be obtained by using the `download_usage_api_data` tool.
 
   The tool provides:
+
   - A markdown list of all jobs that are below the threshold, delineated by project and workflow.
 
   This is useful for:
+
   - Finding jobs that are using less than half of the compute provided to them on average
   - Generating a list of low hanging cost optimizations
 
   Example usage scenarios:
+
   - Scenario 1:
     1. "Find underused resource classes in the file you just downloaded"
   - Scenario 2:
@@ -1043,12 +1058,14 @@ Click the Save button.
 **Most Common Issues:**
 
 1. **Clear package caches:**
+
    ```bash
    npx clear-npx-cache
    npm cache clean --force
    ```
 
 2. **Force latest version:** Add `@latest` to your config:
+
    ```json
    "args": ["-y", "@circleci/mcp-server-circleci@latest"]
    ```
@@ -1057,46 +1074,49 @@ Click the Save button.
 
 ## Authentication Issues
 
-* **Invalid token errors:** Verify your `CIRCLECI_TOKEN` in Personal API Tokens
-* **Permission errors:** Ensure token has read access to your projects
-* **Environment variables not loading:** Test with `echo $CIRCLECI_TOKEN` (Mac/Linux) or `echo %CIRCLECI_TOKEN%` (Windows)
+- **Invalid token errors:** Verify your `CIRCLECI_TOKEN` in Personal API Tokens
+- **Permission errors:** Ensure token has read access to your projects
+- **Environment variables not loading:** Test with `echo $CIRCLECI_TOKEN` (Mac/Linux) or `echo %CIRCLECI_TOKEN%` (Windows)
 
 ## Connection and Network Issues
 
-* **Base URL:** Confirm `CIRCLECI_BASE_URL` is `https://circleci.com`
-* **Corporate networks:** Configure npm proxy settings if behind firewall
-* **Firewall blocking:** Check if security software blocks package downloads
+- **Base URL:** Confirm `CIRCLECI_BASE_URL` is `https://circleci.com`
+- **Corporate networks:** Configure npm proxy settings if behind firewall
+- **Firewall blocking:** Check if security software blocks package downloads
 
 ## System Requirements
 
-* **Node.js version:** Ensure ≥ 18.0.0 with `node --version`
-* **Update Node.js:** Consider latest LTS if experiencing compatibility issues
-* **Package manager:** Verify npm/pnpm is working: `npm --version`
+- **Node.js version:** Ensure ≥ 18.0.0 with `node --version`
+- **Update Node.js:** Consider latest LTS if experiencing compatibility issues
+- **Package manager:** Verify npm/pnpm is working: `npm --version`
 
 ## IDE-Specific Issues
 
-* **Config file location:** Double-check path for your OS
-* **Syntax errors:** Validate JSON syntax in config file
-* **Console logs:** Check IDE developer console for specific errors
-* **Try different IDE:** Test config in another supported editor to isolate issue
+- **Config file location:** Double-check path for your OS
+- **Syntax errors:** Validate JSON syntax in config file
+- **Console logs:** Check IDE developer console for specific errors
+- **Try different IDE:** Test config in another supported editor to isolate issue
 
 ## Process Issues
 
-* **Hanging processes:** Kill existing MCP processes:
+- **Hanging processes:** Kill existing MCP processes:
+
   ```bash
-  # Mac/Linux: 
+  # Mac/Linux:
   pkill -f "mcp-server-circleci"
-  
-  # Windows: 
+
+  # Windows:
   taskkill /f /im node.exe
 
-* **Port conflicts:** Restart IDE if connection seems blocked
+  ```
+
+- **Port conflicts:** Restart IDE if connection seems blocked
 
 ## Advanced Debugging
 
-* **Test package directly:** `npx @circleci/mcp-server-circleci@latest --help`
-* **Verbose logging:** `DEBUG=* npx @circleci/mcp-server-circleci@latest`
-* **Docker fallback:** Try Docker installation if npx fails consistently
+- **Test package directly:** `npx @circleci/mcp-server-circleci@latest --help`
+- **Verbose logging:** `DEBUG=* npx @circleci/mcp-server-circleci@latest`
+- **Docker fallback:** Try Docker installation if npx fails consistently
 
 ## Still Need Help?
 
