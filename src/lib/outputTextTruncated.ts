@@ -1,6 +1,7 @@
 import { McpSuccessResponse } from './mcpResponse.js';
 
-const MAX_LENGTH = 50000;
+const MAX_LENGTH =
+  parseInt(process.env.MAX_MCP_OUTPUT_LENGTH ?? '', 10) || 50000;
 
 export const SEPARATOR = '\n<<<SEPARATOR>>>\n';
 
