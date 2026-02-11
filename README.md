@@ -901,13 +901,75 @@ Click the Save button.
 
 - `rerun_workflow`
 
-  Reruns a workflow from its start or from the failed job.
+  Reruns a workflow with various options: from start, from failed jobs, or with SSH enabled for debugging.
 
-  The tool returns the ID of the newly-created workflow, and a link to monitor the new workflow.
+  **Rerun Options:**
+
+  1. **Rerun from failed** (for recovery):
+     - Reruns only the failed jobs and their dependencies
+     - Example: "Rerun the failed workflow from the failed job"
+
+  2. **Rerun with SSH enabled** (for debugging):
+     - Automatically reruns the LAST job in the workflow with SSH access enabled
+     - Perfect for debugging flaky tests or investigating CI issues
+     - Example: "Rerun the workflow with SSH enabled"
+
+  3. **Full workflow rerun** (default):
+     - Reruns the entire workflow from the beginning
+     - Example: "Rerun the workflow"
+
+  **Parameter Constraints:**
+  - `fromFailed` cannot be used with `enableSsh`
+
+  The tool returns the ID of the newly-created workflow and a link to monitor the new workflow.
 
   This is particularly useful for:
 
-  - Quickly rerunning a workflow from its start or from the failed job without visiting the CircleCI web UI
+  - Quickly rerunning a workflow from its start or from the failed job without visiting the web UI
+  - Debugging flaky tests by enabling SSH access on the last job with a simple command
+
+- `get_ssh_details`
+
+  Retrieves SSH connection details for jobs that were rerun with SSH enabled.
+
+  **Usage:**
+
+  Use this tool after rerunning a workflow with `enableSsh: true`. Wait 30-60 seconds for the job to start before calling this tool.
+
+  **Input Parameters:**
+
+  1. **Workflow Identification** (provide ONE):
+     - `workflowId`: The UUID of the workflow
+     - `workflowURL`: Full workflow URL from CircleCI
+
+  2. **Job Selection** (optional):
+     - `jobNumber`: Specific job number to get SSH details for
+     - If omitted: Automatically finds the last job with SSH enabled
+
+  **Returns:**
+
+  - SSH connection command (e.g., `ssh -p 54782 52.90.XXX.XXX`)
+  - Job information (name, number, URL)
+  - Usage notes about SSH session duration
+
+  **Common Errors:**
+
+  - "SSH step not found" → Job still starting, wait 30-60 seconds and retry
+  - "No SSH-enabled jobs found" → Workflow not rerun with `enableSsh: true`
+
+  **Example Workflow:**
+
+  1. `rerun_workflow(enableSsh: true)` → Returns workflow URL
+  2. Wait 30-60 seconds for job to start
+  3. `get_ssh_details(workflowURL: "...")` → Returns SSH command
+  4. Use SSH command to connect to the job environment
+
+  This is particularly useful for:
+
+  - Getting SSH access after rerunning a workflow for debugging
+  - Investigating flaky tests directly in the CI environment
+  - Troubleshooting environment-specific issues
+  - No need to manually find SSH details in the CircleCI UI
 
 - `analyze_diff`
 

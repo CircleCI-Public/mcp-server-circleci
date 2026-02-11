@@ -3,23 +3,36 @@ import { rerunWorkflowInputSchema } from './inputSchema.js';
 export const rerunWorkflowTool = {
   name: 'rerun_workflow' as const,
   description: `
-  This tool is used to rerun a workflow from start or from the failed job.
+  This tool reruns a workflow with various options: from start, from failed jobs, or with SSH enabled for debugging.
 
   Common use cases:
   - Rerun a workflow from a failed job
   - Rerun a workflow from start
+  - Rerun the last job with SSH enabled for debugging
 
-Input options (EXACTLY ONE of these TWO options must be used):
+WORKFLOW IDENTIFICATION (provide ONE):
+- workflowId: The UUID of the workflow (e.g., "a12145c5-90f8-4cc9-98f2-36cb85db9e4b")
+- workflowURL: Full workflow or job URL
 
-Option 1 - Workflow ID:
-- workflowId: The ID of the workflow to rerun
-- fromFailed: true to rerun from failed, false to rerun from start. If omitted, behavior is based on workflow status. (optional)
+RERUN OPTIONS (choose ONE strategy):
 
-Option 2 - Workflow URL:
-- workflowURL: The URL of the workflow to rerun
-  * Workflow URL: https://app.circleci.com/pipelines/:vcsType/:orgName/:projectName/:pipelineNumber/workflows/:workflowId
-  * Workflow Job URL: https://app.circleci.com/pipelines/:vcsType/:orgName/:projectName/:pipelineNumber/workflows/:workflowId/jobs/:buildNumber
-- fromFailed: true to rerun from failed, false to rerun from start. If omitted, behavior is based on workflow status. (optional)
+Strategy 1 - Rerun from failed (for recovery):
+- fromFailed: true
+- Reruns only the failed jobs and their dependencies
+- Cannot be combined with: enableSsh
+
+Strategy 2 - Rerun with SSH (for debugging):
+- enableSsh: true
+- Automatically reruns the LAST job in the workflow with SSH enabled
+- Perfect for debugging flaky tests or investigating CI issues
+- Cannot be combined with: fromFailed
+
+Strategy 3 - Full workflow rerun (default):
+- No additional parameters needed
+- Reruns the entire workflow from the beginning
+
+PARAMETER CONSTRAINTS:
+- fromFailed CANNOT be used with enableSsh
   `,
   inputSchema: rerunWorkflowInputSchema,
 };

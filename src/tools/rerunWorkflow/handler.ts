@@ -9,7 +9,7 @@ export const rerunWorkflow: ToolCallback<{
   params: typeof rerunWorkflowInputSchema;
 }> = async (args) => {
   let { workflowId } = args.params ?? {};
-  const { fromFailed, workflowURL } = args.params ?? {};
+  const { fromFailed, workflowURL, enableSsh } = args.params ?? {};
   const baseURL = getAppURL();
   const circleci = getCircleCIClient();
 
@@ -20,6 +20,13 @@ export const rerunWorkflow: ToolCallback<{
   if (!workflowId) {
     return mcpErrorOutput(
       'workflowId is required and could not be determined from workflowURL.',
+    );
+  }
+
+  // Validate parameter constraints
+  if (enableSsh && fromFailed) {
+    return mcpErrorOutput(
+      'enableSsh and fromFailed cannot be used together. Use enableSsh to debug a specific job, or use fromFailed to rerun all failed jobs.',
     );
   }
 
@@ -37,12 +44,48 @@ export const rerunWorkflow: ToolCallback<{
     return mcpErrorOutput('Workflow is not failed, cannot rerun from failed');
   }
 
+  // Auto-fetch last job when SSH is enabled
+  let jobs: string[] | undefined;
+  if (enableSsh) {
+    const workflowJobs = await circleci.jobs.getWorkflowJobs({ workflowId });
+
+    if (workflowJobs.length === 0) {
+      return mcpErrorOutput('No jobs found in workflow');
+    }
+
+    // Get the last job (most recent)
+    const lastJob = workflowJobs[workflowJobs.length - 1];
+    jobs = [lastJob.id];
+  }
+
   const newWorkflow = await circleci.workflows.rerunWorkflow({
     workflowId,
-    fromFailed: fromFailed !== undefined ? fromFailed : workflowFailed,
+    fromFailed: fromFailed !== undefined ? fromFailed : jobs ? undefined : workflowFailed,
+    enableSsh,
+    jobs,
   });
 
   const workflowUrl = `${baseURL}/pipelines/workflows/${newWorkflow.workflow_id}`;
+
+  if (enableSsh) {
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `Workflow rerun with SSH enabled!
+
+Workflow: ${workflowUrl}
+
+To get SSH connection details:
+1. Wait 30-60 seconds for the job to start
+2. Use: get_ssh_details with the workflow URL above
+
+The SSH session remains active for 10 minutes after job completion.`,
+        },
+      ],
+    };
+  }
+
   return {
     content: [
       {

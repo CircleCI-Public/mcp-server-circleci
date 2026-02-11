@@ -11,6 +11,7 @@ const newWorkflowId = '11111111-1111-1111-1111-111111111111';
 function setupMockClient(
   workflowStatus,
   rerunResult = { workflow_id: newWorkflowId },
+  workflowJobs = [],
 ) {
   const mockCircleCIClient = {
     workflows: {
@@ -20,6 +21,9 @@ function setupMockClient(
           workflowStatus !== undefined ? { status: workflowStatus } : undefined,
         ),
       rerunWorkflow: vi.fn().mockResolvedValue(rerunResult),
+    },
+    jobs: {
+      getWorkflowJobs: vi.fn().mockResolvedValue(workflowJobs),
     },
   };
   vi.spyOn(client, 'getCircleCIClient').mockReturnValue(
@@ -341,6 +345,115 @@ describe('rerunWorkflow', () => {
         ],
       });
       spy.mockRestore();
+    });
+  });
+
+  describe('when rerunning with SSH enabled', () => {
+    const jobId1 = 'c65b68ef-e73b-4bf2-be9a-7a322a9df150';
+    const jobId2 = '5e957edd-5e8c-4985-9178-5d0d69561822';
+
+    beforeEach(() => {
+      vi.resetAllMocks();
+    });
+
+    it('should successfully rerun last job with SSH enabled', async () => {
+      const mockJobs = [
+        { id: jobId1, name: 'build', status: 'success' },
+        { id: jobId2, name: 'test', status: 'failed' },
+      ];
+      const mockCircleCIClient = setupMockClient(
+        'failed',
+        { workflow_id: newWorkflowId },
+        mockJobs,
+      );
+      const controller = new AbortController();
+      const response = await rerunWorkflow(
+        {
+          params: {
+            workflowId: failedWorkflowId,
+            enableSsh: true,
+          },
+        },
+        {
+          signal: controller.signal,
+        },
+      );
+      expect(mockCircleCIClient.jobs.getWorkflowJobs).toHaveBeenCalledWith({
+        workflowId: failedWorkflowId,
+      });
+      expect(mockCircleCIClient.workflows.rerunWorkflow).toHaveBeenCalledWith({
+        workflowId: failedWorkflowId,
+        fromFailed: undefined,
+        enableSsh: true,
+        jobs: [jobId2], // Should use the last job
+      });
+      expect(response).toEqual({
+        content: [
+          {
+            type: 'text',
+            text: `Workflow rerun with SSH enabled!
+
+Workflow: https://app.circleci.com/pipelines/workflows/${newWorkflowId}
+
+To get SSH connection details:
+1. Wait 30-60 seconds for the job to start
+2. Use: get_ssh_details with the workflow URL above
+
+The SSH session remains active for 10 minutes after job completion.`,
+          },
+        ],
+      });
+    });
+
+    it('should return an error if no jobs found in workflow', async () => {
+      setupMockClient('failed', { workflow_id: newWorkflowId }, []);
+      const controller = new AbortController();
+      const response = await rerunWorkflow(
+        {
+          params: {
+            workflowId: failedWorkflowId,
+            enableSsh: true,
+          },
+        },
+        {
+          signal: controller.signal,
+        },
+      );
+      expect(response).toEqual({
+        isError: true,
+        content: [
+          {
+            type: 'text',
+            text: 'No jobs found in workflow',
+          },
+        ],
+      });
+    });
+
+    it('should return an error if enableSsh and fromFailed are both true', async () => {
+      setupMockClient('failed');
+      const controller = new AbortController();
+      const response = await rerunWorkflow(
+        {
+          params: {
+            workflowId: failedWorkflowId,
+            enableSsh: true,
+            fromFailed: true,
+          },
+        },
+        {
+          signal: controller.signal,
+        },
+      );
+      expect(response).toEqual({
+        isError: true,
+        content: [
+          {
+            type: 'text',
+            text: 'enableSsh and fromFailed cannot be used together. Use enableSsh to debug a specific job, or use fromFailed to rerun all failed jobs.',
+          },
+        ],
+      });
     });
   });
 });
