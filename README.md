@@ -42,7 +42,8 @@ Add the following to your cursor MCP config:
       "args": ["-y", "@circleci/mcp-server-circleci@latest"],
       "env": {
         "CIRCLECI_TOKEN": "your-circleci-token",
-        "CIRCLECI_BASE_URL": "https://circleci.com" // Optional - required for on-prem customers only
+        "CIRCLECI_BASE_URL": "https://circleci.com", // Optional - required for on-prem customers only
+        "MAX_MCP_OUTPUT_LENGTH": "50000" // Optional - maximum output length for MCP responses (default: 50000)
       }
     }
   }
@@ -67,11 +68,14 @@ Add the following to your cursor MCP config:
         "CIRCLECI_TOKEN",
         "-e",
         "CIRCLECI_BASE_URL",
+        "-e",
+        "MAX_MCP_OUTPUT_LENGTH",
         "circleci:mcp-server-circleci"
       ],
       "env": {
         "CIRCLECI_TOKEN": "your-circleci-token",
-        "CIRCLECI_BASE_URL": "https://circleci.com" // Optional - required for on-prem customers only
+        "CIRCLECI_BASE_URL": "https://circleci.com", // Optional - required for on-prem customers only
+        "MAX_MCP_OUTPUT_LENGTH": "50000" // Optional - maximum output length for MCP responses (default: 50000)
       }
     }
   }
@@ -212,7 +216,8 @@ Add the following to your claude_desktop_config.json:
       "args": ["-y", "@circleci/mcp-server-circleci@latest"],
       "env": {
         "CIRCLECI_TOKEN": "your-circleci-token",
-        "CIRCLECI_BASE_URL": "https://circleci.com" // Optional - required for on-prem customers only
+        "CIRCLECI_BASE_URL": "https://circleci.com", // Optional - required for on-prem customers only
+        "MAX_MCP_OUTPUT_LENGTH": "50000" // Optional - maximum output length for MCP responses (default: 50000)
       }
     }
   }
@@ -245,11 +250,14 @@ Add the following to your claude_desktop_config.json:
         "CIRCLECI_TOKEN",
         "-e",
         "CIRCLECI_BASE_URL",
+        "-e",
+        "MAX_MCP_OUTPUT_LENGTH",
         "circleci:mcp-server-circleci"
       ],
       "env": {
         "CIRCLECI_TOKEN": "your-circleci-token",
-        "CIRCLECI_BASE_URL": "https://circleci.com" // Optional - required for on-prem customers only
+        "CIRCLECI_BASE_URL": "https://circleci.com", // Optional - required for on-prem customers only
+        "MAX_MCP_OUTPUT_LENGTH": "50000" // Optional - maximum output length for MCP responses (default: 50000)
       }
     }
   }
@@ -352,7 +360,8 @@ Add the following to your windsurf mcp_config.json:
       "args": ["-y", "@circleci/mcp-server-circleci@latest"],
       "env": {
         "CIRCLECI_TOKEN": "your-circleci-token",
-        "CIRCLECI_BASE_URL": "https://circleci.com" // Optional - required for on-prem customers only
+        "CIRCLECI_BASE_URL": "https://circleci.com", // Optional - required for on-prem customers only
+        "MAX_MCP_OUTPUT_LENGTH": "50000" // Optional - maximum output length for MCP responses (default: 50000)
       }
     }
   }
@@ -376,11 +385,14 @@ Add the following to your windsurf mcp_config.json:
         "CIRCLECI_TOKEN",
         "-e",
         "CIRCLECI_BASE_URL",
+        "-e",
+        "MAX_MCP_OUTPUT_LENGTH",
         "circleci:mcp-server-circleci"
       ],
       "env": {
         "CIRCLECI_TOKEN": "your-circleci-token",
-        "CIRCLECI_BASE_URL": "https://circleci.com" // Optional - required for on-prem customers only
+        "CIRCLECI_BASE_URL": "https://circleci.com", // Optional - required for on-prem customers only
+        "MAX_MCP_OUTPUT_LENGTH": "50000" // Optional - maximum output length for MCP responses (default: 50000)
       }
     }
   }
@@ -446,7 +458,8 @@ Edit your global configuration file ~/.aws/amazonq/mcp.json or create a new one 
       ],
       "env": {
         "CIRCLECI_TOKEN": "YOUR_CIRCLECI_TOKEN",
-        "CIRCLECI_BASE_URL": "https://circleci.com" // Optional - required for on-prem customers only
+        "CIRCLECI_BASE_URL": "https://circleci.com", // Optional - required for on-prem customers only
+        "MAX_MCP_OUTPUT_LENGTH": "50000" // Optional - maximum output length for MCP responses (default: 50000)
       },
       "timeout": 60000
     }
@@ -495,7 +508,8 @@ Edit your global configuration file ~/.aws/amazonq/mcp.json or create a new one 
       ],
       "env": {
         "CIRCLECI_TOKEN": "YOUR_CIRCLECI_TOKEN",
-        "CIRCLECI_BASE_URL": "https://circleci.com" // Optional - required for on-prem customers only
+        "CIRCLECI_BASE_URL": "https://circleci.com", // Optional - required for on-prem customers only
+        "MAX_MCP_OUTPUT_LENGTH": "50000" // Optional - maximum output length for MCP responses (default: 50000)
       },
       "timeout": 60000
     }
