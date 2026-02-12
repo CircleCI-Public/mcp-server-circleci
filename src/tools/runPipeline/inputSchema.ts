@@ -46,4 +46,12 @@ export const runPipelineInputSchema = z.object({
       'The content of the CircleCI YAML configuration file for the pipeline.',
     )
     .optional(),
+  parameters: z
+    .record(z.any())
+    .describe(
+      'Pipeline parameters to pass when triggering the pipeline. ' +
+        'This should be a key-value object where keys are parameter names and values are their values. ' +
+        'For example: { "deploy_feature_beta": true, "environment": "staging" }',
+    )
+    .optional(),
 });

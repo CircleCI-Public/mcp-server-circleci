@@ -387,4 +387,159 @@ describe('runPipeline handler', () => {
     expect(typeof response.content[0].text).toBe('string');
     expect(response.content[0].text).toContain('Pipeline run successfully');
   });
+
+  it('should run a pipeline with parameters when parameters are provided', async () => {
+    vi.spyOn(projectDetection, 'getProjectSlugFromURL').mockReturnValue(
+      'gh/org/repo',
+    );
+    vi.spyOn(projectDetection, 'getBranchFromURL').mockReturnValue('main');
+
+    mockCircleCIClient.projects.getProject.mockResolvedValue({
+      id: 'project-id',
+    });
+    mockCircleCIClient.pipelines.getPipelineDefinitions.mockResolvedValue([
+      { id: 'def1', name: 'Pipeline 1' },
+    ]);
+    mockCircleCIClient.pipelines.runPipeline.mockResolvedValue({
+      number: 123,
+      state: 'pending',
+      id: 'pipeline-id',
+    });
+
+    const args = {
+      params: {
+        projectURL: 'https://app.circleci.com/pipelines/gh/org/repo',
+        parameters: {
+          deploy_feature_beta: true,
+          environment: 'staging',
+        },
+      },
+    } as any;
+
+    const controller = new AbortController();
+    const response = await runPipeline(args, {
+      signal: controller.signal,
+    });
+
+    expect(response).toHaveProperty('content');
+    expect(Array.isArray(response.content)).toBe(true);
+    expect(response.content[0]).toHaveProperty('type', 'text');
+    expect(typeof response.content[0].text).toBe('string');
+    expect(response.content[0].text).toContain('Pipeline run successfully');
+    expect(mockCircleCIClient.pipelines.runPipeline).toHaveBeenCalledWith({
+      projectSlug: 'gh/org/repo',
+      branch: 'main',
+      definitionId: 'def1',
+      parameters: {
+        deploy_feature_beta: true,
+        environment: 'staging',
+      },
+    });
+  });
+
+  it('should run a pipeline with empty parameters object when provided', async () => {
+    vi.spyOn(projectDetection, 'identifyProjectSlug').mockResolvedValue(
+      'gh/org/repo',
+    );
+
+    mockCircleCIClient.projects.getProject.mockResolvedValue({
+      id: 'project-id',
+    });
+    mockCircleCIClient.pipelines.getPipelineDefinitions.mockResolvedValue([
+      { id: 'def1', name: 'Pipeline 1' },
+    ]);
+    mockCircleCIClient.pipelines.runPipeline.mockResolvedValue({
+      number: 123,
+      state: 'pending',
+      id: 'pipeline-id',
+    });
+
+    const args = {
+      params: {
+        workspaceRoot: '/workspace',
+        gitRemoteURL: 'https://github.com/org/repo.git',
+        branch: 'feature-branch',
+        parameters: {},
+      },
+    } as any;
+
+    const controller = new AbortController();
+    const response = await runPipeline(args, {
+      signal: controller.signal,
+    });
+
+    expect(response).toHaveProperty('content');
+    expect(Array.isArray(response.content)).toBe(true);
+    expect(response.content[0]).toHaveProperty('type', 'text');
+    expect(typeof response.content[0].text).toBe('string');
+    expect(response.content[0].text).toContain('Pipeline run successfully');
+    expect(mockCircleCIClient.pipelines.runPipeline).toHaveBeenCalledWith({
+      projectSlug: 'gh/org/repo',
+      branch: 'feature-branch',
+      definitionId: 'def1',
+      parameters: {},
+    });
+  });
+
+  it('should run a pipeline with various parameter types', async () => {
+    mockCircleCIClient.projects.getProject.mockResolvedValue({
+      id: 'project-id',
+    });
+    mockCircleCIClient.pipelines.getPipelineDefinitions.mockResolvedValue([
+      { id: 'def1', name: 'Pipeline 1' },
+    ]);
+    mockCircleCIClient.pipelines.runPipeline.mockResolvedValue({
+      number: 123,
+      state: 'pending',
+      id: 'pipeline-id',
+    });
+
+    const args = {
+      params: {
+        projectSlug: 'gh/org/repo',
+        branch: 'feature/new-feature',
+        parameters: {
+          boolean_param: true,
+          string_param: 'test-value',
+          number_param: 42,
+          array_param: ['item1', 'item2'],
+          nested_object: {
+            key1: 'value1',
+            key2: false,
+          },
+        },
+      },
+    } as any;
+
+    const controller = new AbortController();
+    const response = await runPipeline(args, {
+      signal: controller.signal,
+    });
+
+    expect(mockCircleCIClient.projects.getProject).toHaveBeenCalledWith({
+      projectSlug: 'gh/org/repo',
+    });
+
+    expect(mockCircleCIClient.pipelines.runPipeline).toHaveBeenCalledWith({
+      projectSlug: 'gh/org/repo',
+      branch: 'feature/new-feature',
+      definitionId: 'def1',
+      parameters: {
+        boolean_param: true,
+        string_param: 'test-value',
+        number_param: 42,
+        array_param: ['item1', 'item2'],
+        nested_object: {
+          key1: 'value1',
+          key2: false,
+        },
+      },
+    });
+
+    expect(response).toHaveProperty('content');
+    expect(Array.isArray(response.content)).toBe(true);
+    expect(response.content[0]).toHaveProperty('type', 'text');
+    expect(typeof response.content[0].text).toBe('string');
+    expect(response.content[0].text).toContain('Pipeline run successfully');
+  });
 });

@@ -139,11 +139,13 @@ export class PipelinesAPI {
     branch,
     definitionId,
     configContent = '',
+    parameters,
   }: {
     projectSlug: string;
     branch: string;
     definitionId: string;
     configContent?: string;
+    parameters?: Record<string, any>;
   }): Promise<RunPipelineResponse> {
     const rawResult = await this.client.post<unknown>(
       `/project/${projectSlug}/pipeline/run`,
@@ -156,6 +158,7 @@ export class PipelinesAPI {
         checkout: {
           branch,
         },
+        ...(parameters && { parameters }),
       },
     );
 
