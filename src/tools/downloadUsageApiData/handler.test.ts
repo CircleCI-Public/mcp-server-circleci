@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { downloadUsageApiData } from './handler.js';
 import * as getUsageApiDataModule from '../../lib/usage-api/getUsageApiData.js';
 
@@ -89,5 +89,41 @@ describe('downloadUsageApiData handler', () => {
     expect(getUsageApiDataSpy).not.toHaveBeenCalled();
     expect((result as any).isError).toBe(true);
     expect((result as any).content[0].text).toContain('Provide either jobId');
+  });
+
+  describe('endDate capping', () => {
+    const FAKE_NOW = new Date('2026-02-18T12:00:00Z');
+    const FAKE_EFFECTIVE_NOW_STR = '2026-02-18T11:59:00Z'; // effectiveNow = FAKE_NOW - 60s buffer
+
+    beforeEach(() => {
+      vi.useFakeTimers();
+      vi.setSystemTime(FAKE_NOW);
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('should cap endDate when day is today with unspecified time', async () => {
+      await downloadUsageApiData(
+        { params: { orgId: ORG_ID, startDate: '2026-02-10', endDate: '2026-02-18', outputDir: OUTPUT_DIR } },
+        undefined as any,
+      );
+
+      expect(getUsageApiDataSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ endDate: FAKE_EFFECTIVE_NOW_STR }),
+      );
+    });
+
+    it('should not cap endDate when day is in the past', async () => {
+      await downloadUsageApiData(
+        { params: { orgId: ORG_ID, startDate: '2026-02-01', endDate: '2026-02-10', outputDir: OUTPUT_DIR } },
+        undefined as any,
+      );
+
+      expect(getUsageApiDataSpy).toHaveBeenCalledWith(
+        expect.objectContaining({ endDate: '2026-02-10T23:59:59Z' }),
+      );
+    });
   });
 }); 
