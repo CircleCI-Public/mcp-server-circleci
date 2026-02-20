@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.14.2] - 2026-02-20
+
+### Fixed
+
+- Fixed bug in `download_usage_api_data` tool where `endDate` could resolve to a future time
+- Fixed bug in `download_usage_api_data` tool where date parameters could be passed in ISO 8601 duration format, which chrono-node cannot parse
+
 ## [0.14.1] - 2025-09-17
 
 ### Fixed

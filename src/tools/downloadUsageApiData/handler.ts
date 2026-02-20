@@ -2,6 +2,7 @@ import { ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { downloadUsageApiDataInputSchema } from './inputSchema.js';
 import { getUsageApiData } from '../../lib/usage-api/getUsageApiData.js';
 import { parseDateTimeString } from '../../lib/usage-api/parseDateTimeString.js';
+import { capEndDate } from '../../lib/usage-api/capEndDate.js';
 import { differenceInCalendarDays, parseISO } from 'date-fns';
 import mcpErrorOutput from '../../lib/mcpErrorOutput.js';
 
@@ -29,9 +30,11 @@ export const downloadUsageApiData: ToolCallback<{ params: typeof downloadUsageAp
   const normalizedStartDate = startDate
     ? (parseDateTimeString(startDate, { defaultTime: 'start-of-day' }) ?? undefined)
     : undefined;
-  const normalizedEndDate = endDate
+  const parsedEndDate = endDate
     ? (parseDateTimeString(endDate, { defaultTime: 'end-of-day' }) ?? undefined)
     : undefined;
+
+  const normalizedEndDate = parsedEndDate ? capEndDate(parsedEndDate) : undefined;
 
   try {
     if (hasDates) {
