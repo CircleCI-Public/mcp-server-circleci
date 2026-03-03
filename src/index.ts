@@ -51,9 +51,6 @@ if (process.env.debug === 'true') {
 if (process.env.debug === 'true') {
   console.error('[DEBUG] [Startup] Registering CircleCI MCP tools...');
 }
-// Ensure we advertise support for tools/list in capabilities (SDK only sets listChanged)
-(server as any).server.registerCapabilities({ tools: { list: true } });
-
 CCI_TOOLS.forEach((tool) => {
   const handler = CCI_HANDLERS[tool.name];
   if (!handler) throw new Error(`Handler for tool ${tool.name} not found`);
