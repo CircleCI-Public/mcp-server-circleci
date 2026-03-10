@@ -32,6 +32,16 @@ import { runRollbackPipeline } from './tools/runRollbackPipeline/handler.js';
 
 import { listComponentVersionsTool } from './tools/listComponentVersions/tool.js';
 import { listComponentVersions } from './tools/listComponentVersions/handler.js';
+import {
+  listEnvVarsTool,
+  createEnvVarTool,
+  deleteEnvVarTool,
+} from './tools/manageEnvVars/tool.js';
+import {
+  listEnvVars,
+  createEnvVar,
+  deleteEnvVar,
+} from './tools/manageEnvVars/handler.js';
 
 // Define the tools with their configurations
 export const CCI_TOOLS = [
@@ -51,6 +61,9 @@ export const CCI_TOOLS = [
   analyzeDiffTool,
   runRollbackPipelineTool,
   listComponentVersionsTool,
+  listEnvVarsTool,
+  createEnvVarTool,
+  deleteEnvVarTool,
 ];
 
 // Extract the tool names as a union type
@@ -82,4 +95,7 @@ export const CCI_HANDLERS = {
   analyze_diff: analyzeDiff,
   run_rollback_pipeline: runRollbackPipeline,
   list_component_versions: listComponentVersions,
+  list_env_vars: listEnvVars,
+  create_env_var: createEnvVar,
+  delete_env_var: deleteEnvVar,
 } satisfies ToolHandlers;
