@@ -312,6 +312,17 @@ export type DeployEnvironmentResponse = z.infer<typeof DeployEnvironmentResponse
 export const DeployComponentVersionsResponse = DeployComponentVersionsResponseSchema;
 export type DeployComponentVersionsResponse = z.infer<typeof DeployComponentVersionsResponseSchema>;
 
+const ArtifactSchema = z.object({
+  path: z.string(),
+  node_index: z.number(),
+  url: z.string(),
+});
+
+const PaginatedArtifactResponseSchema = z.object({
+  items: z.array(ArtifactSchema),
+  next_page_token: z.string().nullable(),
+});
+
 const UsageExportJobStartSchema = z.object({
   usage_export_job_id: z.string().uuid(),
 });
@@ -320,6 +331,12 @@ const UsageExportJobStatusSchema = z.object({
   state: z.string(),
   download_urls: z.array(z.string().url()).optional().nullable(),
 });
+
+export const Artifact = ArtifactSchema;
+export type Artifact = z.infer<typeof ArtifactSchema>;
+
+export const PaginatedArtifactResponse = PaginatedArtifactResponseSchema;
+export type PaginatedArtifactResponse = z.infer<typeof PaginatedArtifactResponseSchema>;
 
 export const UsageExportJobStart = UsageExportJobStartSchema;
 export type UsageExportJobStart = z.infer<typeof UsageExportJobStartSchema>;
