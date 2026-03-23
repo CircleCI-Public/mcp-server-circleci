@@ -1,4 +1,4 @@
-import { Job } from '../schemas.js';
+import { Job, Artifact, PaginatedArtifactResponse } from '../schemas.js';
 import { HTTPClient } from './httpClient.js';
 import { defaultPaginationOptions } from './index.js';
 import { z } from 'zod';
@@ -34,6 +34,61 @@ export class JobsAPI {
     );
     // Validate the response against our Job schema
     return Job.parse(rawResult);
+  }
+
+  /**
+   * Get artifacts for a job with pagination support
+   * @param params Configuration parameters
+   * @param params.projectSlug The project slug (e.g., "gh/CircleCI-Public/api-preview-docs")
+   * @param params.jobNumber The number of the job
+   * @param params.options Optional configuration for pagination limits
+   * @returns All artifacts for the job
+   */
+  async getJobArtifacts({
+    projectSlug,
+    jobNumber,
+    options = {},
+  }: {
+    projectSlug: string;
+    jobNumber: number;
+    options?: {
+      maxPages?: number;
+      timeoutMs?: number;
+    };
+  }): Promise<Artifact[]> {
+    const {
+      maxPages = defaultPaginationOptions.maxPages,
+      timeoutMs = defaultPaginationOptions.timeoutMs,
+    } = options;
+
+    const startTime = Date.now();
+    const allArtifacts: Artifact[] = [];
+    let nextPageToken: string | null = null;
+    let pageCount = 0;
+
+    do {
+      if (Date.now() - startTime > timeoutMs) {
+        throw new Error(`Timeout reached after ${timeoutMs}ms`);
+      }
+
+      if (pageCount >= maxPages) {
+        throw new Error(`Maximum number of pages (${maxPages}) reached`);
+      }
+
+      const params = nextPageToken ? { 'page-token': nextPageToken } : {};
+      const rawResult = await this.client.get<unknown>(
+        `/project/${projectSlug}/${jobNumber}/artifacts`,
+        params,
+      );
+
+      const result = PaginatedArtifactResponse.parse(rawResult);
+
+      pageCount++;
+      allArtifacts.push(...result.items);
+      nextPageToken = result.next_page_token;
+    } while (nextPageToken);
+
+    return allArtifacts;
   }
 
   /**
