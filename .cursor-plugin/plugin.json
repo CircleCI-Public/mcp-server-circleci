@@ -12,9 +12,6 @@
   "license": "MIT",
   "keywords": ["circleci", "ci-cd", "pipeline", "devops", "mcp", "automation", "testing", "deployment"],
   "logo": "assets/logo.svg",
-  "rules": "rules",
   "skills": "skills",
-  "agents": "agents",
-  "commands": "commands",
   "mcpServers": "mcp.json"
 }
