@@ -1,0 +1,38 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
+  "name": "io.circleci.mcp/mcp-server-circleci",
+  "title": "CircleCI MCP Server",
+  "description": "Connect AI coding agents to CircleCI — debug pipelines, retrieve build logs and test results, validate config, trigger runs, and optimize resource usage directly from your editor.",
+  "repository": {
+    "url": "https://github.com/CircleCI-Public/mcp-server-circleci",
+    "source": "github"
+  },
+  "version": "0.14.2",
+  "license": "Apache-2.0",
+  "homepage": "https://circleci.com",
+  "packages": [
+    {
+      "registry": "npm",
+      "name": "@circleci/mcp-server-circleci",
+      "command": "npx",
+      "args": ["-y", "@circleci/mcp-server-circleci@latest"],
+      "env": {
+        "CIRCLECI_TOKEN": {
+          "description": "CircleCI personal API token. Generate one at https://app.circleci.com/settings/user/tokens",
+          "required": true,
+          "sensitive": true
+        },
+        "CIRCLECI_BASE_URL": {
+          "description": "CircleCI base URL. Required only for on-premises installations. Defaults to https://circleci.com",
+          "required": false,
+          "default": "https://circleci.com"
+        },
+        "MAX_MCP_OUTPUT_LENGTH": {
+          "description": "Maximum output length for MCP responses in characters. Defaults to 50000.",
+          "required": false,
+          "default": "50000"
+        }
+      }
+    }
+  ]
+}
