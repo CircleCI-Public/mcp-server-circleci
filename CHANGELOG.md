@@ -9,11 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added `listArtifacts` tool to list artifacts for a CircleCI job
+- Added `listArtifacts` tool to list artifacts for a CircleCI job (thank you @nadav-dav)
 
 ### Fixed
 
-- Removed non-spec `tools.list` capability advertisement that caused compatibility issues with some MCP clients
+- Removed non-spec `tools.list` capability advertisement that caused compatibility issues with some MCP clients (thank you @stig)
 
 ## [0.14.2] - 2026-02-20
 
