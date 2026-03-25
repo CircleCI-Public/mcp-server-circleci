@@ -138,6 +138,21 @@ After the issue has been created, follow these steps to create a Pull Request.
 
 Thank you for your contribution!
 
+### <a name="release"></a>Release Process
+
+Releases are published automatically by CI when changes are merged to `main`. The pipeline builds, tests, lints, and then publishes both an npm package and a multi-architecture Docker image. The published version is determined by the `version` field in `package.json`.
+
+To prepare a release:
+
+1. Create a release branch from `main`: `git checkout -b release/x.y.z main`
+2. Bump the `version` in `package.json` following [Semantic Versioning](https://semver.org/)
+3. Update `CHANGELOG.md` with all changes since the last release, following [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format
+4. Commit the version bump and changelog update
+5. Open a Pull Request targeting `main`
+6. After review and merge, CI will automatically:
+   - Publish the package to npm (skipped if the version is already published)
+   - Build and push a multi-architecture Docker image (`linux/amd64`, `linux/arm64`) tagged with `latest`, the package version, and the commit SHA
+
 ### <a name="creating-tools"></a>Creating New Tools
 
 This project provides a tool generator script to help you quickly create new tools with the correct structure and boilerplate code.
