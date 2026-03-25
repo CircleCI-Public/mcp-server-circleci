@@ -1,6 +1,6 @@
 {
   "mcpServers": {
-    "circleci": {
+    "circleci-mcp-server": {
       "command": "npx",
       "args": ["-y", "@circleci/mcp-server-circleci@latest"],
       "env": {
