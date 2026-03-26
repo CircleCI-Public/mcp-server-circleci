@@ -12,21 +12,23 @@ Use Cursor, Windsurf, Copilot, Claude, or any MCP-compatible client to interact 
 
 | Tool | Description |
 |------|-------------|
-| [`get_build_failure_logs`](#get_build_failure_logs) | Retrieve detailed failure logs from CircleCI builds |
-| [`find_flaky_tests`](#find_flaky_tests) | Identify flaky tests by analyzing test execution history |
-| [`get_latest_pipeline_status`](#get_latest_pipeline_status) | Get the status of the latest pipeline for a branch |
-| [`get_job_test_results`](#get_job_test_results) | Retrieve test metadata and results for CircleCI jobs |
+| [`analyze_diff`](#analyze_diff) | Analyze git diffs against cursor rules for violations |
 | [`config_helper`](#config_helper) | Validate and get guidance for your CircleCI configuration |
 | [`create_prompt_template`](#create_prompt_template) | Generate structured prompt templates for AI applications |
-| [`recommend_prompt_template_tests`](#recommend_prompt_template_tests) | Generate test cases for prompt templates |
+| [`download_usage_api_data`](#download_usage_api_data) | Download usage data from the CircleCI Usage API |
+| [`find_flaky_tests`](#find_flaky_tests) | Identify flaky tests by analyzing test execution history |
+| [`find_underused_resource_classes`](#find_underused_resource_classes) | Find jobs with underused compute resources |
+| [`get_build_failure_logs`](#get_build_failure_logs) | Retrieve detailed failure logs from CircleCI builds |
+| [`get_job_test_results`](#get_job_test_results) | Retrieve test metadata and results for CircleCI jobs |
+| [`get_latest_pipeline_status`](#get_latest_pipeline_status) | Get the status of the latest pipeline for a branch |
+| [`list_artifacts`](#list_artifacts) | List artifacts produced by a CircleCI job |
+| [`list_component_versions`](#list_component_versions) | List all versions for a CircleCI component |
 | [`list_followed_projects`](#list_followed_projects) | List all CircleCI projects you're following |
+| [`recommend_prompt_template_tests`](#recommend_prompt_template_tests) | Generate test cases for prompt templates |
+| [`rerun_workflow`](#rerun_workflow) | Rerun a workflow from start or from the failed job |
+| [`run_evaluation_tests`](#run_evaluation_tests) | Run evaluation tests on a CircleCI pipeline |
 | [`run_pipeline`](#run_pipeline) | Trigger a pipeline to run |
 | [`run_rollback_pipeline`](#run_rollback_pipeline) | Trigger a rollback for a project |
-| [`rerun_workflow`](#rerun_workflow) | Rerun a workflow from start or from the failed job |
-| [`analyze_diff`](#analyze_diff) | Analyze git diffs against cursor rules for violations |
-| [`list_component_versions`](#list_component_versions) | List all versions for a CircleCI component |
-| [`download_usage_api_data`](#download_usage_api_data) | Download usage data from the CircleCI Usage API |
-| [`find_underused_resource_classes`](#find_underused_resource_classes) | Find jobs with underused compute resources |
 
 ## Installation
 
@@ -565,27 +567,60 @@ https://github.com/user-attachments/assets/3c765985-8827-442a-a8dc-5069e01edb74
 ## Tool Details
 
 <details>
-<summary id="get_build_failure_logs"><strong><code>get_build_failure_logs</code></strong></summary>
+<summary id="analyze_diff"><strong><code>analyze_diff</code></strong></summary>
 
-Retrieves detailed failure logs from CircleCI builds. This tool can be used in three ways:
+Analyzes git diffs against cursor rules to identify rule violations.
 
-1. **Using Project Slug and Branch (Recommended):**
-   - First use `list_followed_projects` to get your projects, then:
-   - Example: "Get build failures for my-project on the main branch"
+Provide:
+- **Git diff content** (e.g. `git diff --cached`, `git diff HEAD`)
+- **Repository rules** from `.cursorrules` or `.cursor/rules`
 
-2. **Using CircleCI URLs:**
-   - Provide a failed job URL or pipeline URL directly
-   - Example: "Get logs from https://app.circleci.com/pipelines/github/org/repo/123"
+Returns detailed violation reports with confidence scores and explanations.
 
-3. **Using Local Project Context:**
-   - Works from your local workspace by providing workspace root, git remote URL, and branch name
-   - Example: "Find the latest failed pipeline on my current branch"
+Useful for:
+- Pre-commit code quality checks
+- Ensuring consistency with team coding standards
+- Catching rule violations before code review
 
-The tool returns formatted logs including:
+</details>
 
-- Job names
-- Step-by-step execution details
-- Failure messages and context
+<details>
+<summary id="config_helper"><strong><code>config_helper</code></strong></summary>
+
+Assists with CircleCI configuration tasks by providing guidance and validation.
+
+- Validates your `.circleci/config.yml` for syntax and semantic errors
+- Provides detailed validation results and configuration recommendations
+- Example: "Validate my CircleCI config"
+
+</details>
+
+<details>
+<summary id="create_prompt_template"><strong><code>create_prompt_template</code></strong></summary>
+
+Generates structured prompt templates for AI-enabled applications based on feature requirements.
+
+- Transforms user requirements into optimized prompt templates
+- Returns a structured template and a context schema defining required input parameters
+- Example: "Create a prompt template for generating bedtime stories by age and topic"
+
+</details>
+
+<details>
+<summary id="download_usage_api_data"><strong><code>download_usage_api_data</code></strong></summary>
+
+Downloads usage data from the CircleCI Usage API for a given organization. Accepts flexible date input (e.g., "March 2025" or "last month"). Cloud-only feature.
+
+**Option 1:** Start a new export job by providing:
+- `orgId`, `startDate`, `endDate` (max 32 days), `outputDir`
+
+**Option 2:** Check/download an existing export job by providing:
+- `orgId`, `jobId`, `outputDir`
+
+Returns a CSV file with CircleCI usage data for the specified time frame.
+
+> [!NOTE]
+> Usage data can be fed into the `find_underused_resource_classes` tool for cost optimization analysis.
 
 </details>
 
@@ -611,6 +646,70 @@ Output modes:
 
 - **Text (default):** Returns flaky test details in text format
 - **File** (requires `FILE_OUTPUT_DIRECTORY` env var): Creates a directory with flaky test details
+
+</details>
+
+<details>
+<summary id="find_underused_resource_classes"><strong><code>find_underused_resource_classes</code></strong></summary>
+
+Analyzes a CircleCI usage data CSV file to find jobs with average or max CPU/RAM usage below a given threshold (default: 40%).
+
+Provide a CSV file obtained from `download_usage_api_data`.
+
+Returns a markdown list of underused jobs organized by project and workflow — useful for identifying cost optimization opportunities.
+
+</details>
+
+<details>
+<summary id="get_build_failure_logs"><strong><code>get_build_failure_logs</code></strong></summary>
+
+Retrieves detailed failure logs from CircleCI builds. This tool can be used in three ways:
+
+1. **Using Project Slug and Branch (Recommended):**
+   - First use `list_followed_projects` to get your projects, then:
+   - Example: "Get build failures for my-project on the main branch"
+
+2. **Using CircleCI URLs:**
+   - Provide a failed job URL or pipeline URL directly
+   - Example: "Get logs from https://app.circleci.com/pipelines/github/org/repo/123"
+
+3. **Using Local Project Context:**
+   - Works from your local workspace by providing workspace root, git remote URL, and branch name
+   - Example: "Find the latest failed pipeline on my current branch"
+
+The tool returns formatted logs including:
+
+- Job names
+- Step-by-step execution details
+- Failure messages and context
+
+</details>
+
+<details>
+<summary id="get_job_test_results"><strong><code>get_job_test_results</code></strong></summary>
+
+Retrieves test metadata for CircleCI jobs, allowing you to analyze test results without leaving your IDE. This tool can be used in three ways:
+
+1. **Using Project Slug and Branch (Recommended):**
+   - Example: "Get test results for my-project on the main branch"
+
+2. **Using CircleCI URL:**
+   - Job URL: `https://app.circleci.com/pipelines/github/org/repo/123/workflows/abc-def/jobs/789`
+   - Workflow URL: `https://app.circleci.com/pipelines/github/org/repo/123/workflows/abc-def`
+   - Pipeline URL: `https://app.circleci.com/pipelines/github/org/repo/123`
+
+3. **Using Local Project Context:**
+   - Works from your local workspace by providing workspace root, git remote URL, and branch name
+
+The tool returns:
+
+- Summary of all tests (total, successful, failed)
+- Detailed info on failed tests: name, class, file, error message, duration
+- List of successful tests with timing
+- Filter by test result
+
+> [!NOTE]
+> Test metadata must be configured in your CircleCI config. See [Collect Test Data](https://circleci.com/docs/collect-test-data/) for setup instructions.
 
 </details>
 
@@ -648,63 +747,39 @@ Stopped: in progress
 </details>
 
 <details>
-<summary id="get_job_test_results"><strong><code>get_job_test_results</code></strong></summary>
+<summary id="list_artifacts"><strong><code>list_artifacts</code></strong></summary>
 
-Retrieves test metadata for CircleCI jobs, allowing you to analyze test results without leaving your IDE. This tool can be used in three ways:
+Retrieves the list of artifacts produced by a CircleCI job. This tool can be used in three ways:
 
 1. **Using Project Slug and Branch (Recommended):**
-   - Example: "Get test results for my-project on the main branch"
+   - First use `list_followed_projects` to get your projects, then:
+   - Example: "List artifacts for my-project on the main branch"
 
 2. **Using CircleCI URL:**
-   - Job URL: `https://app.circleci.com/pipelines/github/org/repo/123/workflows/abc-def/jobs/789`
-   - Workflow URL: `https://app.circleci.com/pipelines/github/org/repo/123/workflows/abc-def`
-   - Pipeline URL: `https://app.circleci.com/pipelines/github/org/repo/123`
+   - Job URL: `https://app.circleci.com/pipelines/gh/organization/project/123/workflows/abc-def/jobs/789`
+   - Workflow URL: `https://app.circleci.com/pipelines/gh/organization/project/123/workflows/abc-def`
+   - Pipeline URL: `https://app.circleci.com/pipelines/gh/organization/project/123`
 
 3. **Using Local Project Context:**
    - Works from your local workspace by providing workspace root, git remote URL, and branch name
 
-The tool returns:
-
-- Summary of all tests (total, successful, failed)
-- Detailed info on failed tests: name, class, file, error message, duration
-- List of successful tests with timing
-- Filter by test result
-
-> [!NOTE]
-> Test metadata must be configured in your CircleCI config. See [Collect Test Data](https://circleci.com/docs/collect-test-data/) for setup instructions.
+Useful for:
+- Finding download URLs for build artifacts (binaries, reports, logs)
+- Checking what artifacts were produced by a pipeline run
 
 </details>
 
 <details>
-<summary id="config_helper"><strong><code>config_helper</code></strong></summary>
+<summary id="list_component_versions"><strong><code>list_component_versions</code></strong></summary>
 
-Assists with CircleCI configuration tasks by providing guidance and validation.
+Lists all versions for a specific CircleCI component in an environment. Includes deployment status, commit information, and timestamps.
 
-- Validates your `.circleci/config.yml` for syntax and semantic errors
-- Provides detailed validation results and configuration recommendations
-- Example: "Validate my CircleCI config"
+The tool will prompt you to select the component and environment if not provided.
 
-</details>
-
-<details>
-<summary id="create_prompt_template"><strong><code>create_prompt_template</code></strong></summary>
-
-Generates structured prompt templates for AI-enabled applications based on feature requirements.
-
-- Transforms user requirements into optimized prompt templates
-- Returns a structured template and a context schema defining required input parameters
-- Example: "Create a prompt template for generating bedtime stories by age and topic"
-
-</details>
-
-<details>
-<summary id="recommend_prompt_template_tests"><strong><code>recommend_prompt_template_tests</code></strong></summary>
-
-Generates test cases for prompt templates to ensure they produce expected results.
-
-- Creates diverse test scenarios based on your prompt template and context schema
-- Returns an array of recommended test cases with various parameter combinations
-- Example: "Generate tests for my bedtime story prompt template"
+Useful for:
+- Identifying which version is currently live
+- Selecting target versions for rollback operations
+- Getting deployment details (pipeline, workflow, job)
 
 </details>
 
@@ -726,6 +801,51 @@ Projects followed:
 
 > [!NOTE]
 > The `projectSlug` (not the project name) is required for many other CircleCI tools.
+
+</details>
+
+<details>
+<summary id="recommend_prompt_template_tests"><strong><code>recommend_prompt_template_tests</code></strong></summary>
+
+Generates test cases for prompt templates to ensure they produce expected results.
+
+- Creates diverse test scenarios based on your prompt template and context schema
+- Returns an array of recommended test cases with various parameter combinations
+- Example: "Generate tests for my bedtime story prompt template"
+
+</details>
+
+<details>
+<summary id="rerun_workflow"><strong><code>rerun_workflow</code></strong></summary>
+
+Reruns a workflow from its start or from the failed job.
+
+Returns the ID of the newly-created workflow and a link to monitor it.
+
+</details>
+
+<details>
+<summary id="run_evaluation_tests"><strong><code>run_evaluation_tests</code></strong></summary>
+
+Runs evaluation tests (also known as "Prompt Tests") on a CircleCI pipeline. Generates an appropriate CircleCI configuration and triggers a pipeline using it.
+
+This tool can be used in three ways:
+
+1. **Using Project Slug and Branch (Recommended):**
+   - First use `list_followed_projects` to get your projects, then:
+   - Example: "Run evaluation tests for my-project on the main branch"
+
+2. **Using CircleCI URL:**
+   - Project URL, Pipeline URL, Workflow URL, or Job URL
+   - Example: "Run evaluation tests for https://app.circleci.com/pipelines/gh/organization/project/123"
+
+3. **Using Local Project Context:**
+   - Works from your local workspace by providing workspace root, git remote URL, and branch name
+
+The tool accepts prompt template files and returns a URL to monitor the triggered pipeline.
+
+> [!NOTE]
+> If the project has multiple pipeline definitions, the tool will return a list of available pipelines for you to choose from.
 
 </details>
 
@@ -762,76 +882,6 @@ Triggers a rollback for a CircleCI project. The tool interactively guides you th
    - **Pipeline Rollback:** triggers the rollback pipeline
    - **Workflow Rerun:** reruns a previous workflow using its workflow ID
 7. **Confirmation** — summarizes and confirms before execution
-
-</details>
-
-<details>
-<summary id="rerun_workflow"><strong><code>rerun_workflow</code></strong></summary>
-
-Reruns a workflow from its start or from the failed job.
-
-Returns the ID of the newly-created workflow and a link to monitor it.
-
-</details>
-
-<details>
-<summary id="analyze_diff"><strong><code>analyze_diff</code></strong></summary>
-
-Analyzes git diffs against cursor rules to identify rule violations.
-
-Provide:
-- **Git diff content** (e.g. `git diff --cached`, `git diff HEAD`)
-- **Repository rules** from `.cursorrules` or `.cursor/rules`
-
-Returns detailed violation reports with confidence scores and explanations.
-
-Useful for:
-- Pre-commit code quality checks
-- Ensuring consistency with team coding standards
-- Catching rule violations before code review
-
-</details>
-
-<details>
-<summary id="list_component_versions"><strong><code>list_component_versions</code></strong></summary>
-
-Lists all versions for a specific CircleCI component in an environment. Includes deployment status, commit information, and timestamps.
-
-The tool will prompt you to select the component and environment if not provided.
-
-Useful for:
-- Identifying which version is currently live
-- Selecting target versions for rollback operations
-- Getting deployment details (pipeline, workflow, job)
-
-</details>
-
-<details>
-<summary id="download_usage_api_data"><strong><code>download_usage_api_data</code></strong></summary>
-
-Downloads usage data from the CircleCI Usage API for a given organization. Accepts flexible date input (e.g., "March 2025" or "last month"). Cloud-only feature.
-
-**Option 1:** Start a new export job by providing:
-- `orgId`, `startDate`, `endDate` (max 32 days), `outputDir`
-
-**Option 2:** Check/download an existing export job by providing:
-- `orgId`, `jobId`, `outputDir`
-
-Returns a CSV file with CircleCI usage data for the specified time frame.
-
-> [!NOTE]
-> Usage data can be fed into the `find_underused_resource_classes` tool for cost optimization analysis.
-
-</details>
-
-<details>
-<summary id="find_underused_resource_classes"><strong><code>find_underused_resource_classes</code></strong></summary>
-
-Analyzes a CircleCI usage data CSV file to find jobs with average or max CPU/RAM usage below a given threshold (default: 40%).
-
-Provide a CSV file obtained from `download_usage_api_data`.
-
-Returns a markdown list of underused jobs organized by project and workflow — useful for identifying cost optimization opportunities.
 
 </details>
 
