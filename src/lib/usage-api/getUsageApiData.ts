@@ -18,38 +18,49 @@ function resolveOutputDir(outputDir: string): string {
   return outputDir;
 }
 
+function getBaseFileName(opts: { startDate?: string; endDate?: string; jobId?: string }): string {
+  if (opts.startDate && opts.endDate) {
+    return `usage-data-${opts.startDate.slice(0, 10)}_${opts.endDate.slice(0, 10)}`;
+  }
+  if (opts.jobId) {
+    return `usage-data-job-${opts.jobId}`;
+  }
+  return `usage-data-${Date.now()}`;
+}
+
+async function fetchAndDecompress(url: string): Promise<Buffer> {
+  const response = await fetch(url);
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`${response.status} ${response.statusText}: ${text}`);
+  }
+  return gunzipSync(Buffer.from(await response.arrayBuffer()));
+}
+
 export async function downloadAndSaveUsageData(
-  downloadUrl: string,
+  downloadUrls: string[],
   outputDir: string,
   opts: { startDate?: string; endDate?: string; jobId?: string }
 ) {
   try {
-    const gzippedCsvResponse = await fetch(downloadUrl);
-    if (!gzippedCsvResponse.ok) {
-      const csvText = await gzippedCsvResponse.text();
-      return mcpErrorOutput(`ERROR: Failed to download CSV.\nStatus: ${gzippedCsvResponse.status} ${gzippedCsvResponse.statusText}\nResponse: ${csvText}`);
-    }
-    const gzBuffer = Buffer.from(await gzippedCsvResponse.arrayBuffer());
-    const csv = gunzipSync(gzBuffer);
-
-    const fileName = (() => {
-      if (opts.startDate && opts.endDate) {
-        return `usage-data-${opts.startDate.slice(0, 10)}_${opts.endDate.slice(0, 10)}.csv`;
-      }
-      if (opts.jobId) {
-        return `usage-data-job-${opts.jobId}.csv`;
-      }
-      return `usage-data-${Date.now()}.csv`;
-    })();
     const usageDataDir = path.resolve(resolveOutputDir(outputDir));
-    const filePath = path.join(usageDataDir, fileName);
+    fs.mkdirSync(usageDataDir, { recursive: true });
 
-    if (!fs.existsSync(usageDataDir)) {
-      fs.mkdirSync(usageDataDir, { recursive: true });
+    const baseName = getBaseFileName(opts);
+    const savedPaths: string[] = [];
+
+    for (let i = 0; i < downloadUrls.length; i++) {
+      const csv = await fetchAndDecompress(downloadUrls[i]);
+      const suffix = downloadUrls.length > 1 ? `_part${i + 1}` : '';
+      const filePath = path.join(usageDataDir, `${baseName}${suffix}.csv`);
+      fs.writeFileSync(filePath, csv);
+      savedPaths.push(filePath);
     }
-    fs.writeFileSync(filePath, csv);
-    
-    return { content: [{ type: 'text' as const, text: `Usage data CSV downloaded and saved to: ${filePath}` }] };
+
+    const summary = savedPaths.length === 1
+      ? `Usage data CSV downloaded and saved to: ${savedPaths[0]}`
+      : `Usage data downloaded as ${savedPaths.length} files:\n${savedPaths.join('\n')}`;
+    return { content: [{ type: 'text' as const, text: summary }] };
   } catch (e: any) {
     return mcpErrorOutput(`ERROR: Failed to download or save usage data.\nError: ${e?.stack || e}`);
   }
@@ -63,17 +74,15 @@ export async function handleExistingJob({ client, orgId, jobId, outputDir, start
     return mcpErrorOutput(`ERROR: Could not fetch job status for jobId ${jobId}.\n${e?.stack || e}`);
   }
 
-    const state = jobStatus?.state?.toLowerCase();
+  const state = jobStatus?.state?.toLowerCase();
 
   switch (state) {
     case 'completed': {
       const downloadUrls = jobStatus?.download_urls;
-      const downloadUrl = Array.isArray(downloadUrls) && downloadUrls.length > 0 ? downloadUrls[0] : null;
-
-      if (!downloadUrl) {
-        return mcpErrorOutput(`ERROR: No download_url found in job status.\nJob status: ${JSON.stringify(jobStatus, null, 2)}`);
+      if (!Array.isArray(downloadUrls) || downloadUrls.length === 0) {
+        return mcpErrorOutput(`ERROR: No download_urls found in job status.\nJob status: ${JSON.stringify(jobStatus, null, 2)}`);
       }
-      return await downloadAndSaveUsageData(downloadUrl, outputDir, { startDate, endDate, jobId });
+      return await downloadAndSaveUsageData(downloadUrls, outputDir, { startDate, endDate, jobId });
     }
     case 'created':
     case 'pending':
