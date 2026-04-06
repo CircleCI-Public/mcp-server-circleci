@@ -15,7 +15,7 @@ import {
 type GenericToolHandler = (args: any, extra: any) => Promise<any>;
 
 /**
- * Wrap a tool handler with OpenTelemetry metrics instrumentation.
+ * Wrap a tool handler with telemetry metrics instrumentation.
  *
  * This wrapper:
  * 1. Records the start time
