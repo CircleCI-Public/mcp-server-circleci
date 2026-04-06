@@ -3,10 +3,10 @@
  */
 
 import {
-  recordToolInvocation,
+  MetricStatus,
   recordToolDuration,
   recordToolError,
-  MetricStatus,
+  recordToolInvocation,
 } from './metrics.js';
 
 /**
