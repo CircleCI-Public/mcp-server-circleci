@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   getTelemetryConfig,
-  TELEMETRY_EXPORT_INTERVAL_MS,
-  TELEMETRY_OTLP_METRICS_URL,
+  TELEMETRY_FLUSH_INTERVAL_MS,
+  TELEMETRY_METRICS_URL,
   TELEMETRY_SERVICE_NAME,
 } from './config.js';
 
@@ -24,18 +24,16 @@ describe('getTelemetryConfig', () => {
     const config = getTelemetryConfig();
 
     expect(config.enabled).toBe(false);
-    expect(config.otlpHeaders).toEqual({});
+    expect(config.token).toBe('');
   });
 
-  it('should return enabled config with Bearer PAT when CIRCLECI_TOKEN is set', () => {
+  it('should return enabled config with token when CIRCLECI_TOKEN is set', () => {
     process.env.CIRCLECI_TOKEN = 'pat-token-abc';
 
     const config = getTelemetryConfig();
 
     expect(config.enabled).toBe(true);
-    expect(config.otlpHeaders).toEqual({
-      Authorization: 'Bearer pat-token-abc',
-    });
+    expect(config.token).toBe('pat-token-abc');
   });
 
   it('should treat whitespace-only CIRCLECI_TOKEN as disabled', () => {
@@ -48,9 +46,9 @@ describe('getTelemetryConfig', () => {
 });
 
 describe('telemetry constants', () => {
-  it('should use fixed OTLP metrics URL aligned with test-agent ai-o11y', () => {
-    expect(TELEMETRY_OTLP_METRICS_URL).toBe(
-      'https://circleci.com/api/private/ai-o11y/otel/v1/metrics',
+  it('should use ai-o11y-pat metric URL', () => {
+    expect(TELEMETRY_METRICS_URL).toBe(
+      'https://runner.circleci.com/api/private/ai-o11y-pat/metric',
     );
   });
 
@@ -58,7 +56,7 @@ describe('telemetry constants', () => {
     expect(TELEMETRY_SERVICE_NAME).toBe('mcp-server-circleci');
   });
 
-  it('should use fixed export interval', () => {
-    expect(TELEMETRY_EXPORT_INTERVAL_MS).toBe(60_000);
+  it('should use fixed flush interval', () => {
+    expect(TELEMETRY_FLUSH_INTERVAL_MS).toBe(60_000);
   });
 });

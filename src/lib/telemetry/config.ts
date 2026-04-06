@@ -1,20 +1,20 @@
 /**
- * Telemetry configuration for OpenTelemetry metrics export to CircleCI ai-o11y.
+ * Telemetry configuration for metrics export to CircleCI ai-o11y.
  */
 
-/** OTLP/HTTP metrics URL. */
-export const TELEMETRY_OTLP_METRICS_URL =
-  'https://circleci.com/api/private/ai-o11y/otel/v1/metrics';
+/** CircleCI ai-o11y metrics endpoint (PUT JSON). */
+export const TELEMETRY_METRICS_URL =
+  'https://runner.circleci.com/api/private/ai-o11y-pat/metric';
 
 export const TELEMETRY_SERVICE_NAME = 'mcp-server-circleci';
 
-export const TELEMETRY_EXPORT_INTERVAL_MS = 60_000;
+export const TELEMETRY_FLUSH_INTERVAL_MS = 60_000;
 
 export type TelemetryConfig = {
-  /** True when CIRCLECI_TOKEN is set (PAT used as Bearer for OTLP export). */
+  /** True when CIRCLECI_TOKEN is set (PAT used for metrics export via Circle-Token header). */
   enabled: boolean;
-  /** Headers for OTLP exporter (Authorization Bearer PAT when enabled). */
-  otlpHeaders: Record<string, string>;
+  /** CircleCI PAT for metrics endpoint auth. */
+  token: string;
 };
 
 /**
@@ -24,10 +24,7 @@ export type TelemetryConfig = {
 export function getTelemetryConfig(): TelemetryConfig {
   const token = process.env.CIRCLECI_TOKEN?.trim();
   if (!token) {
-    return { enabled: false, otlpHeaders: {} };
+    return { enabled: false, token: '' };
   }
-  return {
-    enabled: true,
-    otlpHeaders: { Authorization: `Bearer ${token}` },
-  };
+  return { enabled: true, token };
 }

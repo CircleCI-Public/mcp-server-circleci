@@ -4,14 +4,14 @@ import { MetricAttributes, MetricNames, MetricStatus } from './metrics.js';
 describe('Metric constants', () => {
   describe('MetricNames', () => {
     it('should have correct metric name prefixes', () => {
-      expect(MetricNames.INVOCATIONS).toBe('circleci.mcp.tool.invocations');
-      expect(MetricNames.DURATION_MS).toBe('circleci.mcp.tool.duration_ms');
-      expect(MetricNames.ERRORS).toBe('circleci.mcp.tool.errors');
+      expect(MetricNames.INVOCATIONS).toBe('mcp.tool.invocations');
+      expect(MetricNames.DURATION_MS).toBe('mcp.tool.duration_ms');
+      expect(MetricNames.ERRORS).toBe('mcp.tool.errors');
     });
 
-    it('should all start with circleci.mcp.tool prefix', () => {
+    it('should all start with mcp.tool prefix (ai-o11y proxy prepends circleci.)', () => {
       Object.values(MetricNames).forEach((name) => {
-        expect(name).toMatch(/^circleci\.mcp\.tool\./);
+        expect(name).toMatch(/^mcp\.tool\./);
       });
     });
   });
