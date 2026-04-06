@@ -975,48 +975,6 @@ taskkill /f /im node.exe
 
 </details>
 
-## Telemetry
-
-The MCP server supports OpenTelemetry (OTEL) metrics for tracking tool usage. When enabled, the server exports metrics about tool invocations, execution duration, and errors.
-
-### Metrics
-
-| Metric Name | Type | Description | Attributes |
-|-------------|------|-------------|------------|
-| `circleci.mcp.tool.invocations` | Counter | Number of tool invocations | `tool_name`, `status` |
-| `circleci.mcp.tool.duration_ms` | Counter | Tool execution duration in milliseconds | `tool_name`, `status` |
-| `circleci.mcp.tool.errors` | Counter | Number of tool errors | `tool_name`, `error_type` |
-
-### Configuration
-
-Telemetry is disabled by default. To enable it, set the following environment variables:
-
-| Variable | Description | Required | Default |
-|----------|-------------|----------|---------|
-| `OTEL_EXPORTER_OTLP_ENDPOINT` | OTLP endpoint URL (e.g., `http://localhost:4318`) | Yes (to enable) | - |
-| `OTEL_EXPORTER_OTLP_HEADERS` | Headers for authentication (format: `key1=value1,key2=value2`) | No | - |
-| `OTEL_SERVICE_NAME` | Service name for metrics | No | `mcp-server-circleci` |
-| `OTEL_METRICS_EXPORT_INTERVAL_MS` | Export interval in milliseconds | No | `60000` |
-
-### Example Configuration
-
-```json
-{
-  "mcpServers": {
-    "circleci-mcp-server": {
-      "command": "npx",
-      "args": ["-y", "@circleci/mcp-server-circleci@latest"],
-      "env": {
-        "CIRCLECI_TOKEN": "your-circleci-token",
-        "OTEL_EXPORTER_OTLP_ENDPOINT": "https://your-otel-endpoint.example.com",
-        "OTEL_EXPORTER_OTLP_HEADERS": "Authorization=Bearer your-token",
-        "OTEL_SERVICE_NAME": "my-mcp-server"
-      }
-    }
-  }
-}
-```
-
 # Development
 
 ## Getting Started

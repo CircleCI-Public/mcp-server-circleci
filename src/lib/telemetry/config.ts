@@ -1,60 +1,33 @@
 /**
- * Telemetry configuration from environment variables.
+ * Telemetry configuration for OpenTelemetry metrics export to CircleCI ai-o11y.
  */
 
+/** OTLP/HTTP metrics URL. */
+export const TELEMETRY_OTLP_METRICS_URL =
+  'https://circleci.com/api/private/ai-o11y/otel/v1/metrics';
+
+export const TELEMETRY_SERVICE_NAME = 'mcp-server-circleci';
+
+export const TELEMETRY_EXPORT_INTERVAL_MS = 60_000;
+
 export type TelemetryConfig = {
-  /** Whether telemetry is enabled (requires OTEL_EXPORTER_OTLP_ENDPOINT) */
+  /** True when CIRCLECI_TOKEN is set (PAT used as Bearer for OTLP export). */
   enabled: boolean;
-  /** OTLP endpoint URL for metrics export */
-  endpoint: string | undefined;
-  /** Headers for OTLP exporter (e.g., for authentication) */
-  headers: Record<string, string>;
-  /** Service name for metrics */
-  serviceName: string;
-  /** Export interval in milliseconds */
-  exportIntervalMs: number;
+  /** Headers for OTLP exporter (Authorization Bearer PAT when enabled). */
+  otlpHeaders: Record<string, string>;
 };
 
 /**
- * Parse headers from OTEL_EXPORTER_OTLP_HEADERS environment variable.
- * Format: "key1=value1,key2=value2"
- */
-function parseHeaders(headersStr: string | undefined): Record<string, string> {
-  if (!headersStr) {
-    return {};
-  }
-
-  const headers: Record<string, string> = {};
-  const pairs = headersStr.split(',');
-
-  for (const pair of pairs) {
-    const [key, ...valueParts] = pair.split('=');
-    if (key && valueParts.length > 0) {
-      headers[key.trim()] = valueParts.join('=').trim();
-    }
-  }
-
-  return headers;
-}
-
-/**
- * Get telemetry configuration from environment variables.
+ * Telemetry is enabled when the customer has configured CIRCLECI_TOKEN.
+ * The same PAT used for CircleCI API calls authenticates metrics export.
  */
 export function getTelemetryConfig(): TelemetryConfig {
-  const endpoint = process.env.OTEL_EXPORTER_OTLP_ENDPOINT;
-  const headers = parseHeaders(process.env.OTEL_EXPORTER_OTLP_HEADERS);
-  const serviceName =
-    process.env.OTEL_SERVICE_NAME || 'mcp-server-circleci';
-  const exportIntervalMs = parseInt(
-    process.env.OTEL_METRICS_EXPORT_INTERVAL_MS || '60000',
-    10,
-  );
-
+  const token = process.env.CIRCLECI_TOKEN?.trim();
+  if (!token) {
+    return { enabled: false, otlpHeaders: {} };
+  }
   return {
-    enabled: !!endpoint,
-    endpoint,
-    headers,
-    serviceName,
-    exportIntervalMs: isNaN(exportIntervalMs) ? 60000 : exportIntervalMs,
+    enabled: true,
+    otlpHeaders: { Authorization: `Bearer ${token}` },
   };
 }

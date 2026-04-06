@@ -1,5 +1,10 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { getTelemetryConfig } from './config.js';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  getTelemetryConfig,
+  TELEMETRY_EXPORT_INTERVAL_MS,
+  TELEMETRY_OTLP_METRICS_URL,
+  TELEMETRY_SERVICE_NAME,
+} from './config.js';
 
 describe('getTelemetryConfig', () => {
   const originalEnv = process.env;
@@ -13,86 +18,47 @@ describe('getTelemetryConfig', () => {
     process.env = originalEnv;
   });
 
-  it('should return disabled config when OTEL_EXPORTER_OTLP_ENDPOINT is not set', () => {
-    delete process.env.OTEL_EXPORTER_OTLP_ENDPOINT;
+  it('should return disabled config when CIRCLECI_TOKEN is not set', () => {
+    delete process.env.CIRCLECI_TOKEN;
 
     const config = getTelemetryConfig();
 
     expect(config.enabled).toBe(false);
-    expect(config.endpoint).toBeUndefined();
+    expect(config.otlpHeaders).toEqual({});
   });
 
-  it('should return enabled config when OTEL_EXPORTER_OTLP_ENDPOINT is set', () => {
-    process.env.OTEL_EXPORTER_OTLP_ENDPOINT = 'http://localhost:4318';
+  it('should return enabled config with Bearer PAT when CIRCLECI_TOKEN is set', () => {
+    process.env.CIRCLECI_TOKEN = 'pat-token-abc';
 
     const config = getTelemetryConfig();
 
     expect(config.enabled).toBe(true);
-    expect(config.endpoint).toBe('http://localhost:4318');
-  });
-
-  it('should use default service name when OTEL_SERVICE_NAME is not set', () => {
-    const config = getTelemetryConfig();
-
-    expect(config.serviceName).toBe('mcp-server-circleci');
-  });
-
-  it('should use custom service name when OTEL_SERVICE_NAME is set', () => {
-    process.env.OTEL_SERVICE_NAME = 'custom-service';
-
-    const config = getTelemetryConfig();
-
-    expect(config.serviceName).toBe('custom-service');
-  });
-
-  it('should use default export interval when OTEL_METRICS_EXPORT_INTERVAL_MS is not set', () => {
-    const config = getTelemetryConfig();
-
-    expect(config.exportIntervalMs).toBe(60000);
-  });
-
-  it('should use custom export interval when OTEL_METRICS_EXPORT_INTERVAL_MS is set', () => {
-    process.env.OTEL_METRICS_EXPORT_INTERVAL_MS = '30000';
-
-    const config = getTelemetryConfig();
-
-    expect(config.exportIntervalMs).toBe(30000);
-  });
-
-  it('should use default export interval when OTEL_METRICS_EXPORT_INTERVAL_MS is invalid', () => {
-    process.env.OTEL_METRICS_EXPORT_INTERVAL_MS = 'invalid';
-
-    const config = getTelemetryConfig();
-
-    expect(config.exportIntervalMs).toBe(60000);
-  });
-
-  it('should parse headers from OTEL_EXPORTER_OTLP_HEADERS', () => {
-    process.env.OTEL_EXPORTER_OTLP_HEADERS = 'Authorization=Bearer token123,X-Custom=value';
-
-    const config = getTelemetryConfig();
-
-    expect(config.headers).toEqual({
-      Authorization: 'Bearer token123',
-      'X-Custom': 'value',
+    expect(config.otlpHeaders).toEqual({
+      Authorization: 'Bearer pat-token-abc',
     });
   });
 
-  it('should handle headers with equals signs in values', () => {
-    process.env.OTEL_EXPORTER_OTLP_HEADERS = 'Authorization=Bearer token=123=abc';
+  it('should treat whitespace-only CIRCLECI_TOKEN as disabled', () => {
+    process.env.CIRCLECI_TOKEN = '   ';
 
     const config = getTelemetryConfig();
 
-    expect(config.headers).toEqual({
-      Authorization: 'Bearer token=123=abc',
-    });
+    expect(config.enabled).toBe(false);
+  });
+});
+
+describe('telemetry constants', () => {
+  it('should use fixed OTLP metrics URL aligned with test-agent ai-o11y', () => {
+    expect(TELEMETRY_OTLP_METRICS_URL).toBe(
+      'https://circleci.com/api/private/ai-o11y/otel/v1/metrics',
+    );
   });
 
-  it('should return empty headers when OTEL_EXPORTER_OTLP_HEADERS is not set', () => {
-    delete process.env.OTEL_EXPORTER_OTLP_HEADERS;
+  it('should use fixed service name', () => {
+    expect(TELEMETRY_SERVICE_NAME).toBe('mcp-server-circleci');
+  });
 
-    const config = getTelemetryConfig();
-
-    expect(config.headers).toEqual({});
+  it('should use fixed export interval', () => {
+    expect(TELEMETRY_EXPORT_INTERVAL_MS).toBe(60_000);
   });
 });

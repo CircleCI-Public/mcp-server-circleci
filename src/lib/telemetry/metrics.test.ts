@@ -1,9 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import {
-  MetricNames,
-  MetricAttributes,
-  MetricStatus,
-} from './metrics.js';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { MetricAttributes, MetricNames, MetricStatus } from './metrics.js';
 
 describe('Metric constants', () => {
   describe('MetricNames', () => {
@@ -49,18 +45,22 @@ describe('Metrics initialization', () => {
   });
 
   it('should not throw when metrics are disabled', async () => {
-    delete process.env.OTEL_EXPORTER_OTLP_ENDPOINT;
+    delete process.env.CIRCLECI_TOKEN;
 
-    const { initializeMetrics, isMetricsEnabled } = await import('./metrics.js');
+    const { initializeMetrics, isMetricsEnabled } = await import(
+      './metrics.js'
+    );
 
     await expect(initializeMetrics()).resolves.not.toThrow();
     expect(isMetricsEnabled()).toBe(false);
   });
 
-  it('should report metrics as disabled when endpoint is not set', async () => {
-    delete process.env.OTEL_EXPORTER_OTLP_ENDPOINT;
+  it('should report metrics as disabled when CIRCLECI_TOKEN is not set', async () => {
+    delete process.env.CIRCLECI_TOKEN;
 
-    const { initializeMetrics, isMetricsEnabled } = await import('./metrics.js');
+    const { initializeMetrics, isMetricsEnabled } = await import(
+      './metrics.js'
+    );
     await initializeMetrics();
 
     expect(isMetricsEnabled()).toBe(false);
@@ -73,7 +73,7 @@ describe('Metrics recording when disabled', () => {
   beforeEach(() => {
     vi.resetModules();
     process.env = { ...originalEnv };
-    delete process.env.OTEL_EXPORTER_OTLP_ENDPOINT;
+    delete process.env.CIRCLECI_TOKEN;
   });
 
   afterEach(() => {

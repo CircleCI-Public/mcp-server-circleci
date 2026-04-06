@@ -1,16 +1,20 @@
 /**
  * OpenTelemetry metrics for CircleCI MCP Server tool usage.
+ *
+ * Uses @opentelemetry/sdk-node for unified lifecycle management.
  */
 
 import { metrics, Counter, Meter } from '@opentelemetry/api';
-import {
-  MeterProvider,
-  PeriodicExportingMetricReader,
-} from '@opentelemetry/sdk-metrics';
 import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-http';
-import { resourceFromAttributes } from '@opentelemetry/resources';
-import { ATTR_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
-import { getTelemetryConfig, TelemetryConfig } from './config.js';
+import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
+import { NodeSDK } from '@opentelemetry/sdk-node';
+import {
+  getTelemetryConfig,
+  TELEMETRY_EXPORT_INTERVAL_MS,
+  TELEMETRY_OTLP_METRICS_URL,
+  TELEMETRY_SERVICE_NAME,
+  type TelemetryConfig,
+} from './config.js';
 
 /** Metric attribute names */
 export const MetricAttributes = {
@@ -32,50 +36,39 @@ export const MetricNames = {
   ERRORS: 'circleci.mcp.tool.errors',
 } as const;
 
-let meterProvider: MeterProvider | null = null;
+let sdk: NodeSDK | null = null;
 let meter: Meter | null = null;
 let invocationsCounter: Counter | null = null;
 let durationCounter: Counter | null = null;
 let errorsCounter: Counter | null = null;
 let config: TelemetryConfig | null = null;
 
-/**
- * Initialize the OpenTelemetry metrics system.
- * This should be called once at application startup.
- */
 export async function initializeMetrics(): Promise<void> {
   config = getTelemetryConfig();
 
   if (!config.enabled) {
     if (process.env.debug === 'true') {
       console.error(
-        '[DEBUG] [Telemetry] OTEL metrics disabled (OTEL_EXPORTER_OTLP_ENDPOINT not set)',
+        '[DEBUG] [Telemetry] OTEL metrics disabled (CIRCLECI_TOKEN not set)',
       );
     }
     return;
   }
 
-  const resource = resourceFromAttributes({
-    [ATTR_SERVICE_NAME]: config.serviceName,
+  sdk = new NodeSDK({
+    serviceName: TELEMETRY_SERVICE_NAME,
+    metricReader: new PeriodicExportingMetricReader({
+      exporter: new OTLPMetricExporter({
+        url: TELEMETRY_OTLP_METRICS_URL,
+        headers: config.otlpHeaders,
+      }),
+      exportIntervalMillis: TELEMETRY_EXPORT_INTERVAL_MS,
+    }),
   });
 
-  const metricExporter = new OTLPMetricExporter({
-    url: `${config.endpoint}/v1/metrics`,
-    headers: config.headers,
-  });
+  sdk.start();
 
-  const metricReader = new PeriodicExportingMetricReader({
-    exporter: metricExporter,
-    exportIntervalMillis: config.exportIntervalMs,
-  });
-
-  meterProvider = new MeterProvider({
-    resource,
-    readers: [metricReader],
-  });
-
-  metrics.setGlobalMeterProvider(meterProvider);
-  meter = metrics.getMeter('mcp-server-circleci');
+  meter = metrics.getMeter(TELEMETRY_SERVICE_NAME);
 
   invocationsCounter = meter.createCounter(MetricNames.INVOCATIONS, {
     description: 'Number of tool invocations',
@@ -94,14 +87,11 @@ export async function initializeMetrics(): Promise<void> {
 
   if (process.env.debug === 'true') {
     console.error(
-      `[DEBUG] [Telemetry] OTEL metrics initialized with endpoint: ${config.endpoint}`,
+      `[DEBUG] [Telemetry] OTEL metrics initialized with endpoint: ${TELEMETRY_OTLP_METRICS_URL}`,
     );
   }
 }
 
-/**
- * Record a tool invocation metric.
- */
 export function recordToolInvocation(
   toolName: string,
   status: (typeof MetricStatus)[keyof typeof MetricStatus],
@@ -114,9 +104,6 @@ export function recordToolInvocation(
   });
 }
 
-/**
- * Record tool execution duration in milliseconds.
- */
 export function recordToolDuration(
   toolName: string,
   durationMs: number,
@@ -130,9 +117,6 @@ export function recordToolDuration(
   });
 }
 
-/**
- * Record a tool error metric.
- */
 export function recordToolError(toolName: string, errorType: string): void {
   if (!errorsCounter) return;
 
@@ -142,21 +126,17 @@ export function recordToolError(toolName: string, errorType: string): void {
   });
 }
 
-/**
- * Shutdown the metrics system and flush any pending metrics.
- * This should be called before application exit.
- */
 export async function shutdownMetrics(): Promise<void> {
-  if (meterProvider) {
+  if (sdk) {
     try {
-      await meterProvider.shutdown();
+      await sdk.shutdown();
       if (process.env.debug === 'true') {
         console.error('[DEBUG] [Telemetry] OTEL metrics shutdown complete');
       }
     } catch (error) {
       console.error('[Telemetry] Error during metrics shutdown:', error);
     }
-    meterProvider = null;
+    sdk = null;
     meter = null;
     invocationsCounter = null;
     durationCounter = null;
@@ -164,9 +144,6 @@ export async function shutdownMetrics(): Promise<void> {
   }
 }
 
-/**
- * Check if metrics are enabled and initialized.
- */
 export function isMetricsEnabled(): boolean {
   return config?.enabled ?? false;
 }
