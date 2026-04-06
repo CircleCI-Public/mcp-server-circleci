@@ -20,9 +20,15 @@ describe('Usage API Data Fetching', () => {
   const END_DATE = '2024-08-31T23:59:59Z';
   const JOB_ID = 'test-job-id';
   const DOWNLOAD_URL = 'https://fake-url.com/usage.csv.gz';
+  const DOWNLOAD_URL_2 = 'https://fake-url.com/usage-part2.csv.gz';
+  const DOWNLOAD_URL_3 = 'https://fake-url.com/usage-part3.csv.gz';
   const OUTPUT_DIR = '/tmp/usage-data';
   const MOCK_CSV_CONTENT = 'col1,col2\nval1,val2';
+  const MOCK_CSV_CONTENT_2 = 'col1,col2\nval3,val4';
+  const MOCK_CSV_CONTENT_3 = 'col1,col2\nval5,val6';
   const MOCK_GZIPPED_CSV = gzipSync(Buffer.from(MOCK_CSV_CONTENT));
+  const MOCK_GZIPPED_CSV_2 = gzipSync(Buffer.from(MOCK_CSV_CONTENT_2));
+  const MOCK_GZIPPED_CSV_3 = gzipSync(Buffer.from(MOCK_CSV_CONTENT_3));
 
   let mockCircleCIClient: any;
   let startUsageExportJobMock: any;
@@ -53,7 +59,7 @@ describe('Usage API Data Fetching', () => {
         arrayBuffer: () => Promise.resolve(MOCK_GZIPPED_CSV),
       });
 
-      const result = await downloadAndSaveUsageData(DOWNLOAD_URL, OUTPUT_DIR, { startDate: START_DATE, endDate: END_DATE });
+      const result = await downloadAndSaveUsageData([DOWNLOAD_URL], OUTPUT_DIR, { startDate: START_DATE, endDate: END_DATE });
 
       expect(fetch).toHaveBeenCalledWith(DOWNLOAD_URL);
       expect(fs.writeFileSync).toHaveBeenCalledWith(
@@ -70,7 +76,7 @@ describe('Usage API Data Fetching', () => {
         arrayBuffer: () => Promise.resolve(MOCK_GZIPPED_CSV),
       });
 
-      await downloadAndSaveUsageData(DOWNLOAD_URL, OUTPUT_DIR, { startDate: START_DATE, endDate: END_DATE });
+      await downloadAndSaveUsageData([DOWNLOAD_URL], OUTPUT_DIR, { startDate: START_DATE, endDate: END_DATE });
 
       expect(fs.mkdirSync).toHaveBeenCalledWith(OUTPUT_DIR, { recursive: true });
     });
@@ -83,8 +89,52 @@ describe('Usage API Data Fetching', () => {
             text: async () => 'Internal Server Error'
         });
         
-        const result = await downloadAndSaveUsageData(DOWNLOAD_URL, OUTPUT_DIR, { startDate: START_DATE, endDate: END_DATE });
-        expect(result.content[0].text).toContain('ERROR: Failed to download CSV');
+        const result = await downloadAndSaveUsageData([DOWNLOAD_URL], OUTPUT_DIR, { startDate: START_DATE, endDate: END_DATE });
+        expect(result.content[0].text).toContain('ERROR: Failed to download or save usage data');
+    });
+
+    it('should download all parts and save as separate files for multiple URLs', async () => {
+      (fetch as any)
+        .mockResolvedValueOnce({ ok: true, arrayBuffer: () => Promise.resolve(MOCK_GZIPPED_CSV) })
+        .mockResolvedValueOnce({ ok: true, arrayBuffer: () => Promise.resolve(MOCK_GZIPPED_CSV_2) })
+        .mockResolvedValueOnce({ ok: true, arrayBuffer: () => Promise.resolve(MOCK_GZIPPED_CSV_3) });
+
+      const result = await downloadAndSaveUsageData(
+        [DOWNLOAD_URL, DOWNLOAD_URL_2, DOWNLOAD_URL_3],
+        OUTPUT_DIR,
+        { startDate: START_DATE, endDate: END_DATE }
+      );
+
+      expect(fetch).toHaveBeenCalledTimes(3);
+      expect(fs.writeFileSync).toHaveBeenCalledTimes(3);
+      expect(fs.writeFileSync).toHaveBeenCalledWith(
+        `${OUTPUT_DIR}/usage-data-2024-08-01_2024-08-31_part1.csv`,
+        Buffer.from(MOCK_CSV_CONTENT)
+      );
+      expect(fs.writeFileSync).toHaveBeenCalledWith(
+        `${OUTPUT_DIR}/usage-data-2024-08-01_2024-08-31_part2.csv`,
+        Buffer.from(MOCK_CSV_CONTENT_2)
+      );
+      expect(fs.writeFileSync).toHaveBeenCalledWith(
+        `${OUTPUT_DIR}/usage-data-2024-08-01_2024-08-31_part3.csv`,
+        Buffer.from(MOCK_CSV_CONTENT_3)
+      );
+      expect(result.content[0].text).toContain('3 files');
+    });
+
+    it('should stop and return error if any part fails to download', async () => {
+      (fetch as any)
+        .mockResolvedValueOnce({ ok: true, arrayBuffer: () => Promise.resolve(MOCK_GZIPPED_CSV) })
+        .mockResolvedValueOnce({ ok: false, status: 403, statusText: 'Forbidden', text: async () => 'Access Denied' });
+
+      const result = await downloadAndSaveUsageData(
+        [DOWNLOAD_URL, DOWNLOAD_URL_2],
+        OUTPUT_DIR,
+        { startDate: START_DATE, endDate: END_DATE }
+      );
+
+      expect(fs.writeFileSync).toHaveBeenCalledTimes(1);
+      expect(result.content[0].text).toContain('ERROR: Failed to download or save usage data');
     });
   });
 
