@@ -9,10 +9,7 @@ import {
   recordToolInvocation,
 } from './metrics.js';
 
-/**
- * A generic tool handler function type that accepts any arguments and returns a promise.
- */
-type GenericToolHandler = (args: any, extra: any) => Promise<any>;
+export type ToolHandler = (args: any, extra: any) => Promise<any>;
 
 /**
  * Wrap a tool handler with telemetry metrics instrumentation.
@@ -28,14 +25,10 @@ type GenericToolHandler = (args: any, extra: any) => Promise<any>;
  * @param handler - The original tool handler function
  * @returns A wrapped handler that records metrics
  */
-export function wrapToolHandler<T extends GenericToolHandler>(
-  toolName: string,
-  handler: T,
-): T {
-  const wrappedHandler = async (args: any, extra: any) => {
+export function wrapToolHandler(toolName: string, handler: ToolHandler): ToolHandler {
+  return async (args, extra) => {
     const startTime = performance.now();
-    let status: (typeof MetricStatus)[keyof typeof MetricStatus] =
-      MetricStatus.SUCCESS;
+    let status = MetricStatus.SUCCESS;
 
     try {
       const result = await handler(args, extra);
@@ -61,6 +54,4 @@ export function wrapToolHandler<T extends GenericToolHandler>(
       }
     }
   };
-
-  return wrappedHandler as T;
 }

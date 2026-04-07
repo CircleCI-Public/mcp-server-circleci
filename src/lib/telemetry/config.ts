@@ -18,10 +18,14 @@ export type TelemetryConfig = {
 };
 
 /**
- * Telemetry is enabled when the customer has configured CIRCLECI_TOKEN.
+ * Telemetry is enabled when the customer has configured CIRCLECI_TOKEN and
+ * has not opted out via DISABLE_TELEMETRY=true.
  * The same PAT used for CircleCI API calls authenticates metrics export.
  */
 export function getTelemetryConfig(): TelemetryConfig {
+  if (process.env.DISABLE_TELEMETRY === 'true') {
+    return { enabled: false, token: '' };
+  }
   const token = process.env.CIRCLECI_TOKEN?.trim();
   if (!token) {
     return { enabled: false, token: '' };

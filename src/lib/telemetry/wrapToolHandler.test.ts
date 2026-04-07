@@ -1,27 +1,24 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { wrapToolHandler } from './wrapToolHandler.js';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as metrics from './metrics.js';
+import { wrapToolHandler } from './wrapToolHandler.js';
 
-vi.mock('./metrics.js', () => ({
-  recordToolInvocation: vi.fn(),
-  recordToolDuration: vi.fn(),
-  recordToolError: vi.fn(),
-  MetricStatus: {
-    SUCCESS: 'success',
-    ERROR: 'error',
-  },
-}));
+vi.mock('./metrics.js', async () => {
+  const actual = await vi.importActual('./metrics.js');
+  return {
+    ...actual,
+    recordToolInvocation: vi.fn(),
+    recordToolDuration: vi.fn(),
+    recordToolError: vi.fn(),
+  };
+});
 
 describe('wrapToolHandler', () => {
-  const originalEnv = process.env;
-
   beforeEach(() => {
     vi.clearAllMocks();
-    process.env = { ...originalEnv };
   });
 
   afterEach(() => {
-    process.env = originalEnv;
+    vi.unstubAllEnvs();
   });
 
   it('should call the original handler and return its result', async () => {
@@ -134,7 +131,7 @@ describe('wrapToolHandler', () => {
   });
 
   it('should log debug info when debug mode is enabled', async () => {
-    process.env.debug = 'true';
+    vi.stubEnv('debug', 'true');
     const consoleSpy = vi
       .spyOn(console, 'error')
       .mockImplementation(() => undefined);

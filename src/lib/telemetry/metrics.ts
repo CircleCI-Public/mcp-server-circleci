@@ -14,28 +14,24 @@ import {
 } from './config.js';
 
 /** Metric attribute names */
-export const MetricAttributes = {
-  TOOL_NAME: 'tool_name',
-  STATUS: 'status',
-  ERROR_TYPE: 'error_type',
-} as const;
+export const METRIC_ATTR_TOOL_NAME = 'tool_name';
+export const METRIC_ATTR_STATUS = 'status';
+export const METRIC_ATTR_ERROR_TYPE = 'error_type';
 
 /** Status values for metrics */
-export const MetricStatus = {
-  SUCCESS: 'success',
-  ERROR: 'error',
-} as const;
+export enum MetricStatus {
+  SUCCESS = 'success',
+  ERROR = 'error',
+}
 
 /**
  * Metric names following mcp.tool prefix convention.
  * The ai-o11y proxy prepends "circleci." for non-api-key auth,
  * so final Datadog names become circleci.mcp.tool.*.
  */
-export const MetricNames = {
-  INVOCATIONS: 'mcp.tool.invocations',
-  DURATION_MS: 'mcp.tool.duration_ms',
-  ERRORS: 'mcp.tool.errors',
-} as const;
+export const METRIC_NAME_INVOCATIONS = 'mcp.tool.invocations';
+export const METRIC_NAME_DURATION_MS = 'mcp.tool.duration_ms';
+export const METRIC_NAME_ERRORS = 'mcp.tool.errors';
 
 type MetricType = 'histogram' | 'count' | 'gauge' | 'timeInMilliseconds';
 
@@ -58,7 +54,7 @@ export async function initializeMetrics(): Promise<void> {
   if (!config.enabled) {
     if (process.env.debug === 'true') {
       console.error(
-        '[DEBUG] [Telemetry] Metrics disabled (CIRCLECI_TOKEN not set)',
+        '[DEBUG] [Telemetry] Metrics disabled (DISABLE_TELEMETRY=true or CIRCLECI_TOKEN not set)',
       );
     }
     return;
@@ -90,29 +86,29 @@ function record(
 
 export function recordToolInvocation(
   toolName: string,
-  status: (typeof MetricStatus)[keyof typeof MetricStatus],
+  status: MetricStatus,
 ): void {
-  record('count', MetricNames.INVOCATIONS, 1, [
-    `${MetricAttributes.TOOL_NAME}:${toolName}`,
-    `${MetricAttributes.STATUS}:${status}`,
+  record('count', METRIC_NAME_INVOCATIONS, 1, [
+    `${METRIC_ATTR_TOOL_NAME}:${toolName}`,
+    `${METRIC_ATTR_STATUS}:${status}`,
   ]);
 }
 
 export function recordToolDuration(
   toolName: string,
   durationMs: number,
-  status: (typeof MetricStatus)[keyof typeof MetricStatus],
+  status: MetricStatus,
 ): void {
-  record('timeInMilliseconds', MetricNames.DURATION_MS, durationMs, [
-    `${MetricAttributes.TOOL_NAME}:${toolName}`,
-    `${MetricAttributes.STATUS}:${status}`,
+  record('timeInMilliseconds', METRIC_NAME_DURATION_MS, durationMs, [
+    `${METRIC_ATTR_TOOL_NAME}:${toolName}`,
+    `${METRIC_ATTR_STATUS}:${status}`,
   ]);
 }
 
 export function recordToolError(toolName: string, errorType: string): void {
-  record('count', MetricNames.ERRORS, 1, [
-    `${MetricAttributes.TOOL_NAME}:${toolName}`,
-    `${MetricAttributes.ERROR_TYPE}:${errorType}`,
+  record('count', METRIC_NAME_ERRORS, 1, [
+    `${METRIC_ATTR_TOOL_NAME}:${toolName}`,
+    `${METRIC_ATTR_ERROR_TYPE}:${errorType}`,
   ]);
 }
 

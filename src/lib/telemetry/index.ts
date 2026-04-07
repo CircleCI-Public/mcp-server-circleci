@@ -15,12 +15,16 @@ export {
 export {
   initializeMetrics,
   isMetricsEnabled,
-  MetricAttributes,
-  MetricNames,
+  METRIC_ATTR_ERROR_TYPE,
+  METRIC_ATTR_STATUS,
+  METRIC_ATTR_TOOL_NAME,
+  METRIC_NAME_DURATION_MS,
+  METRIC_NAME_ERRORS,
+  METRIC_NAME_INVOCATIONS,
   MetricStatus,
   recordToolDuration,
   recordToolError,
   recordToolInvocation,
   shutdownMetrics,
 } from './metrics.js';
-export { wrapToolHandler } from './wrapToolHandler.js';
+export { type ToolHandler, wrapToolHandler } from './wrapToolHandler.js';

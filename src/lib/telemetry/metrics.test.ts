@@ -1,34 +1,36 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { MetricAttributes, MetricNames, MetricStatus } from './metrics.js';
+import {
+  METRIC_ATTR_ERROR_TYPE,
+  METRIC_ATTR_STATUS,
+  METRIC_ATTR_TOOL_NAME,
+  METRIC_NAME_DURATION_MS,
+  METRIC_NAME_ERRORS,
+  METRIC_NAME_INVOCATIONS,
+  MetricStatus,
+} from './metrics.js';
 
 describe('Metric constants', () => {
-  describe('MetricNames', () => {
-    it('should have correct metric name prefixes', () => {
-      expect(MetricNames.INVOCATIONS).toBe('mcp.tool.invocations');
-      expect(MetricNames.DURATION_MS).toBe('mcp.tool.duration_ms');
-      expect(MetricNames.ERRORS).toBe('mcp.tool.errors');
-    });
-
-    it('should all start with mcp.tool prefix (ai-o11y proxy prepends circleci.)', () => {
-      Object.values(MetricNames).forEach((name) => {
-        expect(name).toMatch(/^mcp\.tool\./);
-      });
-    });
+  it('should have correct metric names', () => {
+    expect(METRIC_NAME_INVOCATIONS).toBe('mcp.tool.invocations');
+    expect(METRIC_NAME_DURATION_MS).toBe('mcp.tool.duration_ms');
+    expect(METRIC_NAME_ERRORS).toBe('mcp.tool.errors');
   });
 
-  describe('MetricAttributes', () => {
-    it('should have correct attribute names', () => {
-      expect(MetricAttributes.TOOL_NAME).toBe('tool_name');
-      expect(MetricAttributes.STATUS).toBe('status');
-      expect(MetricAttributes.ERROR_TYPE).toBe('error_type');
-    });
+  it('should all start with mcp.tool prefix (ai-o11y proxy prepends circleci.)', () => {
+    for (const name of [METRIC_NAME_INVOCATIONS, METRIC_NAME_DURATION_MS, METRIC_NAME_ERRORS]) {
+      expect(name).toMatch(/^mcp\.tool\./);
+    }
   });
 
-  describe('MetricStatus', () => {
-    it('should have correct status values', () => {
-      expect(MetricStatus.SUCCESS).toBe('success');
-      expect(MetricStatus.ERROR).toBe('error');
-    });
+  it('should have correct attribute names', () => {
+    expect(METRIC_ATTR_TOOL_NAME).toBe('tool_name');
+    expect(METRIC_ATTR_STATUS).toBe('status');
+    expect(METRIC_ATTR_ERROR_TYPE).toBe('error_type');
+  });
+
+  it('should have correct status values', () => {
+    expect(MetricStatus.SUCCESS).toBe('success');
+    expect(MetricStatus.ERROR).toBe('error');
   });
 });
 

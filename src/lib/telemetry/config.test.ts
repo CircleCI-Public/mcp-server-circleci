@@ -43,6 +43,25 @@ describe('getTelemetryConfig', () => {
 
     expect(config.enabled).toBe(false);
   });
+
+  it('should return disabled config when DISABLE_TELEMETRY is true', () => {
+    process.env.CIRCLECI_TOKEN = 'pat-token-abc';
+    process.env.DISABLE_TELEMETRY = 'true';
+
+    const config = getTelemetryConfig();
+
+    expect(config.enabled).toBe(false);
+    expect(config.token).toBe('');
+  });
+
+  it('should remain enabled when DISABLE_TELEMETRY is not true', () => {
+    process.env.CIRCLECI_TOKEN = 'pat-token-abc';
+    process.env.DISABLE_TELEMETRY = 'false';
+
+    const config = getTelemetryConfig();
+
+    expect(config.enabled).toBe(true);
+  });
 });
 
 describe('telemetry constants', () => {

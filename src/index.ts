@@ -8,6 +8,7 @@ import { createStdioTransport } from './transports/stdio.js';
 import {
   initializeMetrics,
   shutdownMetrics,
+  ToolHandler,
   wrapToolHandler,
 } from './lib/telemetry/index.js';
 
@@ -64,7 +65,7 @@ CCI_TOOLS.forEach((tool) => {
   }
 
   // Wrap handler with telemetry instrumentation
-  const wrappedHandler = wrapToolHandler(tool.name, handler as any);
+  const wrappedHandler = wrapToolHandler(tool.name, handler as ToolHandler);
 
   server.tool(
     tool.name,
