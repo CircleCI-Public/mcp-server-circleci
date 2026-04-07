@@ -975,6 +975,18 @@ taskkill /f /im node.exe
 
 </details>
 
+## Telemetry
+
+The server supports OpenTelemetry metrics for tracking tool usage. Set `OTEL_EXPORTER_OTLP_ENDPOINT` to enable.
+
+| Metric | Description |
+|--------|-------------|
+| `circleci.mcp.tool.invocations` | Tool invocation count |
+| `circleci.mcp.tool.duration_ms` | Execution time in ms |
+| `circleci.mcp.tool.errors` | Error count |
+
+Optional config: `OTEL_EXPORTER_OTLP_HEADERS`, `OTEL_SERVICE_NAME` (default: `mcp-server-circleci`), `OTEL_METRICS_EXPORT_INTERVAL_MS` (default: `60000`).
+
 # Development
 
 ## Getting Started
