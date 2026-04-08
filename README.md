@@ -975,6 +975,16 @@ taskkill /f /im node.exe
 
 </details>
 
+## Telemetry
+
+The server supports OpenTelemetry metrics for tracking tool usage. To disable telemetry, set `DISABLE_TELEMETRY=true`.
+
+| Metric | Description |
+|--------|-------------|
+| `circleci.mcp.tool.invocations` | Tool invocation count |
+| `circleci.mcp.tool.duration_ms` | Execution time in ms |
+| `circleci.mcp.tool.errors` | Error count |
+
 # Development
 
 ## Getting Started

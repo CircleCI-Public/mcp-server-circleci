@@ -5,6 +5,12 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { CCI_HANDLERS, CCI_TOOLS } from './circleci-tools.js';
 import { createUnifiedTransport } from './transports/unified.js';
 import { createStdioTransport } from './transports/stdio.js';
+import {
+  initializeMetrics,
+  shutdownMetrics,
+  ToolHandler,
+  wrapToolHandler,
+} from './lib/telemetry/index.js';
 
 const server = new McpServer(
   { name: 'mcp-server-circleci', version: '1.0.0' },
@@ -57,15 +63,34 @@ CCI_TOOLS.forEach((tool) => {
   if (process.env.debug === 'true') {
     console.error(`[DEBUG] [Startup] Registering tool: ${tool.name}`);
   }
+
+  // Wrap handler with telemetry instrumentation
+  const wrappedHandler = wrapToolHandler(tool.name, handler as ToolHandler);
+
   server.tool(
     tool.name,
     tool.description,
     { params: tool.inputSchema.optional() },
-    handler as any,
+    wrappedHandler,
   );
 });
 
 async function main() {
+  // Initialize OpenTelemetry metrics
+  await initializeMetrics();
+
+  // Handle graceful shutdown
+  const shutdown = async () => {
+    if (process.env.debug === 'true') {
+      console.error('[DEBUG] [Shutdown] Shutting down server...');
+    }
+    await shutdownMetrics();
+    process.exit(0);
+  };
+
+  process.on('SIGTERM', shutdown);
+  process.on('SIGINT', shutdown);
+
   if (process.env.start === 'remote') {
     console.error('Starting CircleCI MCP unified HTTP+SSE server...');
     createUnifiedTransport(server);
