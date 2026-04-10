@@ -45,16 +45,16 @@ export function validateCSVColumns(records: any[]): void {
   }
 }
 
-export function groupRecordsByJob(records: any[]): Map<string, any[]> {
-  const groupMap = new Map<string, any[]>();
+export function groupRecordsByJob(records: any[], groupMap?: Map<string, any[]>): Map<string, any[]> {
+  const map = groupMap ?? new Map<string, any[]>();
   for (const row of records) {
     const key = [row.project_name, row.workflow_name, row.job_name, row.resource_class].join('|||');
-    if (!groupMap.has(key)) {
-      groupMap.set(key, []);
+    if (!map.has(key)) {
+      map.set(key, []);
     }
-    groupMap.get(key)?.push(row);
+    map.get(key)?.push(row);
   }
-  return groupMap;
+  return map;
 }
 
 const avg = (arr: number[]) => arr.length > 0 ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
@@ -144,11 +144,20 @@ export function generateReport(underusedJobs: any[], threshold: number): string 
   return report;
 }
 
-export async function findUnderusedResourceClassesFromCSV({ csvFilePath, threshold = 40 }: { csvFilePath: string, threshold?: number }) {
-  const records = readAndParseCSV(csvFilePath);
-  validateCSVColumns(records);
-  const groupedRecords = groupRecordsByJob(records);
-  const underusedJobs = analyzeJobGroups(groupedRecords, threshold);
+export async function findUnderusedResourceClassesFromCSV({ csvFilePath, threshold = 40 }: { csvFilePath: string | string[], threshold?: number }) {
+  const paths = Array.isArray(csvFilePath) ? csvFilePath : [csvFilePath];
+  // Processing files one at a time to avoid holding all CSVs in memory simultaneously and usage exports can produce 8 part files at ~350Mb each,
+  // which caused a stack overflow when loaded all at once.
+  // As a result this groupMap is used to accumulate grouped records across files, so only one file's worth of rows is in memory at a time.
+  const groupMap = new Map<string, any[]>();
+
+  for (const p of paths) {
+    const records = readAndParseCSV(p);
+    validateCSVColumns(records);
+    groupRecordsByJob(records, groupMap);
+  }
+
+  const underusedJobs = analyzeJobGroups(groupMap, threshold);
   const report = generateReport(underusedJobs, threshold);
   
   return { report, underused: underusedJobs };
