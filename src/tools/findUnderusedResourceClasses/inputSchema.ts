@@ -2,8 +2,8 @@ import { z } from 'zod';
 
 export const findUnderusedResourceClassesInputSchema = z.object({
   csvFilePath: z
-    .string()
-    .describe('The path to the usage data CSV file to analyze.'),
+    .union([z.string(), z.array(z.string())])
+    .describe('Path to a usage data CSV file, or an array of paths to multiple part files to analyze together.'),
   threshold: z
     .number()
     .optional()
