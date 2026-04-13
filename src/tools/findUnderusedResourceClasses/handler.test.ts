@@ -1,50 +1,43 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { findUnderusedResourceClasses } from './handler.js';
-import { promises as fs } from 'fs';
+import * as fs from 'fs';
 
-vi.mock('fs', () => ({
-  promises: {
-    readFile: vi.fn(),
-  },
-}));
+vi.mock('fs');
 
 describe('findUnderusedResourceClasses handler', () => {
-  const CSV_HEADERS = 'project_name,workflow_name,job_name,resource_class,median_cpu_utilization_pct,max_cpu_utilization_pct,median_ram_utilization_pct,max_ram_utilization_pct';
-  const CSV_ROW_UNDER = 'proj,flow,build,medium,10,20,15,18';
-  const CSV_ROW_OVER = 'proj,flow,test,large,50,60,55,58';
-  const CSV = `${CSV_HEADERS}\n${CSV_ROW_UNDER}\n${CSV_ROW_OVER}`;
-  const CSV_MISSING = 'job_name,resource_class,avg_cpu_pct,max_cpu_pct,avg_ram_pct,max_ram_pct\nfoo,medium,10,20,15,18';
+  const CSV_HEADERS = 'project_name,workflow_name,job_name,resource_class,median_cpu_utilization_pct,max_cpu_utilization_pct,median_ram_utilization_pct,max_ram_utilization_pct,compute_credits';
+  const CSV_ROW_UNDER = 'proj,flow,build,medium,10,20,15,18,100';
+  const CSV_ROW_OVER = 'proj,flow,test,large,50,60,55,58,200';
 
   beforeEach(() => {
-    (fs.readFile as any).mockReset();
+    vi.clearAllMocks();
+    (fs.existsSync as any).mockReturnValue(true);
   });
 
   it('returns an error if file read fails', async () => {
-    (fs.readFile as any).mockRejectedValue(new Error('fail'));
+    (fs.readFileSync as any).mockImplementation(() => { throw new Error('fail'); });
     const result = await findUnderusedResourceClasses({ params: { csvFilePath: '/tmp/usage.csv', threshold: 40 } }, undefined as any);
     expect(result.isError).toBeTruthy();
     expect(result.content[0].text).toContain('Could not read CSV file');
   });
 
   it('returns an error if CSV is missing required columns', async () => {
-    (fs.readFile as any).mockResolvedValue(CSV_MISSING);
+    (fs.readFileSync as any).mockReturnValue('bad_col1,bad_col2\n1,2');
     const result = await findUnderusedResourceClasses({ params: { csvFilePath: '/tmp/usage.csv', threshold: 40 } }, undefined as any);
     expect(result.isError).toBeTruthy();
-    expect(result.content[0].text).toContain('Could not read CSV file');
+    expect(result.content[0].text).toContain('missing required columns');
   });
 
-  it('returns an error if all jobs are above threshold', async () => {
-    const CSV_OVER = `${CSV_HEADERS}\nproj,flow,test,large,50,60,55,58`;
-    (fs.readFile as any).mockResolvedValue(CSV_OVER);
+  it('returns a no-underused message if all jobs are above threshold', async () => {
+    (fs.readFileSync as any).mockReturnValue(`${CSV_HEADERS}\n${CSV_ROW_OVER}`);
     const result = await findUnderusedResourceClasses({ params: { csvFilePath: '/tmp/usage.csv', threshold: 40 } }, undefined as any);
-    expect(result.isError).toBeTruthy();
-    expect(result.content[0].text).toContain('Could not read CSV file');
+    expect(result.content[0].text).toContain('No underused resource classes found');
   });
 
-  it('returns an error even if underused jobs are present', async () => {
-    (fs.readFile as any).mockResolvedValue(CSV);
+  it('returns a report when underused jobs are found', async () => {
+    (fs.readFileSync as any).mockReturnValue(`${CSV_HEADERS}\n${CSV_ROW_UNDER}\n${CSV_ROW_OVER}`);
     const result = await findUnderusedResourceClasses({ params: { csvFilePath: '/tmp/usage.csv', threshold: 40 } }, undefined as any);
-    expect(result.isError).toBeTruthy();
-    expect(result.content[0].text).toContain('Could not read CSV file');
+    expect(result.content[0].text).toContain('Underused resource classes');
+    expect(result.content[0].text).toContain('build');
   });
-}); 
+});

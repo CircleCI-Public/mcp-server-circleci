@@ -74,6 +74,14 @@ describe('findUnderusedResourceClasses library functions', () => {
       expect(grouped.size).toBe(2);
       expect(grouped.has('proj|||flow|||build|||medium')).toBe(true);
     });
+
+    it('should accumulate into an existing groupMap', () => {
+      const groupMap = new Map<string, any[]>();
+      groupRecordsByJob([mockRecords[0]], groupMap);
+      groupRecordsByJob([mockRecords[0]], groupMap);
+      const group = groupMap.get('proj|||flow|||build|||medium');
+      expect(group).toHaveLength(2);
+    });
   });
 
   describe('analyzeJobGroups', () => {
