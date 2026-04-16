@@ -337,8 +337,8 @@ describe('listComponentVersions handler', () => {
     it('should list environments when environmentID is not provided', async () => {
       const mockEnvironments = {
         items: [
-          { id: 'env-1', name: 'production' },
-          { id: 'env-2', name: 'staging' },
+          { id: 'env-1', name: 'production', created_at: '2023-01-01T00:00:00Z', updated_at: '2023-01-02T00:00:00Z', labels: [{ key: 'env', value: 'prod' }] },
+          { id: 'env-2', name: 'staging', created_at: '2023-01-01T00:00:00Z', updated_at: '2023-01-02T00:00:00Z', labels: [] },
         ],
         next_page_token: null,
       };
@@ -425,8 +425,8 @@ describe('listComponentVersions handler', () => {
     it('should list components when componentID is not provided', async () => {
       const mockComponents = {
         items: [
-          { id: 'comp-1', name: 'frontend' },
-          { id: 'comp-2', name: 'backend' },
+          { id: 'comp-1', name: 'frontend', project_id: 'test-project-id', release_count: 5, created_at: '2023-01-01T00:00:00Z', updated_at: '2023-01-02T00:00:00Z', labels: [{ key: 'tier', value: 'web' }] },
+          { id: 'comp-2', name: 'backend', project_id: 'test-project-id', release_count: 3, created_at: '2023-01-01T00:00:00Z', updated_at: '2023-01-02T00:00:00Z', labels: [] },
         ],
         next_page_token: null,
       };

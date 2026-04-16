@@ -182,13 +182,15 @@ const DeploySettingsResponseSchema = z.object({
   rollback_pipeline_definition_id: z.string().optional().describe('The rollback pipeline definition ID, if configured for this project'),
 }).passthrough(); // Allow additional properties we might not know about
 
+const LabelSchema = z.object({ key: z.string(), value: z.string() });
+
 const DeployComponentsResponseSchema = z.object({
   items: z.array(z.object({
     id: z.string(),
     project_id: z.string(),
     name: z.string(),
     release_count: z.number(),
-    labels: z.array(z.string()),
+    labels: z.array(LabelSchema),
     created_at: z.string(),
     updated_at: z.string(),
   })),
@@ -212,11 +214,12 @@ const DeployComponentVersionsResponseSchema = z.object({
 
 export const DeployEnvironmentResponseSchema = z.object({
   items: z.array(z.object({
-  id: z.string(),
-  name: z.string(),
-  created_at: z.string(),
-  updated_at: z.string(),
-  labels: z.array(z.string()),
+    id: z.string(),
+    name: z.string(),
+    description: z.string().optional(),
+    created_at: z.string(),
+    updated_at: z.string(),
+    labels: z.array(LabelSchema),
   })),
   next_page_token: z.string().nullable(),
 });
