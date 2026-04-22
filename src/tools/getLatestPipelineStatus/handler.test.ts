@@ -221,6 +221,30 @@ describe('getLatestPipelineStatus handler', () => {
     expect(response).toEqual(mockFormattedResponse);
   });
 
+  it('should use pipelineId directly when provided, bypassing branch search', async () => {
+    const args = {
+      params: {
+        projectURL:
+          'https://app.circleci.com/pipelines/github/circleci/project',
+        pipelineId: 'abc-123',
+      },
+    };
+
+    const controller = new AbortController();
+    const response = await getLatestPipelineStatus(args as any, {
+      signal: controller.signal,
+    });
+
+    expect(
+      getLatestPipelineWorkflowsModule.getLatestPipelineWorkflows,
+    ).toHaveBeenCalledWith({
+      projectSlug: 'gh/circleci/project',
+      branch: 'main',
+      pipelineId: 'abc-123',
+    });
+    expect(response).toEqual(mockFormattedResponse);
+  });
+
   it('should handle errors from getLatestPipelineWorkflows', async () => {
     vi.mocked(
       getLatestPipelineWorkflowsModule.getLatestPipelineWorkflows,

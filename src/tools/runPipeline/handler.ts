@@ -124,7 +124,7 @@ export const runPipeline: ToolCallback<{
     content: [
       {
         type: 'text',
-        text: `Pipeline run successfully. View it at: ${baseURL}/pipelines/${projectSlug}/${runPipelineResponse.number}`,
+        text: `Pipeline run successfully. Pipeline ID: ${runPipelineResponse.id}. View it at: ${baseURL}/pipelines/${projectSlug}/${runPipelineResponse.number}`,
       },
     ],
   };
