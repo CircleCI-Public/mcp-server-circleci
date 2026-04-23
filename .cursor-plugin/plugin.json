@@ -1,0 +1,17 @@
+{
+  "name": "circleci",
+  "displayName": "CircleCI",
+  "version": "0.1.0",
+  "description": "Connect Cursor to CircleCI — debug pipelines, manage CI/CD workflows, validate config, and optimize builds from your editor.",
+  "author": {
+    "name": "CircleCI",
+    "email": "ai-team@circleci.com"
+  },
+  "homepage": "https://circleci.com",
+  "repository": "https://github.com/CircleCI-Public/mcp-server-circleci",
+  "license": "MIT",
+  "keywords": ["circleci", "ci-cd", "pipeline", "devops", "mcp", "automation", "testing", "deployment"],
+  "logo": "assets/logo.svg",
+  "skills": "skills",
+  "mcpServers": "mcp.json"
+}
