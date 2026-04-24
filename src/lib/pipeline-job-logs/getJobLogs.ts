@@ -3,6 +3,9 @@ import { getCircleCIClient } from '../../clients/client.js';
 import { rateLimitedRequests } from '../rateLimitedRequests/index.js';
 import { JobDetails } from '../../clients/schemas.js';
 import outputTextTruncated, { SEPARATOR } from '../outputTextTruncated.js';
+import fs from 'fs';
+import path from 'path';
+import os from 'os';
 
 export type GetJobLogsParams = {
   projectSlug: string;
@@ -105,12 +108,27 @@ const getJobLogs = async ({
 
 export default getJobLogs;
 
+function resolveOutputDir(outputDir: string): string {
+  if (outputDir.startsWith('~')) {
+    return path.join(os.homedir(), outputDir.slice(1));
+  }
+  if (outputDir.includes('%USERPROFILE%')) {
+    const userProfile = process.env.USERPROFILE || os.homedir();
+    return outputDir.replace('%USERPROFILE%', userProfile);
+  }
+  return outputDir;
+}
+
 /**
- * Formats job logs into a standardized output structure
- * @param logs Array of job logs containing step information
- * @returns Formatted output object with text content
+ * Formats job logs, either writing to a file (if outputDir provided) or returning truncated inline text
+ * @param jobStepLogs Array of job logs containing step information
+ * @param outputDir Optional directory to write the full log file to
+ * @returns Formatted output object with file path or inline (possibly truncated) text
  */
-export function formatJobLogs(jobStepLogs: JobWithStepLogs[]) {
+export function formatJobLogs(
+  jobStepLogs: JobWithStepLogs[],
+  outputDir?: string,
+) {
   if (jobStepLogs.length === 0) {
     return {
       content: [
@@ -124,6 +142,23 @@ export function formatJobLogs(jobStepLogs: JobWithStepLogs[]) {
   const outputText = jobStepLogs
     .map((log) => `${SEPARATOR}Job: ${log.jobName}\n` + formatSteps(log))
     .join('\n');
+
+  if (outputDir) {
+    const resolvedDir = path.resolve(resolveOutputDir(outputDir));
+    fs.mkdirSync(resolvedDir, { recursive: true });
+    const fileName = `circleci-build-logs-${Date.now()}.txt`;
+    const filePath = path.join(resolvedDir, fileName);
+    fs.writeFileSync(filePath, outputText, 'utf8');
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: `Build logs saved to: ${filePath}`,
+        },
+      ],
+    };
+  }
+
   return outputTextTruncated(outputText);
 }
 

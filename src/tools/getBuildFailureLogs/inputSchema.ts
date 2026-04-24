@@ -32,4 +32,12 @@ export const getBuildFailureOutputInputSchema = z.object({
         'For example: "https://github.com/user/my-project.git"',
     )
     .optional(),
+  outputDir: z
+    .string()
+    .describe(
+      'Optional. When provided, the full build logs are written to a file in this directory and the file path is returned. ' +
+        'Use this for large logs to avoid truncation. ' +
+        'Use the workspace/project root when available (e.g., "/home/user/my-project"), otherwise use the Downloads folder (e.g., "~/Downloads").',
+    )
+    .optional(),
 });

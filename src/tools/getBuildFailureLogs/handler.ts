@@ -19,6 +19,7 @@ export const getBuildFailureLogs: ToolCallback<{
     branch,
     projectURL,
     projectSlug: inputProjectSlug,
+    outputDir,
   } = args.params ?? {};
 
   let projectSlug: string | undefined;
@@ -65,5 +66,5 @@ export const getBuildFailureLogs: ToolCallback<{
     jobNumber,
   });
 
-  return formatJobLogs(logs);
+  return formatJobLogs(logs, outputDir);
 };

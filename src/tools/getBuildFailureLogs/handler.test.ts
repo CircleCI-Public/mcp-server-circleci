@@ -162,7 +162,7 @@ describe('getBuildFailureLogs handler', () => {
       jobNumber: undefined,
     });
 
-    expect(formatJobLogs.formatJobLogs).toHaveBeenCalledWith(mockLogs);
+    expect(formatJobLogs.formatJobLogs).toHaveBeenCalledWith(mockLogs, undefined);
     expect(response).toHaveProperty('content');
     expect(Array.isArray(response.content)).toBe(true);
     expect(response.content[0]).toHaveProperty('type', 'text');
