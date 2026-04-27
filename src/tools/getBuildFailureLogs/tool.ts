@@ -7,11 +7,10 @@ export const getBuildFailureLogsTool = {
     This tool helps debug CircleCI build failures by retrieving failure logs.
 
     CRITICAL REQUIREMENTS:
-    1. Truncation Handling (HIGHEST PRIORITY):
-       - ALWAYS check for <MCPTruncationWarning> in the output
-       - When present, you MUST start your response with:
-         "WARNING: The logs have been truncated. Only showing the most recent entries. Earlier build failures may not be visible."
-       - Only proceed with log analysis after acknowledging the truncation
+    1. Large Log Handling:
+       - If you expect large logs or want the full output, provide outputDir. The full logs will be written to a file and the path returned.
+         * Use the project/workspace root when available, otherwise use the Downloads folder (e.g., "~/Downloads").
+       - If outputDir is omitted, logs are returned inline but may be truncated. When truncated, output will contain <MCPTruncationWarning> and you MUST acknowledge: "WARNING: The logs have been truncated. Only showing the most recent entries."
 
     Input options (EXACTLY ONE of these THREE options must be used):
 
