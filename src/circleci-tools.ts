@@ -35,6 +35,8 @@ import { listComponentVersions } from './tools/listComponentVersions/handler.js'
 
 import { listArtifactsTool } from './tools/listArtifacts/tool.js';
 import { listArtifacts } from './tools/listArtifacts/handler.js';
+import { getArtifactContentTool } from './tools/getArtifactContent/tool.js';
+import { getArtifactContent } from './tools/getArtifactContent/handler.js';
 
 // Define the tools with their configurations
 export const CCI_TOOLS = [
@@ -55,6 +57,7 @@ export const CCI_TOOLS = [
   runRollbackPipelineTool,
   listComponentVersionsTool,
   listArtifactsTool,
+  getArtifactContentTool,
 ];
 
 // Extract the tool names as a union type
@@ -87,4 +90,5 @@ export const CCI_HANDLERS = {
   run_rollback_pipeline: runRollbackPipeline,
   list_component_versions: listComponentVersions,
   list_artifacts: listArtifacts,
+  get_artifact_content: getArtifactContent,
 } satisfies ToolHandlers;
