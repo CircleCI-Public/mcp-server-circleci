@@ -120,7 +120,7 @@ export const runEvaluationTests: ToolCallback<{
     chosenPipeline?.definitionId || pipelineChoices[0].definitionId;
 
   // Process each file for compression and encoding
-  const processedFiles = promptFiles.map((promptFile) => {
+  const processedFiles = promptFiles.map((promptFile: { fileName: string; fileContent: string }) => {
     const fileExtension = promptFile.fileName.toLowerCase();
     let processedPromptFileContent: string;
 
@@ -152,7 +152,7 @@ export const runEvaluationTests: ToolCallback<{
   // Generate file creation commands with conditional logic for parallelism
   const fileCreationCommands = processedFiles
     .map(
-      (file, index) =>
+      (file: { fileName: string; base64GzippedContent: string }, index: number) =>
         `          if [ "$CIRCLE_NODE_INDEX" = "${index}" ]; then
             sudo mkdir -p /prompts
             echo "${file.base64GzippedContent}" | base64 -d | gzip -d | sudo tee /prompts/${file.fileName} > /dev/null
@@ -163,7 +163,7 @@ export const runEvaluationTests: ToolCallback<{
   // Generate individual evaluation commands with conditional logic for parallelism
   const evaluationCommands = processedFiles
     .map(
-      (file, index) =>
+      (file: { fileName: string }, index: number) =>
         `          if [ "$CIRCLE_NODE_INDEX" = "${index}" ]; then
             python eval.py ${file.fileName}
           fi`,

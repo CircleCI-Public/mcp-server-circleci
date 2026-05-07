@@ -38,14 +38,14 @@
     "bump:major": "pnpm version major --no-git-tag-version"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.15.1",
+    "@modelcontextprotocol/sdk": "~1.22.0",
     "chrono-node": "2.8.3",
     "csv-parse": "6.0.0",
     "date-fns": "4.1.0",
     "express": "^4.19.2",
     "parse-github-url": "^1.0.3",
-    "zod": "^3.24.2",
-    "zod-to-json-schema": "^3.24.3"
+    "zod": "^3.24.4",
+    "zod-to-json-schema": "^3.24.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
@@ -64,6 +64,11 @@
     "typescript": "^5.6.2",
     "typescript-eslint": "^8.28.0",
     "vitest": "^3.1.1"
+  },
+  "pnpm": {
+    "overrides": {
+      "zod-to-json-schema": "3.24.1"
+    }
   },
   "engines": {
     "node": ">=18.0.0"
