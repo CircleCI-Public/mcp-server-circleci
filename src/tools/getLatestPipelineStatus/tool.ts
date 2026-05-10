@@ -13,7 +13,7 @@ export const getLatestPipelineStatusTool = {
     - Check build progress
     - Get pipeline information
 
-    Input options (EXACTLY ONE of these THREE options must be used):
+    Input options (EXACTLY ONE of these FOUR options must be used):
 
     ${option1DescriptionBranchRequired}
 
@@ -29,6 +29,9 @@ export const getLatestPipelineStatusTool = {
     - workspaceRoot: The absolute path to the workspace root
     - gitRemoteURL: The URL of the git remote repository
     - branch: The name of the current branch
+
+    Option 4 - Pipeline ID (use when pipeline ID is known from run_pipeline):
+    - pipelineId: The pipeline ID returned by the run_pipeline tool. Fetches status for this specific pipeline directly, bypassing branch-based lookup and eliminating any race condition from concurrent pushes to the same branch. Combine with projectURL or projectSlug for context.
     
     Recommended Workflow:
     1. Use listFollowedProjects tool to get a list of projects

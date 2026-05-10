@@ -3,13 +3,19 @@ import { getCircleCIClient } from '../../clients/client.js';
 export type GetLatestPipelineWorkflowsParams = {
   projectSlug: string;
   branch?: string;
+  pipelineId?: string;
 };
 
 export const getLatestPipelineWorkflows = async ({
   projectSlug,
   branch,
+  pipelineId,
 }: GetLatestPipelineWorkflowsParams) => {
   const circleci = getCircleCIClient();
+
+  if (pipelineId) {
+    return circleci.workflows.getPipelineWorkflows({ pipelineId });
+  }
 
   const pipelines = await circleci.pipelines.getPipelines({
     projectSlug,
@@ -22,9 +28,7 @@ export const getLatestPipelineWorkflows = async ({
     throw new Error('Latest pipeline not found');
   }
 
-  const workflows = await circleci.workflows.getPipelineWorkflows({
+  return circleci.workflows.getPipelineWorkflows({
     pipelineId: latestPipeline.id,
   });
-
-  return workflows;
 };

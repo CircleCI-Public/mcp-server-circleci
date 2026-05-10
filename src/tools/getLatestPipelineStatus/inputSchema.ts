@@ -34,4 +34,10 @@ export const getLatestPipelineStatusInputSchema = z.object({
         'For example: "https://github.com/user/my-project.git"',
     )
     .optional(),
+  pipelineId: z
+    .string()
+    .describe(
+      'The pipeline ID returned by the run_pipeline tool. When provided, fetches status for this specific pipeline directly, avoiding any race condition from branch-based lookup.',
+    )
+    .optional(),
 });
