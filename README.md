@@ -21,6 +21,7 @@ Use Cursor, Windsurf, Copilot, Claude, or any MCP-compatible client to interact 
 | [`get_build_failure_logs`](#get_build_failure_logs) | Retrieve detailed failure logs from CircleCI builds |
 | [`get_job_test_results`](#get_job_test_results) | Retrieve test metadata and results for CircleCI jobs |
 | [`get_latest_pipeline_status`](#get_latest_pipeline_status) | Get the status of the latest pipeline for a branch |
+| [`get_orb_details`](#get_orb_details) | Get the full schema of a CircleCI orb (commands, jobs, executors, parameters) |
 | [`list_artifacts`](#list_artifacts) | List artifacts produced by a CircleCI job |
 | [`list_component_versions`](#list_component_versions) | List all versions for a CircleCI component |
 | [`list_followed_projects`](#list_followed_projects) | List all CircleCI projects you're following |
@@ -29,6 +30,7 @@ Use Cursor, Windsurf, Copilot, Claude, or any MCP-compatible client to interact 
 | [`run_evaluation_tests`](#run_evaluation_tests) | Run evaluation tests on a CircleCI pipeline |
 | [`run_pipeline`](#run_pipeline) | Trigger a pipeline to run |
 | [`run_rollback_pipeline`](#run_rollback_pipeline) | Trigger a rollback for a project |
+| [`search_orbs`](#search_orbs) | Search the CircleCI certified orb registry by keyword |
 
 ## Installation
 
@@ -747,6 +749,21 @@ Stopped: in progress
 </details>
 
 <details>
+<summary id="get_orb_details"><strong><code>get_orb_details</code></strong></summary>
+
+Retrieves the full schema of a CircleCI orb — every command, job, and executor it exposes, along with each parameter's name, type, default value, and required/optional status — plus the version pin. Use this when authoring or modifying `.circleci/config.yml`: the schema lets you write correct YAML on the first try instead of guessing from training data.
+
+Accepts:
+- `circleci/slack` — returns the latest version's schema.
+- `circleci/slack@4.12.6` — returns the schema for a specific version.
+
+Returns sections (in order): description, examples, executors, jobs, commands, and a final "use this version: `namespace/name@version`" pin. The pin and commands list sit at the tail so they survive truncation if the output is very large.
+
+Example: "Show me the parameters for circleci/aws-cli"
+
+</details>
+
+<details>
 <summary id="list_artifacts"><strong><code>list_artifacts</code></strong></summary>
 
 Retrieves the list of artifacts produced by a CircleCI job. This tool can be used in three ways:
@@ -882,6 +899,19 @@ Triggers a rollback for a CircleCI project. The tool interactively guides you th
    - **Pipeline Rollback:** triggers the rollback pipeline
    - **Workflow Rerun:** reruns a previous workflow using its workflow ID
 7. **Confirmation** — summarizes and confirms before execution
+
+</details>
+
+<details>
+<summary id="search_orbs"><strong><code>search_orbs</code></strong></summary>
+
+Searches the CircleCI orb registry by keyword. Use this when you need an orb for a task but don't already know which one — for example, a less common deployment target or a specific kind of scan. For well-known orbs like `circleci/slack` or `circleci/aws-cli`, skip this and call [`get_orb_details`](#get_orb_details) directly with the slug.
+
+**Limitation:** only the certified orb set (~77 orbs published by CircleCI and partners) is text-searchable through CircleCI's GraphQL API. The thousands of community orbs are not indexed for search — if you know a community orb's exact name (e.g., `datadog/agent`), call `get_orb_details` directly with that slug.
+
+Returns matching orbs sorted by recent build popularity, with each result's latest version pin.
+
+Example: "Find me a CircleCI orb for AWS ECS deployments"
 
 </details>
 
