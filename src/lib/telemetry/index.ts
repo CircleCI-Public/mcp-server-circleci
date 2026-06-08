@@ -1,8 +1,9 @@
 /**
  * Telemetry module for CircleCI MCP Server.
  *
- * Metrics for tool usage are exported to CircleCI ai-o11y when
- * CIRCLECI_TOKEN (PAT) is set.
+ * Metrics for tool usage are exported to CircleCI ai-o11y unless
+ * DISABLE_TELEMETRY=true. Metrics use the request-scoped token when
+ * available, otherwise CIRCLECI_TOKEN from the process environment.
  */
 
 export {

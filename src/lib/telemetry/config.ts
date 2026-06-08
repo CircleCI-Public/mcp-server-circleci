@@ -11,24 +11,21 @@ export const TELEMETRY_SERVICE_NAME = 'mcp-server-circleci';
 export const TELEMETRY_FLUSH_INTERVAL_MS = 60_000;
 
 export type TelemetryConfig = {
-  /** True when CIRCLECI_TOKEN is set (PAT used for metrics export via Circle-Token header). */
+  /** True when telemetry has not been opted out via DISABLE_TELEMETRY=true. */
   enabled: boolean;
-  /** CircleCI PAT for metrics endpoint auth. */
+  /** Fallback CircleCI PAT for metrics when no request-scoped token is available. */
   token: string;
 };
 
 /**
- * Telemetry is enabled when the customer has configured CIRCLECI_TOKEN and
- * has not opted out via DISABLE_TELEMETRY=true.
- * The same PAT used for CircleCI API calls authenticates metrics export.
+ * Telemetry is enabled unless DISABLE_TELEMETRY=true.
+ * Metrics are authenticated with the request-scoped token when available,
+ * otherwise CIRCLECI_TOKEN from the process environment.
  */
 export function getTelemetryConfig(): TelemetryConfig {
   if (process.env.DISABLE_TELEMETRY === 'true') {
     return { enabled: false, token: '' };
   }
-  const token = process.env.CIRCLECI_TOKEN?.trim();
-  if (!token) {
-    return { enabled: false, token: '' };
-  }
+  const token = process.env.CIRCLECI_TOKEN?.trim() || '';
   return { enabled: true, token };
 }

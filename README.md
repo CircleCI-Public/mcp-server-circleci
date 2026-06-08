@@ -32,6 +32,8 @@ Use Cursor, Windsurf, Copilot, Claude, or any MCP-compatible client to interact 
 
 ## Installation
 
+> **Team / centralized deployment:** To run one shared remote server for your org (Kubernetes, Docker, etc.) with per-developer or shared CircleCI tokens, see [Self-Managed Remote MCP Server](#self-managed-remote-mcp-server).
+
 <details>
 <summary><strong>Cursor</strong></summary>
 
@@ -96,25 +98,7 @@ Add the following to your Cursor MCP config:
 
 #### Using a Self-Managed Remote MCP Server
 
-Add the following to your Cursor MCP config:
-
-```json
-{
-  "inputs": [
-    {
-      "type": "promptString",
-      "id": "circleci-token",
-      "description": "CircleCI API Token",
-      "password": true
-    }
-  ],
-  "servers": {
-    "circleci-mcp-server-remote": {
-      "url": "http://your-circleci-remote-mcp-server-endpoint:8000/mcp"
-    }
-  }
-}
-```
+See [Self-Managed Remote MCP Server](#self-managed-remote-mcp-server). Use the [per-user client configuration](#client-configuration-per-user-tokens) and add it to your Cursor MCP config (`Cursor Settings → MCP`).
 
 </details>
 
@@ -207,18 +191,7 @@ Add the following to `.vscode/mcp.json` in your project:
 
 #### Using a Self-Managed Remote MCP Server
 
-Add the following to `.vscode/mcp.json` in your project:
-
-```json
-{
-  "servers": {
-    "circleci-mcp-server-remote": {
-      "type": "sse",
-      "url": "http://your-circleci-remote-mcp-server-endpoint:8000/mcp"
-    }
-  }
-}
-```
+See [Self-Managed Remote MCP Server](#self-managed-remote-mcp-server). Use the [per-user client configuration](#client-configuration-per-user-tokens) in `.vscode/mcp.json`.
 
 </details>
 
@@ -283,31 +256,7 @@ Add the following to your `claude_desktop_config.json`:
 
 #### Using a Self-Managed Remote MCP Server
 
-Create a wrapper script (e.g. `circleci-remote-mcp.sh`):
-
-```bash
-#!/bin/bash
-export CIRCLECI_TOKEN="your-circleci-token"
-npx mcp-remote http://your-circleci-remote-mcp-server-endpoint:8000/mcp --allow-http
-```
-
-Make it executable:
-
-```bash
-chmod +x circleci-remote-mcp.sh
-```
-
-Then add the following to your `claude_desktop_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "circleci-remote-mcp-server": {
-      "command": "/full/path/to/circleci-remote-mcp.sh"
-    }
-  }
-}
-```
+See [Self-Managed Remote MCP Server](#self-managed-remote-mcp-server). Create a wrapper script as shown in [Claude Desktop and CLI clients](#claude-desktop-and-cli-clients), then point your `claude_desktop_config.json` at it.
 
 To find or create your config file, open Claude Desktop settings, click **Developer** in the left sidebar, then click **Edit Config**. The config file is located at:
 
@@ -340,11 +289,7 @@ claude mcp add circleci-mcp-server -e CIRCLECI_TOKEN=your-circleci-token -e CIRC
 
 #### Using a Self-Managed Remote MCP Server
 
-```bash
-claude mcp add circleci-mcp-server -e CIRCLECI_TOKEN=your-circleci-token -- npx mcp-remote http://your-circleci-remote-mcp-server-endpoint:8000/mcp --allow-http
-```
-
-For more information: https://docs.anthropic.com/en/docs/agents-and-tools/claude-code/tutorials#set-up-model-context-protocol-mcp
+See [Self-Managed Remote MCP Server](#self-managed-remote-mcp-server) and the [Claude Code](#claude-code) client setup there.
 
 </details>
 
@@ -409,24 +354,7 @@ Add the following to your Windsurf `mcp_config.json`:
 
 #### Using a Self-Managed Remote MCP Server
 
-Add the following to your Windsurf `mcp_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "circleci": {
-      "command": "npx",
-      "args": [
-        "mcp-remote",
-        "http://your-circleci-remote-mcp-server-endpoint:8000/mcp",
-        "--allow-http"
-      ],
-      "disabled": false,
-      "alwaysAllow": []
-    }
-  }
-}
-```
+See [Self-Managed Remote MCP Server](#self-managed-remote-mcp-server). Use the [per-user client configuration](#client-configuration-per-user-tokens) in your Windsurf `mcp_config.json`.
 
 For more information: https://docs.windsurf.com/windsurf/mcp
 
@@ -472,20 +400,7 @@ Edit `~/.aws/amazonq/mcp.json` or create `.amazonq/mcp.json` with the following:
 
 #### Using a Self-Managed Remote MCP Server
 
-Create a wrapper script (e.g. `circleci-remote-mcp.sh`):
-
-```bash
-#!/bin/bash
-export CIRCLECI_TOKEN="your-circleci-token"
-npx mcp-remote http://your-circleci-remote-mcp-server-endpoint:8000/mcp --allow-http
-```
-
-Make it executable and add it:
-
-```bash
-chmod +x circleci-remote-mcp.sh
-q mcp add --name circleci --command "/full/path/to/circleci-remote-mcp.sh"
-```
+See [Self-Managed Remote MCP Server](#self-managed-remote-mcp-server). Use a wrapper script as shown in [Claude Desktop and CLI clients](#claude-desktop-and-cli-clients), then register it with `q mcp add`.
 
 </details>
 
@@ -522,14 +437,7 @@ Edit `~/.aws/amazonq/mcp.json` or create `.amazonq/mcp.json` with the following:
 
 #### Using a Self-Managed Remote MCP Server
 
-Create a wrapper script (e.g. `circleci-remote-mcp.sh`):
-
-```bash
-#!/bin/bash
-npx mcp-remote http://your-circleci-remote-mcp-server-endpoint:8000/mcp --allow-http
-```
-
-Make it executable, then add it via the MCP configuration UI:
+See [Self-Managed Remote MCP Server](#self-managed-remote-mcp-server). Use a wrapper script as shown in [Claude Desktop and CLI clients](#claude-desktop-and-cli-clients), then add it via the MCP configuration UI:
 
 1. [Access the MCP configuration UI](https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/mcp-ide.html#mcp-ide-configuration-access-ui)
 2. Choose the **+** symbol
@@ -551,6 +459,177 @@ npx -y @smithery/cli install @CircleCI-Public/mcp-server-circleci --client claud
 ```
 
 </details>
+
+## Self-Managed Remote MCP Server
+
+Run the MCP server centrally (for example on Kubernetes or Docker) so your team shares one deployment. Choose how developers authenticate:
+
+### Choose a deployment mode
+
+| Mode | When to use | Server setup | Client setup | CircleCI audit trail |
+|------|-------------|--------------|--------------|----------------------|
+| **Per-user tokens** (recommended) | Teams with SSO-backed Personal API Tokens | `REQUIRE_REQUEST_TOKEN=true`, no server PAT | Each dev forwards their PAT | Per developer |
+| **Shared token** (interim) | Quick rollout, single service identity OK | `CIRCLECI_TOKEN` on server, no `REQUIRE_REQUEST_TOKEN` | No auth header needed | Single shared identity |
+
+### 1. Deploy the server
+
+Both modes use remote HTTP mode (`start=remote`). Publish port `8000` (or your chosen port).
+
+**Per-user tokens (recommended):**
+
+```bash
+docker run --rm -p 8000:8000 \
+  -e start=remote \
+  -e port=8000 \
+  -e REQUIRE_REQUEST_TOKEN=true \
+  circleci/mcp-server-circleci
+```
+
+**Shared token (interim):**
+
+```bash
+docker run --rm -p 8000:8000 \
+  -e start=remote \
+  -e port=8000 \
+  -e CIRCLECI_TOKEN=your-shared-circleci-pat \
+  circleci/mcp-server-circleci
+```
+
+**Environment variables:**
+
+| Variable | Description |
+|----------|-------------|
+| `start=remote` | Starts the HTTP+SSE MCP server instead of stdio |
+| `port` | Listening port inside the container (default: `8000`) |
+| `REQUIRE_REQUEST_TOKEN=true` | Reject requests without `Authorization: Bearer` or `Circle-Token` header |
+| `CIRCLECI_TOKEN` | Shared fallback PAT for all requests when per-user headers are not sent |
+| `CIRCLECI_BASE_URL` | Optional — required for on-prem only (default: `https://circleci.com`) |
+| `DISABLE_TELEMETRY=true` | Opt out of usage metrics export |
+
+The server accepts per-request tokens via:
+
+- `Authorization: Bearer <circleci-pat>`
+- `Circle-Token: <circleci-pat>`
+
+If a client sends a header token, it takes precedence over `CIRCLECI_TOKEN` on the server.
+
+Telemetry metrics recorded during a request are exported using the same token as that request.
+
+### 2. Configure clients
+
+Most MCP clients only support local (stdio) processes. Use [`mcp-remote`](https://www.npmjs.com/package/mcp-remote), a third-party stdio-to-HTTP bridge, to connect them to your remote server.
+
+> **URL scheme:** Use `http://localhost:8000/mcp` with `--allow-http` for local testing. In production, terminate TLS at your ingress/load balancer and use `https://your-host/mcp` without `--allow-http`.
+
+> **Windows:** Avoid spaces around the colon in `--header` values. Put the full `Bearer <token>` value in an environment variable.
+
+> **Security:** Examples use `npx` for convenience. For production or team rollouts, pin a specific version in your MCP config (for example `mcp-remote@0.1.38` instead of `mcp-remote`). Do not use versions below `0.1.16` ([CVE-2025-6514](https://www.npmjs.com/package/mcp-remote)).
+
+#### Client configuration: per-user tokens
+
+Each developer forwards their own CircleCI Personal API Token on every request:
+
+```json
+{
+  "inputs": [
+    {
+      "type": "promptString",
+      "id": "circleci-token",
+      "description": "CircleCI API Token",
+      "password": true
+    }
+  ],
+  "mcpServers": {
+    "circleci-mcp-server-remote": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "http://localhost:8000/mcp",
+        "--allow-http",
+        "--header",
+        "Authorization:${AUTH_HEADER}"
+      ],
+      "env": {
+        "AUTH_HEADER": "Bearer ${input:circleci-token}"
+      }
+    }
+  }
+}
+```
+
+Replace `http://localhost:8000/mcp` with your team's server URL. Cursor and VS Code support `${input:...}` prompts; other clients can set `AUTH_HEADER` directly.
+
+#### Client configuration: shared token
+
+When the server has `CIRCLECI_TOKEN` set and `REQUIRE_REQUEST_TOKEN` is **not** enabled, clients do not need to send a token:
+
+```json
+{
+  "mcpServers": {
+    "circleci-mcp-server-remote": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "http://localhost:8000/mcp",
+        "--allow-http"
+      ]
+    }
+  }
+}
+```
+
+#### Claude Desktop and CLI clients
+
+Create a wrapper script (e.g. `circleci-remote-mcp.sh`):
+
+```bash
+#!/bin/bash
+export AUTH_HEADER="Bearer your-circleci-token"
+npx mcp-remote http://localhost:8000/mcp --allow-http --header "Authorization:${AUTH_HEADER}"
+```
+
+Make it executable (`chmod +x circleci-remote-mcp.sh`), then reference it from your MCP config:
+
+```json
+{
+  "mcpServers": {
+    "circleci-remote-mcp-server": {
+      "command": "/full/path/to/circleci-remote-mcp.sh"
+    }
+  }
+}
+```
+
+#### Claude Code
+
+```bash
+claude mcp add circleci-mcp-server \
+  -e AUTH_HEADER="Bearer your-circleci-token" \
+  -- npx mcp-remote http://localhost:8000/mcp --allow-http --header "Authorization:${AUTH_HEADER}"
+```
+
+Omit `--header` and `AUTH_HEADER` when using a [shared-token server](#1-deploy-the-server).
+
+### 3. Verify the deployment
+
+```bash
+# Health check (no auth required)
+curl http://localhost:8000/ping
+
+# Should return 401 when REQUIRE_REQUEST_TOKEN=true and no token is sent
+curl -s -o /dev/null -w "%{http_code}\n" -X POST http://localhost:8000/mcp \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0"}}}'
+
+# Should return 200 with a valid Bearer token and MCP Accept headers
+curl -s -o /dev/null -w "%{http_code}\n" -X POST http://localhost:8000/mcp \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
+  -H "Authorization: Bearer your-circleci-pat" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"test","version":"1.0"}}}'
+```
 
 ## Demo
 
@@ -977,7 +1056,7 @@ taskkill /f /im node.exe
 
 ## Telemetry
 
-The server supports OpenTelemetry metrics for tracking tool usage. To disable telemetry, set `DISABLE_TELEMETRY=true`.
+The server supports OpenTelemetry metrics for tracking tool usage. Metrics are exported unless you set `DISABLE_TELEMETRY=true`. On remote deployments, metrics use the same token as the request (per-user PAT or shared server PAT).
 
 | Metric | Description |
 |--------|-------------|
@@ -1017,17 +1096,16 @@ docker build -t circleci:mcp-server-circleci .
 
 This will create a Docker image tagged as `circleci:mcp-server-circleci` that you can use with any MCP client.
 
-To run the container locally:
+**Local stdio mode** (single developer, token on the client):
 
 ```bash
-docker run --rm -i -e CIRCLECI_TOKEN=your-circleci-token -e CIRCLECI_BASE_URL=https://circleci.com circleci:mcp-server-circleci
+docker run --rm -i \
+  -e CIRCLECI_TOKEN=your-circleci-token \
+  -e CIRCLECI_BASE_URL=https://circleci.com \
+  circleci/mcp-server-circleci
 ```
 
-To run the container as a self-managed remote MCP server, add `start=remote` and optionally specify the port (default: `8000`):
-
-```bash
-docker run --rm -i -e CIRCLECI_TOKEN=your-circleci-token -e CIRCLECI_BASE_URL=https://circleci.com -e start=remote -e port=8000 circleci:mcp-server-circleci
-```
+**Remote mode** (centralized server for a team): see [Self-Managed Remote MCP Server](#self-managed-remote-mcp-server).
 
 ## Development with MCP Inspector
 

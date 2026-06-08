@@ -18,12 +18,12 @@ describe('getTelemetryConfig', () => {
     process.env = originalEnv;
   });
 
-  it('should return disabled config when CIRCLECI_TOKEN is not set', () => {
+  it('should return enabled config without env token for per-request auth', () => {
     delete process.env.CIRCLECI_TOKEN;
 
     const config = getTelemetryConfig();
 
-    expect(config.enabled).toBe(false);
+    expect(config.enabled).toBe(true);
     expect(config.token).toBe('');
   });
 
@@ -36,12 +36,13 @@ describe('getTelemetryConfig', () => {
     expect(config.token).toBe('pat-token-abc');
   });
 
-  it('should treat whitespace-only CIRCLECI_TOKEN as disabled', () => {
+  it('should treat whitespace-only CIRCLECI_TOKEN as empty fallback token', () => {
     process.env.CIRCLECI_TOKEN = '   ';
 
     const config = getTelemetryConfig();
 
-    expect(config.enabled).toBe(false);
+    expect(config.enabled).toBe(true);
+    expect(config.token).toBe('');
   });
 
   it('should return disabled config when DISABLE_TELEMETRY is true', () => {
