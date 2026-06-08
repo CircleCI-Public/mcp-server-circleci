@@ -46,7 +46,8 @@ describe('Metrics initialization', () => {
     process.env = originalEnv;
   });
 
-  it('should not throw when metrics are disabled', async () => {
+  it('should not throw when metrics are disabled via DISABLE_TELEMETRY', async () => {
+    process.env.DISABLE_TELEMETRY = 'true';
     delete process.env.CIRCLECI_TOKEN;
 
     const { initializeMetrics, isMetricsEnabled } = await import(
@@ -57,7 +58,7 @@ describe('Metrics initialization', () => {
     expect(isMetricsEnabled()).toBe(false);
   });
 
-  it('should report metrics as disabled when CIRCLECI_TOKEN is not set', async () => {
+  it('should report metrics as enabled when CIRCLECI_TOKEN is not set', async () => {
     delete process.env.CIRCLECI_TOKEN;
 
     const { initializeMetrics, isMetricsEnabled } = await import(
@@ -65,7 +66,7 @@ describe('Metrics initialization', () => {
     );
     await initializeMetrics();
 
-    expect(isMetricsEnabled()).toBe(false);
+    expect(isMetricsEnabled()).toBe(true);
   });
 });
 

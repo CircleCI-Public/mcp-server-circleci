@@ -5,6 +5,7 @@
  * in the same JSON format used by test-agent.
  */
 
+import { resolveCircleCIToken } from '../auth/resolveToken.js';
 import {
   getTelemetryConfig,
   TELEMETRY_FLUSH_INTERVAL_MS,
@@ -42,10 +43,14 @@ type MetricData = {
   tags: string[];
 };
 
+type BufferedMetric = MetricData & {
+  token: string;
+};
+
 const FLUSH_TIMEOUT_MS = 10_000;
 
 let config: TelemetryConfig | null = null;
-let buffer: MetricData[] = [];
+let buffer: BufferedMetric[] = [];
 let flushTimer: ReturnType<typeof setInterval> | null = null;
 
 export async function initializeMetrics(): Promise<void> {
@@ -54,7 +59,7 @@ export async function initializeMetrics(): Promise<void> {
   if (!config.enabled) {
     if (process.env.debug === 'true') {
       console.error(
-        '[DEBUG] [Telemetry] Metrics disabled (DISABLE_TELEMETRY=true or CIRCLECI_TOKEN not set)',
+        '[DEBUG] [Telemetry] Metrics disabled (DISABLE_TELEMETRY=true)',
       );
     }
     return;
@@ -81,7 +86,11 @@ function record(
   tags: string[],
 ): void {
   if (!config?.enabled) return;
-  buffer.push({ type, name, value, tags });
+
+  const token = resolveCircleCIToken();
+  if (!token) return;
+
+  buffer.push({ type, name, value, tags, token });
 }
 
 export function recordToolInvocation(
@@ -116,33 +125,46 @@ async function flush(): Promise<void> {
   if (!config?.enabled || buffer.length === 0) return;
 
   const metrics = buffer.splice(0);
-  const body = JSON.stringify({
-    metrics,
-    tags: [`service:${TELEMETRY_SERVICE_NAME}`],
-  });
+  const metricsByToken = new Map<string, MetricData[]>();
 
-  try {
-    const response = await fetch(TELEMETRY_METRICS_URL, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Circle-Token': config.token,
-      },
-      body,
-      signal: AbortSignal.timeout(FLUSH_TIMEOUT_MS),
+  for (const { token, ...metricData } of metrics) {
+    const tokenMetrics = metricsByToken.get(token);
+    if (tokenMetrics) {
+      tokenMetrics.push(metricData);
+    } else {
+      metricsByToken.set(token, [metricData]);
+    }
+  }
+
+  for (const [token, tokenMetrics] of metricsByToken) {
+    const body = JSON.stringify({
+      metrics: tokenMetrics,
+      tags: [`service:${TELEMETRY_SERVICE_NAME}`],
     });
 
-    if (!response.ok && process.env.debug === 'true') {
-      console.error(
-        `[DEBUG] [Telemetry] Metric flush failed: ${response.status} ${response.statusText}`,
-      );
-    }
-  } catch (error) {
-    if (process.env.debug === 'true') {
-      console.error(
-        '[DEBUG] [Telemetry] Metric flush error:',
-        error instanceof Error ? error.message : String(error),
-      );
+    try {
+      const response = await fetch(TELEMETRY_METRICS_URL, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Circle-Token': token,
+        },
+        body,
+        signal: AbortSignal.timeout(FLUSH_TIMEOUT_MS),
+      });
+
+      if (!response.ok && process.env.debug === 'true') {
+        console.error(
+          `[DEBUG] [Telemetry] Metric flush failed: ${response.status} ${response.statusText}`,
+        );
+      }
+    } catch (error) {
+      if (process.env.debug === 'true') {
+        console.error(
+          '[DEBUG] [Telemetry] Metric flush error:',
+          error instanceof Error ? error.message : String(error),
+        );
+      }
     }
   }
 }

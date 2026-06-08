@@ -2,7 +2,13 @@ import express from 'express';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
-import type { Response } from 'express';
+import type { Request, Response } from 'express';
+
+import {
+  extractCircleCITokenFromRequest,
+  isRequestTokenRequired,
+} from '../lib/auth/extractToken.js';
+import { runWithCircleCIToken } from '../lib/auth/requestContext.js';
 
 // Debug subclass that logs every payload sent over SSE
 class DebugSSETransport extends SSEServerTransport {
@@ -15,6 +21,37 @@ class DebugSSETransport extends SSEServerTransport {
     }
     return super.send(payload);
   }
+}
+
+function sendUnauthorized(res: Response): void {
+  res.status(401).json({
+    jsonrpc: '2.0',
+    error: {
+      code: -32001,
+      message:
+        'Unauthorized: CircleCI token required via Authorization: Bearer or Circle-Token header',
+    },
+    id: null,
+  });
+}
+
+async function runWithRequestAuth<T>(
+  req: Request,
+  res: Response,
+  handler: () => Promise<T>,
+): Promise<T | undefined> {
+  const requestToken = extractCircleCITokenFromRequest(req);
+
+  if (isRequestTokenRequired() && !requestToken) {
+    sendUnauthorized(res);
+    return undefined;
+  }
+
+  if (requestToken) {
+    return runWithCircleCIToken(requestToken, handler);
+  }
+
+  return handler();
 }
 
 /**
@@ -37,22 +74,24 @@ export const createUnifiedTransport = (server: McpServer) => {
   // GET /mcp → open SSE stream, assign session if needed (stateless)
   app.get('/mcp', (req, res) => {
     (async () => {
-      if (process.env.debug === 'true') {
-        const sessionId =
-          req.header('Mcp-Session-Id') ||
-          req.header('mcp-session-id') ||
-          (req.query.sessionId as string);
-        console.error(`[DEBUG] [GET /mcp] Incoming session:`, sessionId);
-      }
-      // Create SSE transport (stateless)
-      const transport = new DebugSSETransport('/mcp', res);
-      if (process.env.debug === 'true') {
-        console.error(`[DEBUG] [GET /mcp] Created SSE transport.`);
-      }
-      await server.connect(transport);
-      // Notify newly connected client of current tool catalogue
-      await server.sendToolListChanged();
-      // SSE connection will be closed by client or on disconnect
+      await runWithRequestAuth(req, res, async () => {
+        if (process.env.debug === 'true') {
+          const sessionId =
+            req.header('Mcp-Session-Id') ||
+            req.header('mcp-session-id') ||
+            (req.query.sessionId as string);
+          console.error(`[DEBUG] [GET /mcp] Incoming session:`, sessionId);
+        }
+        // Create SSE transport (stateless)
+        const transport = new DebugSSETransport('/mcp', res);
+        if (process.env.debug === 'true') {
+          console.error(`[DEBUG] [GET /mcp] Created SSE transport.`);
+        }
+        await server.connect(transport);
+        // Notify newly connected client of current tool catalogue
+        await server.sendToolListChanged();
+        // SSE connection will be closed by client or on disconnect
+      });
     })().catch((err) => {
       console.error('GET /mcp error:', err);
       if (!res.headersSent) res.status(500).end();
@@ -63,39 +102,45 @@ export const createUnifiedTransport = (server: McpServer) => {
   app.post('/mcp', (req, res) => {
     (async () => {
       try {
-        if (process.env.debug === 'true') {
-          const names = Object.keys((server as any)._registeredTools ?? {});
-          console.error(`[DEBUG] visible tools:`, names);
-          console.error(
-            `[DEBUG] incoming request body:`,
-            JSON.stringify(req.body),
-          );
-        }
-
-        // For each POST, create a temporary, stateless transport to handle the request/response cycle.
-        const httpTransport = new StreamableHTTPServerTransport({
-          sessionIdGenerator: undefined, // Ensures stateless operation
-        });
-
-        // Connect the server to the transport. This wires the server's internal `_handleRequest`
-        // method to the transport's `onmessage` event.
-        await server.connect(httpTransport);
-
-        // Handle the request. The transport will receive the request, pass it to the server via
-        // `onmessage`, receive the response from the server via its `send` method, and then
-        // write the response back to the client over the HTTP connection.
-        await httpTransport.handleRequest(req, res, req.body);
-
-        // After responding to initialize, send tool catalogue again so the freshly initialised
-        // client is guaranteed to see it (the first notification may have been sent before it
-        // started listening on the SSE stream).
-        if (req.body?.method === 'initialize') {
+        const handled = await runWithRequestAuth(req, res, async () => {
           if (process.env.debug === 'true') {
+            const names = Object.keys((server as any)._registeredTools ?? {});
+            console.error(`[DEBUG] visible tools:`, names);
             console.error(
-              '[DEBUG] initialize handled -> sending tools/list_changed again',
+              `[DEBUG] incoming request body:`,
+              JSON.stringify(req.body),
             );
           }
-          await server.sendToolListChanged();
+
+          // For each POST, create a temporary, stateless transport to handle the request/response cycle.
+          const httpTransport = new StreamableHTTPServerTransport({
+            sessionIdGenerator: undefined, // Ensures stateless operation
+          });
+
+          // Connect the server to the transport. This wires the server's internal `_handleRequest`
+          // method to the transport's `onmessage` event.
+          await server.connect(httpTransport);
+
+          // Handle the request. The transport will receive the request, pass it to the server via
+          // `onmessage`, receive the response from the server via its `send` method, and then
+          // write the response back to the client over the HTTP connection.
+          await httpTransport.handleRequest(req, res, req.body);
+
+          // After responding to initialize, send tool catalogue again so the freshly initialised
+          // client is guaranteed to see it (the first notification may have been sent before it
+          // started listening on the SSE stream).
+          if (req.body?.method === 'initialize') {
+            if (process.env.debug === 'true') {
+              console.error(
+                '[DEBUG] initialize handled -> sending tools/list_changed again',
+              );
+            }
+            await server.sendToolListChanged();
+          }
+        });
+
+        if (handled === undefined) {
+          return;
         }
       } catch (error: any) {
         console.error('Error handling MCP request:', error);
