@@ -24,6 +24,12 @@ export function extractCircleCITokenFromRequest(
   return undefined;
 }
 
+/**
+ * Whether the remote HTTP transport must reject requests that carry no
+ * CircleCI token. Secure by default: a request token is required unless an
+ * operator explicitly opts out with REQUIRE_REQUEST_TOKEN=false (the
+ * "shared token" deployment). Only consulted by the remote transport.
+ */
 export function isRequestTokenRequired(): boolean {
-  return process.env.REQUIRE_REQUEST_TOKEN === 'true';
+  return process.env.REQUIRE_REQUEST_TOKEN !== 'false';
 }

@@ -378,6 +378,13 @@ describe('runEvaluationTests handler', () => {
     expect(configContent).toContain('test1.prompt.json');
     expect(configContent).toContain('test2.prompt.yml');
     expect(configContent).toContain('python eval.py');
+
+    // File names must be single-quoted at every interpolation site so they
+    // cannot escape into shell (defense-in-depth alongside schema validation).
+    expect(configContent).toContain("sudo tee '/prompts/test1.prompt.json'");
+    expect(configContent).toContain("sudo tee '/prompts/test2.prompt.yml'");
+    expect(configContent).toContain("python eval.py 'test1.prompt.json'");
+    expect(configContent).toContain("python eval.py 'test2.prompt.yml'");
   });
 
   it('should process JSON files with proper formatting', async () => {

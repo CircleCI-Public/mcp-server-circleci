@@ -469,7 +469,9 @@ Run the MCP server centrally (for example on Kubernetes or Docker) so your team 
 | Mode | When to use | Server setup | Client setup | CircleCI audit trail |
 |------|-------------|--------------|--------------|----------------------|
 | **Per-user tokens** (recommended) | Teams with SSO-backed Personal API Tokens | `REQUIRE_REQUEST_TOKEN=true`, no server PAT | Each dev forwards their PAT | Per developer |
-| **Shared token** (interim) | Quick rollout, single service identity OK | `CIRCLECI_TOKEN` on server, no `REQUIRE_REQUEST_TOKEN` | No auth header needed | Single shared identity |
+| **Shared token** (interim) | Quick rollout, single service identity OK | `CIRCLECI_TOKEN` on server, `REQUIRE_REQUEST_TOKEN=false` (explicit opt-out) | No auth header needed | Single shared identity |
+
+> **Security:** Request authentication is **on by default** in remote mode. The shared-token mode disables it (`REQUIRE_REQUEST_TOKEN=false`), making every caller able to act as the server's `CIRCLECI_TOKEN` identity with no credentials. Only enable it on a network you fully trust, and prefer per-user tokens otherwise. Terminating TLS at an ingress provides encryption, not authentication.
 
 ### 1. Deploy the server
 
@@ -492,6 +494,7 @@ docker run --rm -p 8000:8000 \
   -e start=remote \
   -e port=8000 \
   -e CIRCLECI_TOKEN=your-shared-circleci-pat \
+  -e REQUIRE_REQUEST_TOKEN=false \
   circleci/mcp-server-circleci
 ```
 
@@ -501,7 +504,7 @@ docker run --rm -p 8000:8000 \
 |----------|-------------|
 | `start=remote` | Starts the HTTP+SSE MCP server instead of stdio |
 | `port` | Listening port inside the container (default: `8000`) |
-| `REQUIRE_REQUEST_TOKEN=true` | Reject requests without `Authorization: Bearer` or `Circle-Token` header |
+| `REQUIRE_REQUEST_TOKEN` | Reject requests without `Authorization: Bearer` or `Circle-Token` header. Defaults to required; set `REQUIRE_REQUEST_TOKEN=false` to allow unauthenticated requests (shared-token mode) |
 | `CIRCLECI_TOKEN` | Shared fallback PAT for all requests when per-user headers are not sent |
 | `CIRCLECI_BASE_URL` | Optional — required for on-prem only (default: `https://circleci.com`) |
 | `DISABLE_TELEMETRY=true` | Opt out of usage metrics export |
@@ -562,7 +565,7 @@ Replace `http://localhost:8000/mcp` with your team's server URL. Cursor and VS C
 
 #### Client configuration: shared token
 
-When the server has `CIRCLECI_TOKEN` set and `REQUIRE_REQUEST_TOKEN` is **not** enabled, clients do not need to send a token:
+When the server has `CIRCLECI_TOKEN` set and is started with `REQUIRE_REQUEST_TOKEN=false` (request auth is on by default and must be explicitly disabled), clients do not need to send a token:
 
 ```json
 {
