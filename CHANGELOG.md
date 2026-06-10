@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.16.1] - 2026-06-09
+
+### Security
+
+- Fixed a command injection in the `run_evaluation_tests` tool. The caller-supplied `promptFiles[].fileName` was interpolated unquoted into shell commands inside the generated pipeline config, allowing arbitrary command execution in the CircleCI runner under the server's token. `fileName` is now constrained to `/^[A-Za-z0-9._-]+$/` at the schema boundary and single-quoted at every interpolation site (#169)
+
+### Changed
+
+- Remote HTTP request authentication is now secure by default. `REQUIRE_REQUEST_TOKEN` defaults to required; operators running the shared-token mode must now set `REQUIRE_REQUEST_TOKEN=false` to allow unauthenticated requests. **Breaking** for existing shared-token deployments that relied on no auth (#169)
+
 ## [0.16.0] - 2026-06-09
 
 ### Added

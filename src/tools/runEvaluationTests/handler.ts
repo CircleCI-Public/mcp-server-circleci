@@ -155,7 +155,7 @@ export const runEvaluationTests: ToolCallback<{
       (file, index) =>
         `          if [ "$CIRCLE_NODE_INDEX" = "${index}" ]; then
             sudo mkdir -p /prompts
-            echo "${file.base64GzippedContent}" | base64 -d | gzip -d | sudo tee /prompts/${file.fileName} > /dev/null
+            echo "${file.base64GzippedContent}" | base64 -d | gzip -d | sudo tee '/prompts/${file.fileName}' > /dev/null
           fi`,
     )
     .join('\n');
@@ -165,7 +165,7 @@ export const runEvaluationTests: ToolCallback<{
     .map(
       (file, index) =>
         `          if [ "$CIRCLE_NODE_INDEX" = "${index}" ]; then
-            python eval.py ${file.fileName}
+            python eval.py '${file.fileName}'
           fi`,
     )
     .join('\n');

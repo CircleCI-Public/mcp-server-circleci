@@ -67,12 +67,22 @@ describe('isRequestTokenRequired', () => {
     process.env = originalEnv;
   });
 
-  it('should be false by default', () => {
-    expect(isRequestTokenRequired()).toBe(false);
+  it('should be true by default (secure by default)', () => {
+    expect(isRequestTokenRequired()).toBe(true);
   });
 
   it('should be true when REQUIRE_REQUEST_TOKEN is true', () => {
     process.env.REQUIRE_REQUEST_TOKEN = 'true';
+    expect(isRequestTokenRequired()).toBe(true);
+  });
+
+  it('should be false only when explicitly opted out with REQUIRE_REQUEST_TOKEN=false', () => {
+    process.env.REQUIRE_REQUEST_TOKEN = 'false';
+    expect(isRequestTokenRequired()).toBe(false);
+  });
+
+  it('should be true for any non-false value', () => {
+    process.env.REQUIRE_REQUEST_TOKEN = 'no';
     expect(isRequestTokenRequired()).toBe(true);
   });
 });

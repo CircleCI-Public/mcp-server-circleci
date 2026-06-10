@@ -45,7 +45,13 @@ export const runEvaluationTestsInputSchema = z.object({
   promptFiles: z
     .array(
       z.object({
-        fileName: z.string().describe('The name of the prompt template file'),
+        fileName: z
+          .string()
+          .regex(
+            /^[A-Za-z0-9._-]+$/,
+            'fileName may only contain letters, numbers, dot, underscore, and hyphen',
+          )
+          .describe('The name of the prompt template file'),
         fileContent: z
           .string()
           .describe('The contents of the prompt template file'),
