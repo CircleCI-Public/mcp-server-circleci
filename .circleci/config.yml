@@ -87,7 +87,8 @@ jobs:
       - run:
           name: Upgrade npm for trusted publishing
           command: |
-            # Trusted publishing (OIDC) requires npm >= 11.5.1; cimg/node:22.14 ships 10.x.
+            # pnpm 10 delegates `pnpm publish` to the npm CLI on PATH, and OIDC
+            # trusted publishing requires npm >= 11.5.1; cimg/node:22.14 ships 10.x.
             sudo npm install -g npm@latest
             npm --version
       - run:
@@ -99,9 +100,10 @@ jobs:
               exit 0
             fi
             echo "Publishing $FULL_IDENTIFIER…"
-            # OIDC trusted publishing: npm exchanges NPM_ID_TOKEN for a short-lived publish token.
+            # OIDC trusted publishing: pnpm shells out to npm, which exchanges
+            # NPM_ID_TOKEN for a short-lived publish token.
             export NPM_ID_TOKEN="$(circleci run oidc get --claims '{"aud": "npm:registry.npmjs.org"}')"
-            npm publish --access public
+            pnpm publish --no-git-checks
 
   publish-docker-image:
     executor: docker-executor
