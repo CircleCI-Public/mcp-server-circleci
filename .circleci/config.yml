@@ -23,10 +23,6 @@ commands:
             echo "Version: $PACKAGE_VERSION"
             echo "Full identifier: $FULL_IDENTIFIER"
 
-  login:
-    steps:
-      - run: echo "//registry.npmjs.org/:_authToken=$NPM_ACCESS_TOKEN" >> ~/.npmrc
-
   install-deps:
     steps:
       - node/install-packages:
@@ -88,17 +84,24 @@ jobs:
       - install-deps
       - attach_workspace:
           at: .
-      - login
+      - run:
+          name: Upgrade npm for trusted publishing
+          command: |
+            # Trusted publishing (OIDC) requires npm >= 11.5.1; cimg/node:22.14 ships 10.x.
+            sudo npm install -g npm@latest
+            npm --version
       - run:
           name: Publish npm Package
           command: |
             echo "Checking for published version: $FULL_IDENTIFIER..."
-            if ! pnpm view $FULL_IDENTIFIER --json > /dev/null 2>&1; then
-              echo "Publishing $FULL_IDENTIFIER…"
-              pnpm publish --no-git-checks
-            else
+            if pnpm view $FULL_IDENTIFIER --json > /dev/null 2>&1; then
               echo "$FULL_IDENTIFIER already published. Doing nothing."
+              exit 0
             fi
+            echo "Publishing $FULL_IDENTIFIER…"
+            # OIDC trusted publishing: npm exchanges NPM_ID_TOKEN for a short-lived publish token.
+            export NPM_ID_TOKEN="$(circleci run oidc get --claims '{"aud": "npm:registry.npmjs.org"}')"
+            npm publish --access public
 
   publish-docker-image:
     executor: docker-executor
