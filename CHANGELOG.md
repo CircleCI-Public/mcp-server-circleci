@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.16.2] - 2026-06-16
+
+### Changed
+
+- npm releases now use trusted publishing (OIDC) instead of a static `NPM_ACCESS_TOKEN`. The publish job exchanges a CircleCI OIDC token for a short-lived npm token via `NPM_ID_TOKEN` (#170)
+
 ## [0.16.1] - 2026-06-09
 
 ### Security
