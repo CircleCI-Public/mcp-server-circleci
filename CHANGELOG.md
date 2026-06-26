@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.17.0] - 2026-06-26
+
+### Security
+
+- Fixed a DNS-rebinding vulnerability in the remote HTTP transport. The `/mcp` routes now validate the `Host` header against an allowlist (loopback by default) and the `Origin` header when present (absent Origin is allowed — non-browser clients such as `mcp-remote` never send it). Requests with a disallowed `Host` or `Origin` receive `403 Forbidden`. **Breaking for public deployments:** operators must set `MCP_ALLOWED_HOSTS` to the hostname their clients use, or requests will be rejected.
+
+### Added
+
+- `MCP_ALLOWED_HOSTS` — comma-separated list of additional `Host` values to permit on `/mcp` routes (e.g. `my-mcp.example.com`). Loopback is always allowed.
+- `MCP_ALLOWED_ORIGINS` — comma-separated list of additional `Origin` values to permit (e.g. `https://my-app.example.com`). Loopback origins are always allowed. Only needed when a browser reaches this server directly.
+- `MCP_BIND_HOST` — network interface to bind to (default: `0.0.0.0`, unchanged). Set to `127.0.0.1` to restrict to loopback.
+
 ## [0.16.2] - 2026-06-16
 
 ### Changed

@@ -477,7 +477,7 @@ Run the MCP server centrally (for example on Kubernetes or Docker) so your team 
 
 Both modes use remote HTTP mode (`start=remote`). Publish port `8000` (or your chosen port).
 
-**Per-user tokens (recommended):**
+**Per-user tokens (recommended) — accessed via `mcp-remote` from localhost:**
 
 ```bash
 docker run --rm -p 8000:8000 \
@@ -487,7 +487,18 @@ docker run --rm -p 8000:8000 \
   circleci/mcp-server-circleci
 ```
 
-**Shared token (interim):**
+**Per-user tokens (recommended) — accessed via `mcp-remote` from a public hostname:**
+
+```bash
+docker run --rm -p 8000:8000 \
+  -e start=remote \
+  -e port=8000 \
+  -e REQUIRE_REQUEST_TOKEN=true \
+  -e MCP_ALLOWED_HOSTS=my-mcp.example.com \
+  circleci/mcp-server-circleci
+```
+
+**Shared token (interim) — accessed via `mcp-remote` from a public hostname:**
 
 ```bash
 docker run --rm -p 8000:8000 \
@@ -495,6 +506,7 @@ docker run --rm -p 8000:8000 \
   -e port=8000 \
   -e CIRCLECI_TOKEN=your-shared-circleci-pat \
   -e REQUIRE_REQUEST_TOKEN=false \
+  -e MCP_ALLOWED_HOSTS=my-mcp.example.com \
   circleci/mcp-server-circleci
 ```
 
@@ -508,6 +520,15 @@ docker run --rm -p 8000:8000 \
 | `CIRCLECI_TOKEN` | Shared fallback PAT for all requests when per-user headers are not sent |
 | `CIRCLECI_BASE_URL` | Optional — required for on-prem only (default: `https://circleci.com`) |
 | `DISABLE_TELEMETRY=true` | Opt out of usage metrics export |
+| `MCP_ALLOWED_HOSTS` | Comma-separated list of additional `Host` header values to allow (e.g. `my-mcp.example.com,my-mcp.example.com:443`). Loopback hostnames are always allowed. Required for any non-loopback deployment. |
+| `MCP_ALLOWED_ORIGINS` | Comma-separated list of additional `Origin` header values to allow (e.g. `https://my-app.example.com`). Loopback origins are always allowed. Only needed when a browser directly reaches this server (not via `mcp-remote`). |
+| `MCP_BIND_HOST` | Network interface to bind to (default: `0.0.0.0`). Set to `127.0.0.1` to restrict to loopback only (not compatible with Docker `-p` port mapping). |
+
+> **DNS-rebinding protection:** The remote transport validates the `Host` header on every `/mcp` request. By default only loopback addresses (`localhost`, `127.0.0.1`, `[::1]`) are accepted. **Public deployments must set `MCP_ALLOWED_HOSTS`** to the hostname clients use, or all `/mcp` requests will receive `403 Forbidden`. The `/ping` health-check endpoint is not guarded so load-balancer probes continue to work regardless of `Host`.
+>
+> The `Origin` header (sent by browsers) is also validated when present. Non-browser clients such as `mcp-remote` never send `Origin`, so they are unaffected by this check.
+>
+> **Behind a reverse proxy:** If your proxy rewrites `Host` to the backend address (nginx's default), add `proxy_set_header Host $host;` to pass the original hostname through, then set `MCP_ALLOWED_HOSTS` to that public hostname. Alternatively, set `MCP_ALLOWED_HOSTS` to whatever hostname the proxy does forward.
 
 The server accepts per-request tokens via:
 
