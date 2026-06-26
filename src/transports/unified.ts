@@ -8,6 +8,7 @@ import {
   extractCircleCITokenFromRequest,
   isRequestTokenRequired,
 } from '../lib/auth/extractToken.js';
+import { validateRemoteRequest } from '../lib/auth/originValidation.js';
 import { runWithCircleCIToken } from '../lib/auth/requestContext.js';
 
 // Debug subclass that logs every payload sent over SSE
@@ -64,11 +65,24 @@ export const createUnifiedTransport = (server: McpServer) => {
   const app = express();
   app.use(express.json());
 
+  const port = process.env.port || 8000;
+
   // Stateless: No in-memory session or transport store
 
-  // Health check
+  // Health check — intentionally unguarded so any load-balancer probes always pass.
   app.get('/ping', (_req, res) => {
     res.json({ result: 'pong' });
+  });
+
+  // DNS-rebinding guard for all /mcp routes.
+  // Validates Host (always required) and Origin (only when present — absent means
+  // a non-browser client like mcp-remote, which is always allowed).
+  app.use('/mcp', (req, res, next) => {
+    if (!validateRemoteRequest(req, port)) {
+      res.status(403).end();
+      return;
+    }
+    next();
   });
 
   // GET /mcp → open SSE stream, assign session if needed (stateless)
@@ -174,10 +188,10 @@ export const createUnifiedTransport = (server: McpServer) => {
     res.status(204).end();
   });
 
-  const port = process.env.port || 8000;
-  app.listen(port, () => {
+  const bindHost = process.env.MCP_BIND_HOST || '0.0.0.0';
+  app.listen(Number(port), bindHost, () => {
     console.error(
-      `CircleCI MCP unified HTTP+SSE server listening on http://0.0.0.0:${port}`,
+      `CircleCI MCP unified HTTP+SSE server listening on http://${bindHost}:${port}`,
     );
   });
 };
