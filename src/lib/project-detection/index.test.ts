@@ -279,6 +279,13 @@ describe('identifyProjectSlug', () => {
     },
   );
 
+  it('returns undefined without calling the CircleCI API for a remote URL with no owner/repo', async () => {
+    const slug = await identifyProjectSlug({ gitRemoteURL: 'not-a-url' });
+
+    expect(mockCircleCIClient.projects.getProject).not.toHaveBeenCalled();
+    expect(slug).toBeUndefined();
+  });
+
   it('throws for an unhandled VCS host', async () => {
     await expect(
       identifyProjectSlug({
@@ -299,5 +306,17 @@ describe('identifyProjectSlug', () => {
     });
 
     expect(slug).toBeUndefined();
+  });
+
+  it('rethrows a non-404 error instead of treating it as project-not-found', async () => {
+    mockCircleCIClient.projects.getProject.mockRejectedValue(
+      new Error('CircleCI API Error: 401 \nURL: /project/gh/organization/project'),
+    );
+
+    await expect(
+      identifyProjectSlug({
+        gitRemoteURL: 'https://github.com/organization/project.git',
+      }),
+    ).rejects.toThrow('CircleCI API Error: 401');
   });
 });
