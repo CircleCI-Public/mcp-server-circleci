@@ -1,4 +1,4 @@
-import { getCircleCIPrivateClient } from '../../clients/client.js';
+import { getCircleCIClient } from '../../clients/client.js';
 import { getVCSFromHost, vcses } from './vcsTool.js';
 import gitUrlParse from 'parse-github-url';
 
@@ -12,10 +12,8 @@ export const identifyProjectSlug = async ({
 }: {
   gitRemoteURL: string;
 }) => {
-  const cciPrivateClients = getCircleCIPrivateClient();
-
   const parsedGitURL = gitUrlParse(gitRemoteURL);
-  if (!parsedGitURL?.host) {
+  if (!parsedGitURL?.host || !parsedGitURL.owner || !parsedGitURL.name) {
     return undefined;
   }
 
@@ -24,19 +22,18 @@ export const identifyProjectSlug = async ({
     throw new Error(`VCS with host ${parsedGitURL.host} is not handled`);
   }
 
-  const { projects: followedProjects } =
-    await cciPrivateClients.me.getFollowedProjects();
-  if (!followedProjects) {
-    throw new Error('Failed to get followed projects');
+  const projectSlug = `${vcs.short}/${parsedGitURL.owner}/${parsedGitURL.name}`;
+
+  try {
+    await getCircleCIClient().projects.getProject({ projectSlug });
+    return projectSlug;
+  } catch (error) {
+    console.error(
+      `[identifyProjectSlug] Could not find project ${projectSlug}:`,
+      error,
+    );
+    return undefined;
   }
-
-  const project = followedProjects.find(
-    (followedProject) =>
-      followedProject.name === parsedGitURL.name &&
-      followedProject.vcs_type === vcs.name,
-  );
-
-  return project?.slug;
 };
 
 /**
