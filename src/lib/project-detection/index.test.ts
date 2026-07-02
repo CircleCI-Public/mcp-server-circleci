@@ -3,8 +3,12 @@ import {
   getProjectSlugFromURL,
   getBranchFromURL,
   getJobNumberFromURL,
+  identifyProjectSlug,
 } from './index.js';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import * as clientModule from '../../clients/client.js';
+
+vi.mock('../../clients/client.js');
 
 describe('getPipelineNumberFromURL', () => {
   it.each([
@@ -228,5 +232,72 @@ describe('getJobNumberFromURL', () => {
         'https://app.circleci.com/pipelines/gh/organization/project/123/workflows/abc123de-f456-78gh-90ij-klmnopqrstuv/jobs/abc',
       ),
     ).toThrow('Job number in URL is not a valid number');
+  });
+});
+
+describe('identifyProjectSlug', () => {
+  const mockCircleCIClient = {
+    projects: {
+      getProject: vi.fn(),
+    },
+  };
+
+  beforeEach(() => {
+    vi.resetAllMocks();
+    vi.spyOn(clientModule, 'getCircleCIClient').mockReturnValue(
+      mockCircleCIClient as any,
+    );
+  });
+
+  // Regression: identifyProjectSlug used to only match against
+  // getFollowedProjects(), so an unfollowed-but-accessible project could
+  // never resolve even with a correct git remote URL. It now validates a
+  // directly-constructed slug against the CircleCI API instead, which also
+  // means SSH- and HTTPS-form remotes must resolve identically.
+  it.each([
+    {
+      form: 'SSH',
+      gitRemoteURL: 'git@github.com:organization/project.git',
+    },
+    {
+      form: 'HTTPS',
+      gitRemoteURL: 'https://github.com/organization/project.git',
+    },
+  ])(
+    'resolves a slug from an $form-form remote by validating it against the CircleCI API',
+    async ({ gitRemoteURL }) => {
+      mockCircleCIClient.projects.getProject.mockResolvedValue({
+        slug: 'gh/organization/project',
+      });
+
+      const slug = await identifyProjectSlug({ gitRemoteURL });
+
+      expect(mockCircleCIClient.projects.getProject).toHaveBeenCalledWith({
+        projectSlug: 'gh/organization/project',
+      });
+      expect(slug).toBe('gh/organization/project');
+    },
+  );
+
+  it('throws for an unhandled VCS host', async () => {
+    await expect(
+      identifyProjectSlug({
+        gitRemoteURL: 'git@gitlab.com:organization/project.git',
+      }),
+    ).rejects.toThrow('VCS with host gitlab.com is not handled');
+  });
+
+  it('returns undefined when the CircleCI API has no matching project', async () => {
+    mockCircleCIClient.projects.getProject.mockRejectedValue(
+      new Error(
+        'CircleCI API Error: 404 \nURL: /project/gh/no-such-org/no-such-project',
+      ),
+    );
+
+    const slug = await identifyProjectSlug({
+      gitRemoteURL: 'https://github.com/no-such-org/no-such-project.git',
+    });
+
+    expect(slug).toBeUndefined();
   });
 });
