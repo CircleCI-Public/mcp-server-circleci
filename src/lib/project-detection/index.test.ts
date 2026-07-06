@@ -249,11 +249,6 @@ describe('identifyProjectSlug', () => {
     );
   });
 
-  // Regression: identifyProjectSlug used to only match against
-  // getFollowedProjects(), so an unfollowed-but-accessible project could
-  // never resolve even with a correct git remote URL. It now validates a
-  // directly-constructed slug against the CircleCI API instead, which also
-  // means SSH- and HTTPS-form remotes must resolve identically.
   it.each([
     {
       form: 'SSH',
