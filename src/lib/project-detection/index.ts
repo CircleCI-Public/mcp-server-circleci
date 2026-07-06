@@ -4,8 +4,7 @@ import gitUrlParse from 'parse-github-url';
 
 /**
  * Identify the project slug from the git remote URL, validating it against
- * the CircleCI API rather than the caller's followed-projects list, so it
- * also resolves projects the caller has access to but hasn't followed.
+ * the CircleCI API.
  * @param {string} gitRemoteURL - eg: https://github.com/organization/project.git
  * @returns {string | undefined} project slug (eg: gh/organization/project), or
  * undefined if the remote URL couldn't be parsed or no matching CircleCI
