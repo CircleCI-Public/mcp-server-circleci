@@ -33,5 +33,8 @@ export const downloadUsageApiDataTool = {
 
     This ensures that downloaded usage data is always saved in a location that is relevant and easy for the user to find, and that the output is always copy-paste friendly for status checks, regardless of the environment in which the tool is run.
   `,
+  annotations: {
+    destructiveHint: true,
+  },
   inputSchema: downloadUsageApiDataInputSchema,
-}; 
+};

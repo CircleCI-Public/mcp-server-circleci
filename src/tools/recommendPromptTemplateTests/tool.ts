@@ -39,5 +39,8 @@ export const recommendPromptTemplateTestsTool = {
   Tool output instructions:
     - The tool will return a ${recommendedTestsVar} array that can be used to test the prompt template.
   `,
+  annotations: {
+    destructiveHint: true,
+  },
   inputSchema: recommendPromptTemplateTestsInputSchema,
 };
