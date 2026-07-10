@@ -51,5 +51,8 @@ export const runEvaluationTestsTool = {
     Returns:
     - A URL to the newly triggered pipeline that can be used to monitor its progress
     `,
+  annotations: {
+    destructiveHint: true,
+  },
   inputSchema: runEvaluationTestsInputSchema,
 };

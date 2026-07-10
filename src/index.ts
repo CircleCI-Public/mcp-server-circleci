@@ -67,12 +67,12 @@ CCI_TOOLS.forEach((tool) => {
   // Wrap handler with telemetry instrumentation
   const wrappedHandler = wrapToolHandler(tool.name, handler as ToolHandler);
 
-  server.tool(
-    tool.name,
-    tool.description,
-    { params: tool.inputSchema.optional() },
-    wrappedHandler,
-  );
+  const annotations = (tool as { annotations?: Record<string, unknown> }).annotations;
+  if (annotations) {
+    server.tool(tool.name, tool.description, { params: tool.inputSchema.optional() }, annotations, wrappedHandler);
+  } else {
+    server.tool(tool.name, tool.description, { params: tool.inputSchema.optional() }, wrappedHandler);
+  }
 });
 
 async function main() {

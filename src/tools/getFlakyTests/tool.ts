@@ -37,5 +37,8 @@ export const getFlakyTestLogsTool = {
     - If using Option 3, BOTH parameters (workspaceRoot, gitRemoteURL) must be provided
     - If none of the options can be fully satisfied, ask the user for the missing information before making the tool call
     `,
+  annotations: {
+    destructiveHint: true,
+  },
   inputSchema: getFlakyTestLogsInputSchema,
 };

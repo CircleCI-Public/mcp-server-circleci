@@ -53,5 +53,8 @@ export const runRollbackPipelineTool = {
     If no version is found, the tool will suggest the user to set up deploy markers following the documentation at:
     https://circleci.com/docs/deploy/configure-deploy-markers/
   `,
+  annotations: {
+    destructiveHint: true,
+  },
   inputSchema: runRollbackPipelineInputSchema,
 };

@@ -69,5 +69,8 @@ export const createPromptTemplateTool = {
     - a \`${promptOriginKey}\` that indicates whether the prompt comes from an existing prompt or prompt template in the user's codebase or from new requirements.
   - The tool output -- the \`${templateKey}\`, \`${contextSchemaKey}\`, and \`${promptOriginKey}\` -- will also be used as input to the \`${PromptWorkbenchToolName.recommend_prompt_template_tests}\` tool to generate a list of recommended tests that can be used to test the prompt template.
   `,
+  annotations: {
+    destructiveHint: true,
+  },
   inputSchema: createPromptTemplateInputSchema,
 };

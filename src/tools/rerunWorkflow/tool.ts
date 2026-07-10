@@ -21,5 +21,8 @@ Option 2 - Workflow URL:
   * Workflow Job URL: https://app.circleci.com/pipelines/:vcsType/:orgName/:projectName/:pipelineNumber/workflows/:workflowId/jobs/:buildNumber
 - fromFailed: true to rerun from failed, false to rerun from start. If omitted, behavior is based on workflow status. (optional)
   `,
+  annotations: {
+    destructiveHint: true,
+  },
   inputSchema: rerunWorkflowInputSchema,
 };
