@@ -50,7 +50,7 @@ const getFlakyTests = async ({ projectSlug }: { projectSlug: string }) => {
 
   const filteredTestsArrays = testsArrays
     .flat()
-    .filter((test) => test !== undefined);
+    .filter((test): test is Test => test !== undefined);
 
   return filteredTestsArrays;
 };
