@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> This repository is deprecated. The CircleCI MCP server is now built into the CircleCI CLI. Visit **[cli.circleci.com](https://cli.circleci.com)** to get started.
+
 # CircleCI MCP Server
 
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/CircleCI-Public/mcp-server-circleci/blob/main/LICENSE)
