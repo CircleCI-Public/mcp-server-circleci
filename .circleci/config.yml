@@ -14,11 +14,11 @@ commands:
             PACKAGE_NAME="$(jq --raw-output .name package.json)"
             PACKAGE_VERSION="$(jq --raw-output .version package.json)"
             FULL_IDENTIFIER="$PACKAGE_NAME@$PACKAGE_VERSION"
-            
+
             echo "export PACKAGE_NAME=$PACKAGE_NAME" >> $BASH_ENV
             echo "export PACKAGE_VERSION=$PACKAGE_VERSION" >> $BASH_ENV
             echo "export FULL_IDENTIFIER=$FULL_IDENTIFIER" >> $BASH_ENV
-            
+
             echo "Package: $PACKAGE_NAME"
             echo "Version: $PACKAGE_VERSION"
             echo "Full identifier: $FULL_IDENTIFIER"
@@ -34,7 +34,7 @@ executors:
   node-executor:
     docker:
       - image: cimg/node:22.14
-  
+
   docker-executor:
     machine:
       image: ubuntu-2404:current
@@ -89,7 +89,7 @@ jobs:
           command: |
             # pnpm 10 delegates `pnpm publish` to the npm CLI on PATH, and OIDC
             # trusted publishing requires npm >= 11.5.1; cimg/node:22.14 ships 10.x.
-            sudo npm install -g npm@latest
+            sudo npm install -g npm@11.5.1
             npm --version
       - run:
           name: Publish npm Package
