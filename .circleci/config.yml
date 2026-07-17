@@ -89,7 +89,7 @@ jobs:
           command: |
             # pnpm 10 delegates `pnpm publish` to the npm CLI on PATH, and OIDC
             # trusted publishing requires npm >= 11.5.1; cimg/node:22.14 ships 10.x.
-            sudo npm install -g npm@11.5.1
+            sudo npm install -g npm@11.18.0
             npm --version
       - run:
           name: Publish npm Package
