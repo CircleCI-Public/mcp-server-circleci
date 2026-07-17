@@ -89,7 +89,7 @@ jobs:
           command: |
             # pnpm 10 delegates `pnpm publish` to the npm CLI on PATH, and OIDC
             # trusted publishing requires npm >= 11.5.1; cimg/node:22.14 ships 10.x.
-            sudo npm install -g npm@11.5.1
+            sudo npm install -g npm@11.18.0
             npm --version
       - run:
           name: Publish npm Package
@@ -103,7 +103,7 @@ jobs:
             # OIDC trusted publishing: pnpm shells out to npm, which exchanges
             # NPM_ID_TOKEN for a short-lived publish token.
             export NPM_ID_TOKEN="$(circleci run oidc get --claims '{"aud": "npm:registry.npmjs.org"}')"
-            pnpm publish --no-git-checks
+            npm publish --access public
 
   publish-docker-image:
     executor: docker-executor
