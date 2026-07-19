@@ -9,24 +9,16 @@ import { getJobTestResultsTool } from './tools/getJobTestResults/tool.js';
 import { getJobTestResults } from './tools/getJobTestResults/handler.js';
 import { configHelper } from './tools/configHelper/handler.js';
 import { configHelperTool } from './tools/configHelper/tool.js';
-import { createPromptTemplate } from './tools/createPromptTemplate/handler.js';
-import { createPromptTemplateTool } from './tools/createPromptTemplate/tool.js';
-import { recommendPromptTemplateTestsTool } from './tools/recommendPromptTemplateTests/tool.js';
-import { recommendPromptTemplateTests } from './tools/recommendPromptTemplateTests/handler.js';
 import { runPipeline } from './tools/runPipeline/handler.js';
 import { runPipelineTool } from './tools/runPipeline/tool.js';
 import { listFollowedProjectsTool } from './tools/listFollowedProjects/tool.js';
 import { listFollowedProjects } from './tools/listFollowedProjects/handler.js';
-import { runEvaluationTestsTool } from './tools/runEvaluationTests/tool.js';
-import { runEvaluationTests } from './tools/runEvaluationTests/handler.js';
 import { rerunWorkflowTool } from './tools/rerunWorkflow/tool.js';
 import { rerunWorkflow } from './tools/rerunWorkflow/handler.js';
 import { downloadUsageApiDataTool } from './tools/downloadUsageApiData/tool.js';
 import { downloadUsageApiData } from './tools/downloadUsageApiData/handler.js';
 import { findUnderusedResourceClassesTool } from './tools/findUnderusedResourceClasses/tool.js';
 import { findUnderusedResourceClasses } from './tools/findUnderusedResourceClasses/handler.js';
-import { analyzeDiffTool } from './tools/analyzeDiff/tool.js';
-import { analyzeDiff } from './tools/analyzeDiff/handler.js';
 import { runRollbackPipelineTool } from './tools/runRollbackPipeline/tool.js';
 import { runRollbackPipeline } from './tools/runRollbackPipeline/handler.js';
 
@@ -43,15 +35,11 @@ export const CCI_TOOLS = [
   getLatestPipelineStatusTool,
   getJobTestResultsTool,
   configHelperTool,
-  createPromptTemplateTool,
-  recommendPromptTemplateTestsTool,
   runPipelineTool,
   listFollowedProjectsTool,
-  runEvaluationTestsTool,
   rerunWorkflowTool,
   downloadUsageApiDataTool,
   findUnderusedResourceClassesTool,
-  analyzeDiffTool,
   runRollbackPipelineTool,
   listComponentVersionsTool,
   listArtifactsTool,
@@ -75,15 +63,11 @@ export const CCI_HANDLERS = {
   get_latest_pipeline_status: getLatestPipelineStatus,
   get_job_test_results: getJobTestResults,
   config_helper: configHelper,
-  create_prompt_template: createPromptTemplate,
-  recommend_prompt_template_tests: recommendPromptTemplateTests,
   run_pipeline: runPipeline,
   list_followed_projects: listFollowedProjects,
-  run_evaluation_tests: runEvaluationTests,
   rerun_workflow: rerunWorkflow,
   download_usage_api_data: downloadUsageApiData,
   find_underused_resource_classes: findUnderusedResourceClasses,
-  analyze_diff: analyzeDiff,
   run_rollback_pipeline: runRollbackPipeline,
   list_component_versions: listComponentVersions,
   list_artifacts: listArtifacts,
