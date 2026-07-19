@@ -15,9 +15,7 @@ Use Cursor, Windsurf, Copilot, Claude, or any MCP-compatible client to interact 
 
 | Tool | Description |
 |------|-------------|
-| [`analyze_diff`](#analyze_diff) | Analyze git diffs against cursor rules for violations |
 | [`config_helper`](#config_helper) | Validate and get guidance for your CircleCI configuration |
-| [`create_prompt_template`](#create_prompt_template) | Generate structured prompt templates for AI applications |
 | [`download_usage_api_data`](#download_usage_api_data) | Download usage data from the CircleCI Usage API |
 | [`find_flaky_tests`](#find_flaky_tests) | Identify flaky tests by analyzing test execution history |
 | [`find_underused_resource_classes`](#find_underused_resource_classes) | Find jobs with underused compute resources |
@@ -27,9 +25,7 @@ Use Cursor, Windsurf, Copilot, Claude, or any MCP-compatible client to interact 
 | [`list_artifacts`](#list_artifacts) | List artifacts produced by a CircleCI job |
 | [`list_component_versions`](#list_component_versions) | List all versions for a CircleCI component |
 | [`list_followed_projects`](#list_followed_projects) | List all CircleCI projects you're following |
-| [`recommend_prompt_template_tests`](#recommend_prompt_template_tests) | Generate test cases for prompt templates |
 | [`rerun_workflow`](#rerun_workflow) | Rerun a workflow from start or from the failed job |
-| [`run_evaluation_tests`](#run_evaluation_tests) | Run evaluation tests on a CircleCI pipeline |
 | [`run_pipeline`](#run_pipeline) | Trigger a pipeline to run |
 | [`run_rollback_pipeline`](#run_rollback_pipeline) | Trigger a rollback for a project |
 
@@ -673,24 +669,6 @@ https://github.com/user-attachments/assets/3c765985-8827-442a-a8dc-5069e01edb74
 ## Tool Details
 
 <details>
-<summary id="analyze_diff"><strong><code>analyze_diff</code></strong></summary>
-
-Analyzes git diffs against cursor rules to identify rule violations.
-
-Provide:
-- **Git diff content** (e.g. `git diff --cached`, `git diff HEAD`)
-- **Repository rules** from `.cursorrules` or `.cursor/rules`
-
-Returns detailed violation reports with confidence scores and explanations.
-
-Useful for:
-- Pre-commit code quality checks
-- Ensuring consistency with team coding standards
-- Catching rule violations before code review
-
-</details>
-
-<details>
 <summary id="config_helper"><strong><code>config_helper</code></strong></summary>
 
 Assists with CircleCI configuration tasks by providing guidance and validation.
@@ -698,17 +676,6 @@ Assists with CircleCI configuration tasks by providing guidance and validation.
 - Validates your `.circleci/config.yml` for syntax and semantic errors
 - Provides detailed validation results and configuration recommendations
 - Example: "Validate my CircleCI config"
-
-</details>
-
-<details>
-<summary id="create_prompt_template"><strong><code>create_prompt_template</code></strong></summary>
-
-Generates structured prompt templates for AI-enabled applications based on feature requirements.
-
-- Transforms user requirements into optimized prompt templates
-- Returns a structured template and a context schema defining required input parameters
-- Example: "Create a prompt template for generating bedtime stories by age and topic"
 
 </details>
 
@@ -911,47 +878,11 @@ Projects followed:
 </details>
 
 <details>
-<summary id="recommend_prompt_template_tests"><strong><code>recommend_prompt_template_tests</code></strong></summary>
-
-Generates test cases for prompt templates to ensure they produce expected results.
-
-- Creates diverse test scenarios based on your prompt template and context schema
-- Returns an array of recommended test cases with various parameter combinations
-- Example: "Generate tests for my bedtime story prompt template"
-
-</details>
-
-<details>
 <summary id="rerun_workflow"><strong><code>rerun_workflow</code></strong></summary>
 
 Reruns a workflow from its start or from the failed job.
 
 Returns the ID of the newly-created workflow and a link to monitor it.
-
-</details>
-
-<details>
-<summary id="run_evaluation_tests"><strong><code>run_evaluation_tests</code></strong></summary>
-
-Runs evaluation tests (also known as "Prompt Tests") on a CircleCI pipeline. Generates an appropriate CircleCI configuration and triggers a pipeline using it.
-
-This tool can be used in three ways:
-
-1. **Using Project Slug and Branch (Recommended):**
-   - First use `list_followed_projects` to get your projects, then:
-   - Example: "Run evaluation tests for my-project on the main branch"
-
-2. **Using CircleCI URL:**
-   - Project URL, Pipeline URL, Workflow URL, or Job URL
-   - Example: "Run evaluation tests for https://app.circleci.com/pipelines/gh/organization/project/123"
-
-3. **Using Local Project Context:**
-   - Works from your local workspace by providing workspace root, git remote URL, and branch name
-
-The tool accepts prompt template files and returns a URL to monitor the triggered pipeline.
-
-> [!NOTE]
-> If the project has multiple pipeline definitions, the tool will return a list of available pipelines for you to choose from.
 
 </details>
 

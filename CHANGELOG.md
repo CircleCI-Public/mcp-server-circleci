@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.19.0] - 2026-07-19
+
+### Removed
+
+- Removed the Prompt Workbench toolchain (`create_prompt_template`, `recommend_prompt_template_tests`, `run_evaluation_tests`) — the feature has been shut down.
+- Removed the `analyze_diff` tool — it depended on the Circlet backend which has been decommissioned.
+
 ## [0.18.0] - 2026-07-17
 
 ### Security

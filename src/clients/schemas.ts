@@ -1,75 +1,5 @@
 import { z } from 'zod';
 
-type ContextSchema = {
-  [k: string]: 'string' | 'number' | 'boolean' | 'date' | ContextSchema;
-};
-
-const contextSchemaSchema: z.ZodSchema<ContextSchema> = z.lazy(() =>
-  z
-    .record(
-      z.union([
-        contextSchemaSchema,
-        z
-          .enum(['string', 'number', 'boolean', 'date'])
-          .describe('a primitive data type: string, number, boolean, or date'),
-      ]),
-    )
-    .describe(
-      'a schema structure, mapping keys to a primitive type (string, number, boolean, or date) or recursively to a nested schema',
-    ),
-);
-
-const promptObjectSchema = z
-  .object({
-    template: z.string().describe('a mustache template string'),
-    contextSchema: contextSchemaSchema.describe(
-      'an arbitrarily nested map of variable names from the mustache template to primitive types (string, number, or boolean)',
-    ),
-  })
-  .describe(
-    'a complete prompt template with a template string and a context schema',
-  );
-
-const RuleReviewSchema = z.object({
-  isRuleCompliant: z.boolean(),
-  relatedRules: z.object({
-    compliant: z.array(
-      z.object({
-        rule: z.string(),
-        reason: z.string(),
-        confidenceScore: z.number(),
-      }),
-    ),
-    violations: z.array(
-      z.object({
-        rule: z.string(),
-        reason: z.string(),
-        confidenceScore: z.number(),
-        violationInstances: z.array(
-          z.object({
-            file: z.string(),
-            lineNumbersInDiff: z.array(z.string()),
-            violatingCodeSnippet: z.string(),
-            explanationOfViolation: z.string(),
-          }),
-        ),
-      }),
-    ),
-    requiresHumanReview: z.array(
-      z.object({
-        rule: z.string(),
-        reason: z.string(),
-        confidenceScore: z.number(),
-        humanReviewRequired: z.object({
-          pointsOfAmbiguity: z.array(z.string()),
-          questionsForManualReviewer: z.array(z.string()),
-        }),
-      }),
-    ),
-  }),
-  unrelatedRules: z.array(z.string()).optional(),
-});
-
 const FollowedProjectSchema = z.object({
   name: z.string(),
   slug: z.string(),
@@ -288,14 +218,8 @@ export type JobDetails = z.infer<typeof JobDetailsSchema>;
 export const FollowedProject = FollowedProjectSchema;
 export type FollowedProject = z.infer<typeof FollowedProjectSchema>;
 
-export const PromptObject = promptObjectSchema;
-export type PromptObject = z.infer<typeof PromptObject>;
-
 export const RerunWorkflow = RerunWorkflowSchema;
 export type RerunWorkflow = z.infer<typeof RerunWorkflowSchema>;
-
-export const RuleReview = RuleReviewSchema;
-export type RuleReview = z.infer<typeof RuleReviewSchema>;
 
 export const RollbackProjectRequest = RollbackProjectRequestSchema;
 export type RollbackProjectRequest = z.infer<typeof RollbackProjectRequestSchema>;
