@@ -256,6 +256,7 @@ describe('runPipeline handler', () => {
     expect(response.content[0]).toHaveProperty('type', 'text');
     expect(typeof response.content[0].text).toBe('string');
     expect(response.content[0].text).toContain('Pipeline run successfully');
+    expect(response.content[0].text).toContain('pipeline-id');
     expect(mockCircleCIClient.pipelines.runPipeline).toHaveBeenCalledWith({
       projectSlug: 'gh/org/repo',
       branch: 'main',
@@ -297,6 +298,7 @@ describe('runPipeline handler', () => {
     expect(response.content[0]).toHaveProperty('type', 'text');
     expect(typeof response.content[0].text).toBe('string');
     expect(response.content[0].text).toContain('Pipeline run successfully');
+    expect(response.content[0].text).toContain('pipeline-id');
     expect(mockCircleCIClient.pipelines.runPipeline).toHaveBeenCalledWith({
       projectSlug: 'gh/org/repo',
       branch: 'main',
@@ -339,6 +341,7 @@ describe('runPipeline handler', () => {
     expect(response.content[0]).toHaveProperty('type', 'text');
     expect(typeof response.content[0].text).toBe('string');
     expect(response.content[0].text).toContain('Pipeline run successfully');
+    expect(response.content[0].text).toContain('pipeline-id');
     expect(mockCircleCIClient.pipelines.runPipeline).toHaveBeenCalledWith({
       projectSlug: 'gh/org/repo',
       branch: 'feature-branch',
@@ -386,5 +389,6 @@ describe('runPipeline handler', () => {
     expect(response.content[0]).toHaveProperty('type', 'text');
     expect(typeof response.content[0].text).toBe('string');
     expect(response.content[0].text).toContain('Pipeline run successfully');
+    expect(response.content[0].text).toContain('pipeline-id');
   });
 });

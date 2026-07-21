@@ -18,6 +18,7 @@ export const getLatestPipelineStatus: ToolCallback<{
     branch,
     projectURL,
     projectSlug: inputProjectSlug,
+    pipelineId,
   } = args.params ?? {};
 
   let projectSlug: string | null | undefined;
@@ -56,6 +57,7 @@ export const getLatestPipelineStatus: ToolCallback<{
   const latestPipelineWorkflows = await getLatestPipelineWorkflows({
     projectSlug,
     branch: branchFromURL ?? branch,
+    pipelineId,
   });
 
   return formatLatestPipelineStatus(latestPipelineWorkflows);

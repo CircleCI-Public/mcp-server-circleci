@@ -89,6 +89,7 @@ const ConfigValidateSchema = z.object({
 });
 
 const RunPipelineResponseSchema = z.object({
+  id: z.string(),
   number: z.number(),
 });
 
