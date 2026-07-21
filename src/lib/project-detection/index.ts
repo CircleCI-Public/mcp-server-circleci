@@ -1,21 +1,25 @@
-import { getCircleCIPrivateClient } from '../../clients/client.js';
+import { getCircleCIClient } from '../../clients/client.js';
 import { getVCSFromHost, vcses } from './vcsTool.js';
 import gitUrlParse from 'parse-github-url';
 
 /**
- * Identify the project slug from the git remote URL
+ * Identify the project slug from the git remote URL, validating it against
+ * the CircleCI API.
  * @param {string} gitRemoteURL - eg: https://github.com/organization/project.git
- * @returns {string} project slug - eg: gh/organization/project
+ * @returns {string | undefined} project slug (eg: gh/organization/project), or
+ * undefined if the remote URL couldn't be parsed or no matching CircleCI
+ * project exists
+ * @throws if the git remote's host is not a supported VCS, or if the
+ * CircleCI API call fails for a reason other than the project not existing
+ * (e.g. an invalid token, rate limiting, or a network error)
  */
 export const identifyProjectSlug = async ({
   gitRemoteURL,
 }: {
   gitRemoteURL: string;
 }) => {
-  const cciPrivateClients = getCircleCIPrivateClient();
-
   const parsedGitURL = gitUrlParse(gitRemoteURL);
-  if (!parsedGitURL?.host) {
+  if (!parsedGitURL?.host || !parsedGitURL.owner || !parsedGitURL.name) {
     return undefined;
   }
 
@@ -24,19 +28,18 @@ export const identifyProjectSlug = async ({
     throw new Error(`VCS with host ${parsedGitURL.host} is not handled`);
   }
 
-  const { projects: followedProjects } =
-    await cciPrivateClients.me.getFollowedProjects();
-  if (!followedProjects) {
-    throw new Error('Failed to get followed projects');
+  const projectSlug = `${vcs.short}/${parsedGitURL.owner}/${parsedGitURL.name}`;
+
+  try {
+    await getCircleCIClient().projects.getProject({ projectSlug });
+    return projectSlug;
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('404')) {
+      console.error(`Project ${projectSlug} not found:`, error);
+      return undefined;
+    }
+    throw error;
   }
-
-  const project = followedProjects.find(
-    (followedProject) =>
-      followedProject.name === parsedGitURL.name &&
-      followedProject.vcs_type === vcs.name,
-  );
-
-  return project?.slug;
 };
 
 /**
