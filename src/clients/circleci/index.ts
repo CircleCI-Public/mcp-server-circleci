@@ -9,6 +9,8 @@ import { ConfigValidateAPI } from './configValidate.js';
 import { ProjectsAPI } from './projects.js';
 import { UsageAPI } from './usage.js';
 import { DeploysAPI } from './deploys.js';
+import { GraphQLClient } from './graphqlClient.js';
+import { OrbsAPI } from './orbs.js';
 export type TCircleCIClient = InstanceType<typeof CircleCIClients>;
 
 export const getBaseURL = (useAPISubdomain = false) => {
@@ -100,6 +102,24 @@ const defaultV1HTTPClient = (options: {
 };
 
 /**
+ * Creates a default HTTP client for the CircleCI GraphQL API
+ * @param options Configuration parameters
+ * @param options.token CircleCI API token
+ * @returns HTTP client for the CircleCI GraphQL endpoint
+ */
+const defaultGraphQLHTTPClient = (options: { token: string }) => {
+  if (!options.token) {
+    throw new Error('Token is required');
+  }
+
+  const baseURL = getBaseURL();
+  const headers = createCircleCIHeaders({ token: options.token });
+  return new HTTPClient(baseURL, '/graphql-unstable', {
+    headers,
+  });
+};
+
+/**
  * Creates a default HTTP client for the CircleCI API v2
  * @param options Configuration parameters
  * @param options.token CircleCI API token
@@ -118,6 +138,7 @@ export class CircleCIClients {
   public projects: ProjectsAPI;
   public usage: UsageAPI;
   public deploys: DeploysAPI;
+  public orbs: OrbsAPI;
 
   constructor({
     token,
@@ -131,11 +152,15 @@ export class CircleCIClients {
       token,
       useAPISubdomain: true,
     }),
+    graphqlHttpClient = defaultGraphQLHTTPClient({
+      token,
+    }),
   }: {
     token: string;
     v2httpClient?: HTTPClient;
     v1httpClient?: HTTPClient;
     apiSubdomainV2httpClient?: HTTPClient;
+    graphqlHttpClient?: HTTPClient;
   }) {
     this.jobs = new JobsAPI(v2httpClient);
     this.pipelines = new PipelinesAPI(v2httpClient);
@@ -147,5 +172,6 @@ export class CircleCIClients {
     this.projects = new ProjectsAPI(v2httpClient);
     this.usage = new UsageAPI(v2httpClient);
     this.deploys = new DeploysAPI(v2httpClient);
+    this.orbs = new OrbsAPI(new GraphQLClient(graphqlHttpClient));
   }
 }

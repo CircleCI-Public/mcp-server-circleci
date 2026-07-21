@@ -28,6 +28,12 @@ import { listComponentVersions } from './tools/listComponentVersions/handler.js'
 import { listArtifactsTool } from './tools/listArtifacts/tool.js';
 import { listArtifacts } from './tools/listArtifacts/handler.js';
 
+import { getOrbDetailsTool } from './tools/getOrbDetails/tool.js';
+import { getOrbDetails } from './tools/getOrbDetails/handler.js';
+
+import { searchOrbsTool } from './tools/searchOrbs/tool.js';
+import { searchOrbs } from './tools/searchOrbs/handler.js';
+
 // Define the tools with their configurations
 export const CCI_TOOLS = [
   getBuildFailureLogsTool,
@@ -43,6 +49,8 @@ export const CCI_TOOLS = [
   runRollbackPipelineTool,
   listComponentVersionsTool,
   listArtifactsTool,
+  getOrbDetailsTool,
+  searchOrbsTool,
 ];
 
 // Extract the tool names as a union type
@@ -71,4 +79,6 @@ export const CCI_HANDLERS = {
   run_rollback_pipeline: runRollbackPipeline,
   list_component_versions: listComponentVersions,
   list_artifacts: listArtifacts,
+  get_orb_details: getOrbDetails,
+  search_orbs: searchOrbs,
 } satisfies ToolHandlers;
