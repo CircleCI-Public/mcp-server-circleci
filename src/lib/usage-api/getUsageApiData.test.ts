@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import fs from 'fs';
+import path from 'path';
 import { gzipSync } from 'zlib';
 import * as clientModule from '../../clients/client.js';
 import {
@@ -23,6 +24,9 @@ describe('Usage API Data Fetching', () => {
   const DOWNLOAD_URL_2 = 'https://fake-url.com/usage-part2.csv.gz';
   const DOWNLOAD_URL_3 = 'https://fake-url.com/usage-part3.csv.gz';
   const OUTPUT_DIR = '/tmp/usage-data';
+  // Writes go through safeWriteFileSync, which opens with O_NOFOLLOW so a
+  // symlink planted at the destination filename cannot redirect the write.
+  const NOFOLLOW_WRITE = { flag: expect.any(Number) };
   const MOCK_CSV_CONTENT = 'col1,col2\nval1,val2';
   const MOCK_CSV_CONTENT_2 = 'col1,col2\nval3,val4';
   const MOCK_CSV_CONTENT_3 = 'col1,col2\nval5,val6';
@@ -64,7 +68,8 @@ describe('Usage API Data Fetching', () => {
       expect(fetch).toHaveBeenCalledWith(DOWNLOAD_URL);
       expect(fs.writeFileSync).toHaveBeenCalledWith(
         `${OUTPUT_DIR}/usage-data-2024-08-01_2024-08-31.csv`,
-        Buffer.from(MOCK_CSV_CONTENT)
+        Buffer.from(MOCK_CSV_CONTENT),
+        NOFOLLOW_WRITE
       );
       expect(result.content[0].text).toContain('Usage data CSV downloaded and saved to');
     });
@@ -109,15 +114,18 @@ describe('Usage API Data Fetching', () => {
       expect(fs.writeFileSync).toHaveBeenCalledTimes(3);
       expect(fs.writeFileSync).toHaveBeenCalledWith(
         `${OUTPUT_DIR}/usage-data-2024-08-01_2024-08-31_part1.csv`,
-        Buffer.from(MOCK_CSV_CONTENT)
+        Buffer.from(MOCK_CSV_CONTENT),
+        NOFOLLOW_WRITE
       );
       expect(fs.writeFileSync).toHaveBeenCalledWith(
         `${OUTPUT_DIR}/usage-data-2024-08-01_2024-08-31_part2.csv`,
-        Buffer.from(MOCK_CSV_CONTENT_2)
+        Buffer.from(MOCK_CSV_CONTENT_2),
+        NOFOLLOW_WRITE
       );
       expect(fs.writeFileSync).toHaveBeenCalledWith(
         `${OUTPUT_DIR}/usage-data-2024-08-01_2024-08-31_part3.csv`,
-        Buffer.from(MOCK_CSV_CONTENT_3)
+        Buffer.from(MOCK_CSV_CONTENT_3),
+        NOFOLLOW_WRITE
       );
       expect(result.content[0].text).toContain('3 files');
     });
@@ -135,6 +143,59 @@ describe('Usage API Data Fetching', () => {
 
       expect(fs.writeFileSync).toHaveBeenCalledTimes(1);
       expect(result.content[0].text).toContain('ERROR: Failed to download or save usage data');
+    });
+
+    // Regression: jobId/startDate/endDate were interpolated straight into the
+    // filename, so a value such as "/../../../../tmp/pwned" escaped outputDir
+    // entirely and gave the caller full control of the written path.
+    describe('path containment', () => {
+      beforeEach(() => {
+        (fetch as any).mockResolvedValue({
+          ok: true,
+          arrayBuffer: () => Promise.resolve(MOCK_GZIPPED_CSV),
+        });
+      });
+
+      it.each([
+        ['a rooted traversal', '/../../../../tmp/pwned'],
+        ['a nested traversal', 'x/../../../../../../etc/cron.d/evil'],
+        ['a parent reference', '..'],
+        ['a hidden target', '/../.ssh/authorized_keys'],
+      ])('keeps the file inside outputDir for jobId %s', async (_label, jobId) => {
+        await downloadAndSaveUsageData([DOWNLOAD_URL], OUTPUT_DIR, { jobId });
+
+        expect(fs.writeFileSync).toHaveBeenCalledTimes(1);
+        const written = (fs.writeFileSync as any).mock.calls[0][0] as string;
+        // The traversal characters may survive inside the basename (harmless),
+        // but the file must land as a direct child of outputDir.
+        expect(path.dirname(written)).toBe(OUTPUT_DIR);
+        expect(path.basename(written)).not.toMatch(/[/\\]/);
+      });
+
+      it('sanitises traversal in startDate/endDate', async () => {
+        await downloadAndSaveUsageData([DOWNLOAD_URL], OUTPUT_DIR, {
+          startDate: '../../../../../../../../tmp/a',
+          endDate: '../../../../../../../../tmp/b',
+        });
+
+        const written = (fs.writeFileSync as any).mock.calls[0][0] as string;
+        expect(path.dirname(written)).toBe(OUTPUT_DIR);
+        expect(path.basename(written)).not.toMatch(/[/\\]/);
+      });
+
+      it.each([
+        ['a system directory', '/etc'],
+        ['a traversal escape', '/tmp/../etc'],
+      ])('refuses outputDir %s', async (_label, outputDir) => {
+        const result = await downloadAndSaveUsageData([DOWNLOAD_URL], outputDir, {
+          jobId: JOB_ID,
+        });
+
+        expect(result.isError).toBe(true);
+        expect(result.content[0].text).toContain('Refusing to write');
+        expect(fs.writeFileSync).not.toHaveBeenCalled();
+        expect(fs.mkdirSync).not.toHaveBeenCalled();
+      });
     });
   });
 

@@ -1,20 +1,26 @@
 import fs from 'fs';
-import path from 'path';
 import { parse } from 'csv-parse/sync';
+import { resolveSafeInputFile } from '../file-output/safePaths.js';
 
 function normalizeHeader(header: string): string {
   return header.trim().toLowerCase().replace(/\s+/g, '_');
 }
 
 export function readAndParseCSV(csvFilePath: string): any[] {
-  if (!csvFilePath) {
-    throw new Error('csvFilePath is required');
-  }
+  // Throws UnsafePathError if the path escapes the permitted directories, so an
+  // arbitrary path such as /etc/passwd or ~/.ssh/id_rsa can never be read here.
+  const resolvedPath = resolveSafeInputFile(csvFilePath);
+
   let csvContent: string;
   try {
-    csvContent = fs.readFileSync(path.resolve(csvFilePath), 'utf8');
+    csvContent = fs.readFileSync(resolvedPath, 'utf8');
   } catch (e: any) {
-    throw new Error(`Could not read CSV file at ${csvFilePath}.\n${e?.stack || e}`);
+    // Report only the errno and echo back the path the caller supplied. The raw
+    // message embeds the canonical host path, and distinguishing every fs error
+    // would turn this into a file-existence/permission oracle.
+    throw new Error(
+      `Could not read CSV file at ${csvFilePath}${e?.code ? ` (${e.code})` : ''}.`,
+    );
   }
   try {
     return parse(csvContent, {
@@ -24,7 +30,7 @@ export function readAndParseCSV(csvFilePath: string): any[] {
       skip_records_with_error: true,
     });
   } catch (e: any) {
-    throw new Error(`Failed to parse CSV.\n${e?.stack || e}`);
+    throw new Error(`Failed to parse CSV.\n${e?.message || 'unknown error'}`);
   }
 }
 

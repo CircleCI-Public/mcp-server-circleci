@@ -26,5 +26,9 @@ export const downloadUsageApiDataInputSchema = z.object({
     ),
   outputDir: z
     .string()
-    .describe('The directory to save the downloaded usage data CSV file.'),
+    .describe(
+      'The directory to save the downloaded usage data CSV file. ' +
+        'Must be inside the current working directory, the user home directory, or a temp directory. ' +
+        'System paths and hidden config directories (e.g. "/etc", "~/.ssh") are rejected.',
+    ),
 });

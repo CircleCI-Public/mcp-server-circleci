@@ -1,29 +1,27 @@
 import { gunzipSync } from 'zlib';
 import { getCircleCIClient } from '../../clients/client.js';
 import mcpErrorOutput from '../../lib/mcpErrorOutput.js';
+import {
+  UnsafePathError,
+  joinWithinDir,
+  resolveSafeOutputDir,
+  safeFilenameSegment,
+  safeWriteFileSync,
+} from '../file-output/safePaths.js';
 import fs from 'fs';
-import path from 'path';
-import os from 'os';
 
 type CircleCIClient = ReturnType<typeof getCircleCIClient>;
 
-function resolveOutputDir(outputDir: string): string {
-  if (outputDir.startsWith('~')) {
-    return path.join(os.homedir(), outputDir.slice(1));
-  }
-  if (outputDir.includes('%USERPROFILE%')) {
-    const userProfile = process.env.USERPROFILE || os.homedir();
-    return outputDir.replace('%USERPROFILE%', userProfile);
-  }
-  return outputDir;
-}
-
+// startDate/endDate/jobId are caller-supplied, so every interpolated segment is
+// reduced to a single safe filename component before it reaches path.join.
 function getBaseFileName(opts: { startDate?: string; endDate?: string; jobId?: string }): string {
   if (opts.startDate && opts.endDate) {
-    return `usage-data-${opts.startDate.slice(0, 10)}_${opts.endDate.slice(0, 10)}`;
+    const start = safeFilenameSegment(opts.startDate.slice(0, 10), 'start');
+    const end = safeFilenameSegment(opts.endDate.slice(0, 10), 'end');
+    return `usage-data-${start}_${end}`;
   }
   if (opts.jobId) {
-    return `usage-data-job-${opts.jobId}`;
+    return `usage-data-job-${safeFilenameSegment(opts.jobId, 'unknown')}`;
   }
   return `usage-data-${Date.now()}`;
 }
@@ -43,7 +41,7 @@ export async function downloadAndSaveUsageData(
   opts: { startDate?: string; endDate?: string; jobId?: string }
 ) {
   try {
-    const usageDataDir = path.resolve(resolveOutputDir(outputDir));
+    const usageDataDir = resolveSafeOutputDir(outputDir);
     fs.mkdirSync(usageDataDir, { recursive: true });
 
     const baseName = getBaseFileName(opts);
@@ -52,8 +50,8 @@ export async function downloadAndSaveUsageData(
     for (let i = 0; i < downloadUrls.length; i++) {
       const csv = await fetchAndDecompress(downloadUrls[i]);
       const suffix = downloadUrls.length > 1 ? `_part${i + 1}` : '';
-      const filePath = path.join(usageDataDir, `${baseName}${suffix}.csv`);
-      fs.writeFileSync(filePath, csv);
+      const filePath = joinWithinDir(usageDataDir, `${baseName}${suffix}.csv`);
+      safeWriteFileSync(filePath, csv);
       savedPaths.push(filePath);
     }
 
@@ -62,7 +60,14 @@ export async function downloadAndSaveUsageData(
       : `Usage data downloaded as ${savedPaths.length} files:\n${savedPaths.join('\n')}`;
     return { content: [{ type: 'text' as const, text: summary }] };
   } catch (e: any) {
-    return mcpErrorOutput(`ERROR: Failed to download or save usage data.\nError: ${e?.stack || e}`);
+    if (e instanceof UnsafePathError) {
+      return mcpErrorOutput(`ERROR: ${e.message}`);
+    }
+    // Message only, never the stack: this is returned to the client and must
+    // not disclose the host's filesystem layout.
+    return mcpErrorOutput(
+      `ERROR: Failed to download or save usage data.\nError: ${e?.message || 'unknown error'}`,
+    );
   }
 }
 
@@ -122,6 +127,17 @@ export async function getUsageApiData({ orgId, startDate, endDate, jobId, output
   if (!outputDir) {
     return mcpErrorOutput('ERROR: outputDir is required. Please specify a directory to save the usage data CSV.');
   }
+  // Validate up front. Otherwise a rejected outputDir is only discovered on the
+  // poll that finds the export complete, after an export job has been consumed.
+  try {
+    resolveSafeOutputDir(outputDir);
+  } catch (e: any) {
+    if (e instanceof UnsafePathError) {
+      return mcpErrorOutput(`ERROR: ${e.message}`);
+    }
+    throw e;
+  }
+
   const client = getCircleCIClient();
 
   if (jobId) {
