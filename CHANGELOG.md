@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.19.1] - 2026-07-28
+
+### Security
+
+- Fixed a path-traversal / arbitrary-file-write vulnerability in the tools that take a filesystem path. `outputDir` (`get_build_failure_logs`, `download_usage_api_data`) and `csvFilePath` (`find_underused_resource_classes`) were used unvalidated, so a caller could create directories and write files anywhere the server process had access (`/etc`, `~/.ssh`, `~/Library/LaunchAgents`, …) or read any file the process could open. Reads and writes are now confined to the server's working directory, the user's home directory and the system temp directory; hidden config directories, `node_modules` and launch-agent directories are rejected. Set `MCP_FILE_OUTPUT_ROOTS` to allow additional locations.
+- System directories (`/etc`, `/usr`, `/bin`, `/System`, `/Library`, `%SystemRoot%`, …) are refused unconditionally, independently of the permitted roots. Without this floor, a server launched with a working directory of `/` — which is what a GUI MCP client or a systemd unit with no `WorkingDirectory` gives the process — would have had the entire filesystem as a permitted root, leaving the vulnerability open in that configuration.
+- Fixed filename injection in `download_usage_api_data`. The caller-supplied `jobId`, `startDate` and `endDate` were interpolated straight into the output filename, so a value such as `/../../../../tmp/pwned` escaped `outputDir` and gave the caller control of the full written path. Every interpolated value is now reduced to a single safe filename segment, and each write is asserted to land as a direct child of the validated directory.
+- File writes now open with `O_NOFOLLOW`. The output filenames are derived from caller input and the temp directory is world-writable, so another local process could pre-plant a symlink at the destination filename and redirect the write to an arbitrary file; validating the directory alone did not prevent this.
+- Symlinked directories that resolve outside the permitted roots are rejected, including dangling ones — a symlink that cannot be canonicalised is no longer treated as a not-yet-created directory.
+- Error messages no longer include stack traces, the resolved host path, or the list of permitted roots, all of which disclosed the host's filesystem layout to the client. `find_underused_resource_classes` reports only the errno for a failed read.
+- `download_usage_api_data` validates `outputDir` before starting an export job instead of on the poll that finds it complete, so a rejected directory no longer consumes a usage export.
+
+### Added
+
+- `MCP_FILE_OUTPUT_ROOTS` — comma-separated list of additional directories that the file-reading/writing tools may use. The working directory, home directory and temp directory are always allowed; system directories can never be allowed. Deployments whose checkout lives outside those roots (`/workspace` in a container, `/srv`, a secondary volume) must set this.
+
 ## [0.19.0] - 2026-07-19
 
 ### Removed

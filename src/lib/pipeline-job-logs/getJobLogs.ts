@@ -3,9 +3,14 @@ import { getCircleCIClient } from '../../clients/client.js';
 import { rateLimitedRequests } from '../rateLimitedRequests/index.js';
 import { JobDetails } from '../../clients/schemas.js';
 import outputTextTruncated, { SEPARATOR } from '../outputTextTruncated.js';
+import mcpErrorOutput from '../mcpErrorOutput.js';
+import {
+  UnsafePathError,
+  joinWithinDir,
+  resolveSafeOutputDir,
+  safeWriteFileSync,
+} from '../file-output/safePaths.js';
 import fs from 'fs';
-import path from 'path';
-import os from 'os';
 
 export type GetJobLogsParams = {
   projectSlug: string;
@@ -108,17 +113,6 @@ const getJobLogs = async ({
 
 export default getJobLogs;
 
-function resolveOutputDir(outputDir: string): string {
-  if (outputDir.startsWith('~')) {
-    return path.join(os.homedir(), outputDir.slice(1));
-  }
-  if (outputDir.includes('%USERPROFILE%')) {
-    const userProfile = process.env.USERPROFILE || os.homedir();
-    return outputDir.replace('%USERPROFILE%', userProfile);
-  }
-  return outputDir;
-}
-
 /**
  * Formats job logs, either writing to a file (if outputDir provided) or returning truncated inline text
  * @param jobStepLogs Array of job logs containing step information
@@ -144,11 +138,21 @@ export function formatJobLogs(
     .join('\n');
 
   if (outputDir) {
-    const resolvedDir = path.resolve(resolveOutputDir(outputDir));
-    fs.mkdirSync(resolvedDir, { recursive: true });
-    const fileName = `circleci-build-logs-${Date.now()}.txt`;
-    const filePath = path.join(resolvedDir, fileName);
-    fs.writeFileSync(filePath, outputText, 'utf8');
+    let filePath: string;
+    try {
+      const resolvedDir = resolveSafeOutputDir(outputDir);
+      fs.mkdirSync(resolvedDir, { recursive: true });
+      filePath = joinWithinDir(
+        resolvedDir,
+        `circleci-build-logs-${Date.now()}.txt`,
+      );
+      safeWriteFileSync(filePath, outputText);
+    } catch (error) {
+      if (error instanceof UnsafePathError) {
+        return mcpErrorOutput(`ERROR: ${error.message}`);
+      }
+      throw error;
+    }
     return {
       content: [
         {

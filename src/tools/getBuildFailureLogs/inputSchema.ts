@@ -37,7 +37,9 @@ export const getBuildFailureOutputInputSchema = z.object({
     .describe(
       'Optional. When provided, the full build logs are written to a file in this directory and the file path is returned. ' +
         'Use this for large logs to avoid truncation. ' +
-        'Use the workspace/project root when available (e.g., "/home/user/my-project"), otherwise use the Downloads folder (e.g., "~/Downloads").',
+        'Use the workspace/project root when available (e.g., "/home/user/my-project"), otherwise use the Downloads folder (e.g., "~/Downloads"). ' +
+        'Must be inside the current working directory, the user home directory, or a temp directory. ' +
+        'System paths and hidden config directories (e.g. "/etc", "~/.ssh") are rejected.',
     )
     .optional(),
 });

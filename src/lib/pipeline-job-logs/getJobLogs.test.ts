@@ -77,4 +77,30 @@ describe('formatJobLogs', () => {
       fs.rmSync(dir, { recursive: true, force: true });
     }
   });
+
+  // Regression: outputDir used to be handed straight to mkdirSync/writeFileSync,
+  // letting a caller create directories and write files anywhere on the host.
+  describe('outputDir containment', () => {
+    it.each([
+      ['a system directory', '/etc'],
+      ['a traversal escape', '/tmp/../etc'],
+      ['relative traversal', '../../../../../../../../etc/cron.d'],
+      ['the ssh directory', '~/.ssh'],
+      ['launch agents', '~/Library/LaunchAgents'],
+    ])('refuses to write to %s', (_label, outputDir) => {
+      const result = formatJobLogs(mockLogs, outputDir);
+
+      expect(result.isError).toBe(true);
+      expect(result.content[0].text).toContain('Refusing to write');
+      expect(result.content[0].text).not.toContain('Build logs saved to');
+    });
+
+    it('does not create the rejected directory', () => {
+      const target = path.join(os.homedir(), '.circleci-mcp-should-not-exist');
+      const result = formatJobLogs(mockLogs, target);
+
+      expect(result.isError).toBe(true);
+      expect(fs.existsSync(target)).toBe(false);
+    });
+  });
 });
