@@ -1,5 +1,5 @@
 > [!IMPORTANT]
-> This repository is deprecated. The CircleCI MCP server is now built into the CircleCI CLI. Visit **[cli.circleci.com](https://cli.circleci.com)** to get started.
+> This repository is deprecated. Visit the **[CircleCI MCP overview](https://circleci.com/docs/guides/toolkit/circleci-mcp-overview/)** for up-to-date documentation on CircleCI's MCP offerings, including the hosted server and the CircleCI CLI MCP.
 
 # CircleCI MCP Server
 
