@@ -470,7 +470,9 @@ Run the MCP server centrally (for example on Kubernetes or Docker) so your team 
 | **Per-user tokens** (recommended) | Teams with SSO-backed Personal API Tokens | `REQUIRE_REQUEST_TOKEN=true`, no server PAT | Each dev forwards their PAT | Per developer |
 | **Shared token** (interim) | Quick rollout, single service identity OK | `CIRCLECI_TOKEN` on server, `REQUIRE_REQUEST_TOKEN=false` (explicit opt-out) | No auth header needed | Single shared identity |
 
-> **Security:** Request authentication is **on by default** in remote mode. The shared-token mode disables it (`REQUIRE_REQUEST_TOKEN=false`), making every caller able to act as the server's `CIRCLECI_TOKEN` identity with no credentials. Only enable it on a network you fully trust, and prefer per-user tokens otherwise. Terminating TLS at an ingress provides encryption, not authentication.
+> **Security:** Request authentication is **on by default** in remote mode. The shared-token mode disables it (`REQUIRE_REQUEST_TOKEN=false`), making every caller able to act as the server's `CIRCLECI_TOKEN` identity with no credentials — including triggering pipelines with arbitrary config. Only enable it on a network you fully trust, and prefer per-user tokens otherwise. Terminating TLS at an ingress provides encryption, not authentication.
+>
+> Because that combination is unsafe on a public interface, the server **refuses to start** when `REQUIRE_REQUEST_TOKEN=false` is combined with a non-loopback bind address, unless you explicitly accept the risk with `MCP_ALLOW_UNAUTHENTICATED_NETWORK_ACCESS=true`. The `Host`/`Origin` check is *not* a substitute for authentication — see [DNS-rebinding protection](#dns-rebinding-protection-is-not-authentication) below.
 
 ### 1. Deploy the server
 
@@ -499,15 +501,23 @@ docker run --rm -p 8000:8000 \
 
 **Shared token (interim) — accessed via `mcp-remote` from a public hostname:**
 
+Because this mode serves the org's PAT to any caller with no credential, it must be
+run only where the published port is unreachable from untrusted networks, and you
+must acknowledge that explicitly or the server will refuse to start:
+
 ```bash
 docker run --rm -p 8000:8000 \
   -e start=remote \
   -e port=8000 \
   -e CIRCLECI_TOKEN=your-shared-circleci-pat \
   -e REQUIRE_REQUEST_TOKEN=false \
+  -e MCP_ALLOW_UNAUTHENTICATED_NETWORK_ACCESS=true \
   -e MCP_ALLOWED_HOSTS=my-mcp.example.com \
   circleci/mcp-server-circleci
 ```
+
+Prefer putting authentication in front of the port instead — an ingress that
+requires SSO, mTLS, or an API key — or switch to per-user tokens above.
 
 **Environment variables:**
 
@@ -522,15 +532,20 @@ docker run --rm -p 8000:8000 \
 | `MCP_ALLOWED_HOSTS` | Comma-separated list of additional `Host` header values to allow (e.g. `my-mcp.example.com,my-mcp.example.com:443`). Loopback hostnames are always allowed. Required for any non-loopback deployment. |
 | `MCP_ALLOWED_ORIGINS` | Comma-separated list of additional `Origin` header values to allow (e.g. `https://my-app.example.com`). Loopback origins are always allowed. Only needed when a browser directly reaches this server (not via `mcp-remote`). |
 | `MCP_BIND_HOST` | Network interface to bind to (default: `0.0.0.0`). Set to `127.0.0.1` to restrict to loopback only (not compatible with Docker `-p` port mapping). |
+| `MCP_ALLOW_UNAUTHENTICATED_NETWORK_ACCESS` | Required (`=true`) to start with `REQUIRE_REQUEST_TOKEN=false` on a non-loopback bind address. Acknowledges that any peer able to reach the port acts as the server's `CIRCLECI_TOKEN` identity without a credential. Has no effect when request tokens are required. |
 | `MCP_FILE_OUTPUT_ROOTS` | Comma-separated list of additional directories that file-reading/writing tools may use (e.g. `/srv/reports,/data/exports`). The working directory, home directory and temp directory are always allowed. See the note below. |
 
 > **File output locations (applies to both stdio and remote transports):** Tools that accept a filesystem path — `get_build_failure_logs` (`outputDir`), `download_usage_api_data` (`outputDir`) and `find_underused_resource_classes` (`csvFilePath`) — may only read and write inside the server's working directory, the user's home directory, and the system temp directory. Within those roots, hidden configuration directories (`~/.ssh`, `~/.aws`, `~/.config`, `.git`, …), `node_modules` and launch-agent directories are rejected, as are symlinks resolving outside the permitted roots. System directories (`/etc`, `/usr`, `/bin`, `/System`, `/Library`, `%SystemRoot%`, …) are refused unconditionally and cannot be re-enabled. Output files are never written through a symlink.
 >
 > If your checkout lives outside those roots — `/workspace` in a container, `/srv`, `/opt`, a secondary volume such as `/Volumes/work` — set `MCP_FILE_OUTPUT_ROOTS` to that directory, otherwise those paths are rejected. For a stdio server the working directory is usually already the project root, so no configuration is needed. This matters most for the remote transport, where the paths come from network clients rather than the local user.
 
-> **DNS-rebinding protection:** The remote transport validates the `Host` header on every `/mcp` request. By default only loopback addresses (`localhost`, `127.0.0.1`, `[::1]`) are accepted. **Public deployments must set `MCP_ALLOWED_HOSTS`** to the hostname clients use, or all `/mcp` requests will receive `403 Forbidden`. The `/ping` health-check endpoint is not guarded so load-balancer probes continue to work regardless of `Host`.
+<a name="dns-rebinding-protection-is-not-authentication"></a>
+
+> **DNS-rebinding protection (not authentication):** The remote transport validates the `Host` header on every `/mcp` request. By default only loopback addresses (`localhost`, `127.0.0.1`, `[::1]`) are accepted. **Public deployments must set `MCP_ALLOWED_HOSTS`** to the hostname clients use, or all `/mcp` requests will receive `403 Forbidden`. The `/ping` health-check endpoint is not guarded so load-balancer probes continue to work regardless of `Host`.
 >
 > The `Origin` header (sent by browsers) is also validated when present. Non-browser clients such as `mcp-remote` never send `Origin`, so they are unaffected by this check.
+>
+> **This check is not an access control and must not be relied on as one.** Both headers are chosen by the caller, so any non-browser client — curl, a script, a raw socket — can send an allowed `Host` and omit `Origin` to satisfy it. Its only purpose is to stop a *browser* from being aimed at the server by attacker-controlled DNS, which is the DNS-rebinding threat. Authenticating callers is the job of `REQUIRE_REQUEST_TOKEN` (or an authenticating proxy in front of the port). Requiring an `Origin` header would break every legitimate CLI client while stopping no attacker.
 >
 > **Behind a reverse proxy:** If your proxy rewrites `Host` to the backend address (nginx's default), add `proxy_set_header Host $host;` to pass the original hostname through, then set `MCP_ALLOWED_HOSTS` to that public hostname. Alternatively, set `MCP_ALLOWED_HOSTS` to whatever hostname the proxy does forward.
 
@@ -590,7 +605,7 @@ Replace `http://localhost:8000/mcp` with your team's server URL. Cursor and VS C
 
 #### Client configuration: shared token
 
-When the server has `CIRCLECI_TOKEN` set and is started with `REQUIRE_REQUEST_TOKEN=false` (request auth is on by default and must be explicitly disabled), clients do not need to send a token:
+When the server has `CIRCLECI_TOKEN` set and is started with `REQUIRE_REQUEST_TOKEN=false` (request auth is on by default and must be explicitly disabled, and a non-loopback bind additionally requires `MCP_ALLOW_UNAUTHENTICATED_NETWORK_ACCESS=true`), clients do not need to send a token:
 
 ```json
 {

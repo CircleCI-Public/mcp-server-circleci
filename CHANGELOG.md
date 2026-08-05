@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.19.2] - 2026-08-05
+
+### Security
+
+- The remote transport now refuses to start when request authentication is disabled (`REQUIRE_REQUEST_TOKEN=false`, the shared-token mode) *and* it would bind a non-loopback interface — which the default `MCP_BIND_HOST=0.0.0.0` does. That combination served the org's `CIRCLECI_TOKEN` to any peer that could route to the port, with no credential, including `run_pipeline` with arbitrary pipeline config. Operators who genuinely have the port restricted to a trusted network can opt back in with `MCP_ALLOW_UNAUTHENTICATED_NETWORK_ACCESS=true`; a loud warning is logged whenever request auth is off.
+- Clarified that the `Host`/`Origin` validation added in 0.17.0 is a DNS-rebinding mitigation and **not** authentication. Both headers are chosen by the caller, so a non-browser client can always satisfy the check by sending an allowed `Host` and omitting `Origin`; it was never an access-control boundary, and the docs no longer read as though `/mcp` is protected by it. Authentication is `REQUIRE_REQUEST_TOKEN` (on by default, returns `401`) or an authenticating proxy. The absent-`Origin` allowance is retained deliberately: requiring the header would break `mcp-remote`, curl and every other non-browser client while stopping no attacker.
+
+### Added
+
+- `MCP_ALLOW_UNAUTHENTICATED_NETWORK_ACCESS` — set to `true` to acknowledge running the shared-token mode on a network-reachable interface. Required in that configuration; ignored when request tokens are required.
+
 ## [0.19.1] - 2026-07-28
 
 ### Security

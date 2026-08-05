@@ -8,6 +8,7 @@ import {
   extractCircleCITokenFromRequest,
   isRequestTokenRequired,
 } from '../lib/auth/extractToken.js';
+import { assertSafeRemoteExposure } from '../lib/auth/networkExposure.js';
 import { validateRemoteRequest } from '../lib/auth/originValidation.js';
 import { runWithCircleCIToken } from '../lib/auth/requestContext.js';
 
@@ -74,9 +75,16 @@ export const createUnifiedTransport = (server: McpServer) => {
     res.json({ result: 'pong' });
   });
 
-  // DNS-rebinding guard for all /mcp routes.
-  // Validates Host (always required) and Origin (only when present — absent means
-  // a non-browser client like mcp-remote, which is always allowed).
+  // DNS-rebinding guard for all /mcp routes. Validates Host (always required)
+  // and Origin (only when present — absent means a non-browser client like
+  // mcp-remote, which is always allowed).
+  //
+  // This is NOT authentication and must not be relied on as one: both headers are
+  // chosen by the caller, so a non-browser peer can send `Host: localhost` with no
+  // Origin and pass. Its only job is to stop a browser being aimed at a
+  // loopback-bound server via attacker-controlled DNS. Authentication is
+  // REQUIRE_REQUEST_TOKEN (see runWithRequestAuth), and networkExposure.ts
+  // refuses to start the combination where neither applies.
   app.use('/mcp', (req, res, next) => {
     if (!validateRemoteRequest(req, port)) {
       res.status(403).end();
@@ -189,6 +197,11 @@ export const createUnifiedTransport = (server: McpServer) => {
   });
 
   const bindHost = process.env.MCP_BIND_HOST || '0.0.0.0';
+
+  // Refuse to serve a network interface with request auth disabled. Must run
+  // before listen() so an unsafe deployment never accepts a single request.
+  assertSafeRemoteExposure(bindHost, isRequestTokenRequired());
+
   app.listen(Number(port), bindHost, () => {
     console.error(
       `CircleCI MCP unified HTTP+SSE server listening on http://${bindHost}:${port}`,
