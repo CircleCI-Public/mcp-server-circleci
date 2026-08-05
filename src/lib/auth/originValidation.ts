@@ -26,11 +26,18 @@ export function isHostAllowed(host: string | undefined, allowed: Set<string>): b
 }
 
 export function isOriginAllowed(origin: string | undefined, allowed: Set<string>): boolean {
-  // Non-browser clients (mcp-remote, curl) send no Origin — allow them.
+  // Non-browser clients (mcp-remote, curl) send no Origin — allow them. Requiring
+  // one would break every legitimate CLI client while stopping no attacker, since
+  // a raw client simply omits the header.
   if (!origin?.trim()) return true;
   return allowed.has(origin.trim().toLowerCase());
 }
 
+/**
+ * DNS-rebinding mitigation only — NOT authentication. Both headers are supplied by
+ * the caller, so any non-browser peer can satisfy this check. Use
+ * REQUIRE_REQUEST_TOKEN to authenticate callers.
+ */
 export function validateRemoteRequest(req: Request, port: string | number): boolean {
   return (
     isHostAllowed(req.header('host'), getAllowedHosts(port)) &&
