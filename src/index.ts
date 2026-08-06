@@ -3,6 +3,10 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 import { CCI_HANDLERS, CCI_TOOLS } from './circleci-tools.js';
+import {
+  printDeprecationNotice,
+  withDeprecationNotice,
+} from './lib/deprecation.js';
 import { createUnifiedTransport } from './transports/unified.js';
 import { createStdioTransport } from './transports/stdio.js';
 import {
@@ -67,15 +71,23 @@ CCI_TOOLS.forEach((tool) => {
   // Wrap handler with telemetry instrumentation
   const wrappedHandler = wrapToolHandler(tool.name, handler as ToolHandler);
 
+  // Carry the deprecation notice in the description so it reaches the model's
+  // context and gets relayed to the user in conversation.
+  const description = withDeprecationNotice(tool.description);
+
   const annotations = (tool as { annotations?: Record<string, unknown> }).annotations;
   if (annotations) {
-    server.tool(tool.name, tool.description, { params: tool.inputSchema.optional() }, annotations, wrappedHandler);
+    server.tool(tool.name, description, { params: tool.inputSchema.optional() }, annotations, wrappedHandler);
   } else {
-    server.tool(tool.name, tool.description, { params: tool.inputSchema.optional() }, wrappedHandler);
+    server.tool(tool.name, description, { params: tool.inputSchema.optional() }, wrappedHandler);
   }
 });
 
 async function main() {
+  // stderr only — stdout carries JSON-RPC in stdio mode. Printed for both
+  // transports, before anything else, so it is not buried in later output.
+  printDeprecationNotice();
+
   // Initialize OpenTelemetry metrics
   await initializeMetrics();
 

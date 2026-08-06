@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.20.0] - 2026-08-06
+
+### Deprecated
+
+- **This package is deprecated in favour of CircleCI's hosted MCP server and the CircleCI CLI MCP.** See https://circleci.com/docs/guides/toolkit/circleci-mcp-overview/. This repository will be archived.
+- The server now prints a deprecation banner to stderr at startup (both transports), where MCP clients surface it in their logs. There is no opt-out: an off-switch would be adopted by exactly the high-volume operators who most need to migrate, and the server already logs to stderr unconditionally on every start.
+- Every tool description now carries the deprecation notice. Tool descriptions enter the model's context, so the assistant relays the notice in conversation — the only channel that reaches users who never open a log file. Almost the entire installed base runs `npx -y @circleci/mcp-server-circleci@latest` from an MCP client config that re-resolves on every start, so the package itself is the only reliable way to reach them; a README notice is not.
+
+Nothing in this release changes tool behaviour, arguments, or output. The deprecation is deliberately non-breaking: a server that stops working gets pinned to the last working version, which strands operators on an unmaintained release rather than moving them forward.
+
 ## [0.19.2] - 2026-08-05
 
 ### Security

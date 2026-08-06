@@ -1,5 +1,11 @@
 > [!IMPORTANT]
-> This repository is deprecated. Visit the **[CircleCI MCP overview](https://circleci.com/docs/guides/toolkit/circleci-mcp-overview/)** for up-to-date documentation on CircleCI's MCP offerings, including the hosted server and the CircleCI CLI MCP.
+> **This package is deprecated. Please migrate.**
+>
+> `@circleci/mcp-server-circleci` is no longer receiving feature work. Use CircleCI's **hosted MCP server** or the **CircleCI CLI MCP** instead — see the **[CircleCI MCP overview](https://circleci.com/docs/guides/toolkit/circleci-mcp-overview/)**.
+>
+> This repository will be archived. Existing versions remain installable from npm, but running an unmaintained server that holds a CircleCI Personal API Token is not recommended.
+>
+> If you are running the **self-managed remote transport** (`start=remote`), migrate first: the hosted server is its direct replacement and removes the need to operate a network-facing service that brokers your org's token.
 
 # CircleCI MCP Server
 
