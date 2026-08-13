@@ -5,7 +5,7 @@ import { defaultPaginationOptions } from '../circleci/index.js';
 
 const FollowedProjectResponseSchema = z.object({
   items: z.array(FollowedProject),
-  next_page_token: z.string().nullable(),
+  next_page_token: z.string().nullable().optional(),
 });
 
 export class MeAPI {
@@ -74,7 +74,7 @@ export class MeAPI {
 
       // Store the current token before updating
       previousPageToken = nextPageToken;
-      nextPageToken = result.next_page_token;
+      nextPageToken = result.next_page_token ?? null;
 
       // Break if we received the same token as before (stuck in a loop)
       if (nextPageToken && nextPageToken === previousPageToken) {

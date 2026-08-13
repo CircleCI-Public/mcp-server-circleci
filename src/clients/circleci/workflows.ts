@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 const WorkflowResponseSchema = z.object({
   items: z.array(Workflow),
-  next_page_token: z.string().nullable(),
+  next_page_token: z.string().nullable().optional(),
 });
 
 export class WorkflowsAPI {
@@ -67,7 +67,7 @@ export class WorkflowsAPI {
 
       pageCount++;
       allWorkflows.push(...result.items);
-      nextPageToken = result.next_page_token;
+      nextPageToken = result.next_page_token ?? null;
     } while (nextPageToken);
 
     return allWorkflows;

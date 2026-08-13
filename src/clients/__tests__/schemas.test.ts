@@ -2,6 +2,9 @@ import { describe, it, expect } from 'vitest';
 import {
   DeployComponentsResponse,
   DeployEnvironmentResponse,
+  PaginatedArtifactResponse,
+  PaginatedPipelineResponseSchema,
+  PaginatedTestResponse,
 } from '../schemas.js';
 
 describe('DeployEnvironmentResponseSchema', () => {
@@ -175,4 +178,53 @@ describe('DeployComponentsResponseSchema', () => {
     const result = DeployComponentsResponse.safeParse(input);
     expect(result.success).toBe(false);
   });
+});
+
+describe('paginated response schemas: next_page_token', () => {
+  // The API omits next_page_token entirely on the last page of some endpoints.
+  // A required-but-nullable field rejects that with
+  //   { code: 'invalid_type', expected: 'string', received: 'undefined',
+  //     path: ['next_page_token'], message: 'Required' }
+  // which surfaced as get_build_failure_logs failing before it sent a request.
+  const schemas = {
+    PaginatedPipelineResponseSchema,
+    PaginatedArtifactResponse,
+    PaginatedTestResponse,
+  };
+
+  for (const [name, schema] of Object.entries(schemas)) {
+    describe(name, () => {
+      it('parses a response with next_page_token absent', () => {
+        const result = schema.safeParse({ items: [] });
+        expect(result.success).toBe(true);
+        if (result.success) {
+          expect(result.data.next_page_token).toBeUndefined();
+        }
+      });
+
+      it('parses a response with next_page_token null', () => {
+        const result = schema.safeParse({ items: [], next_page_token: null });
+        expect(result.success).toBe(true);
+        if (result.success) {
+          expect(result.data.next_page_token).toBeNull();
+        }
+      });
+
+      it('parses a response with next_page_token set', () => {
+        const result = schema.safeParse({
+          items: [],
+          next_page_token: 'token-1',
+        });
+        expect(result.success).toBe(true);
+        if (result.success) {
+          expect(result.data.next_page_token).toBe('token-1');
+        }
+      });
+
+      it('rejects a non-string next_page_token', () => {
+        const result = schema.safeParse({ items: [], next_page_token: 7 });
+        expect(result.success).toBe(false);
+      });
+    });
+  }
 });

@@ -92,7 +92,7 @@ export class PipelinesAPI {
         }
       }
 
-      nextPageToken = result.data.next_page_token;
+      nextPageToken = result.data.next_page_token ?? null;
     } while (nextPageToken);
 
     return filteredPipelines;

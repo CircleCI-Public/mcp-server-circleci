@@ -72,7 +72,7 @@ const TestSchema = z.object({
 
 const PaginatedTestResponseSchema = z.object({
   items: z.array(TestSchema),
-  next_page_token: z.string().nullable(),
+  next_page_token: z.string().nullable().optional(),
 });
 
 const ConfigValidateSchema = z.object({
@@ -124,7 +124,7 @@ const DeployComponentsResponseSchema = z.object({
     created_at: z.string(),
     updated_at: z.string(),
   })),
-  next_page_token: z.string().nullable(),
+  next_page_token: z.string().nullable().optional(),
 });
 
 const DeployComponentVersionsResponseSchema = z.object({
@@ -139,7 +139,7 @@ const DeployComponentVersionsResponseSchema = z.object({
     job_number: z.number(),
     last_deployed_at: z.string(),
   })),
-  next_page_token: z.string().nullable(),
+  next_page_token: z.string().nullable().optional(),
 });
 
 export const DeployEnvironmentResponseSchema = z.object({
@@ -151,7 +151,7 @@ export const DeployEnvironmentResponseSchema = z.object({
     updated_at: z.string(),
     labels: z.array(LabelSchema),
   })),
-  next_page_token: z.string().nullable(),
+  next_page_token: z.string().nullable().optional(),
 });
 
 const ProjectSchema = z.object({
@@ -200,7 +200,7 @@ export type Project = z.infer<typeof ProjectSchema>;
 
 export const PaginatedPipelineResponseSchema = z.object({
   items: z.array(Pipeline),
-  next_page_token: z.string().nullable(),
+  next_page_token: z.string().nullable().optional(),
 });
 export type PaginatedPipelineResponse = z.infer<
   typeof PaginatedPipelineResponseSchema
@@ -247,7 +247,7 @@ const ArtifactSchema = z.object({
 
 const PaginatedArtifactResponseSchema = z.object({
   items: z.array(ArtifactSchema),
-  next_page_token: z.string().nullable(),
+  next_page_token: z.string().nullable().optional(),
 });
 
 const UsageExportJobStartSchema = z.object({
