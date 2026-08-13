@@ -5,7 +5,7 @@ import { z } from 'zod';
 
 const WorkflowJobResponseSchema = z.object({
   items: z.array(Job),
-  next_page_token: z.string().nullable(),
+  next_page_token: z.string().nullable().optional(),
 });
 
 export class JobsAPI {
@@ -85,7 +85,7 @@ export class JobsAPI {
 
       pageCount++;
       allArtifacts.push(...result.items);
-      nextPageToken = result.next_page_token;
+      nextPageToken = result.next_page_token ?? null;
     } while (nextPageToken);
 
     return allArtifacts;
@@ -143,7 +143,7 @@ export class JobsAPI {
 
       pageCount++;
       allJobs.push(...result.items);
-      nextPageToken = result.next_page_token;
+      nextPageToken = result.next_page_token ?? null;
     } while (nextPageToken);
 
     return allJobs;
