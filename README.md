@@ -44,7 +44,7 @@ Use Cursor, Windsurf, Copilot, Claude, or any MCP-compatible client to interact 
 
 **Prerequisites:**
 - [CircleCI Personal API token](https://app.circleci.com/settings/user/tokens) ([learn more](https://circleci.com/docs/managing-api-tokens/))
-- NPX: [Node.js >= v18](https://nodejs.org/) and [pnpm](https://pnpm.io/installation)
+- NPX: [Node.js](https://nodejs.org/) `^22.23.4 || ^24.22.1 || >=26.12.1` and [pnpm](https://pnpm.io/installation)
 - Docker: [Docker](https://docs.docker.com/get-docker/)
 
 #### Using NPX in a local MCP Server
@@ -112,7 +112,7 @@ See [Self-Managed Remote MCP Server](#self-managed-remote-mcp-server). Use the [
 
 **Prerequisites:**
 - [CircleCI Personal API token](https://app.circleci.com/settings/user/tokens) ([learn more](https://circleci.com/docs/managing-api-tokens/))
-- NPX: [Node.js >= v18](https://nodejs.org/) and [pnpm](https://pnpm.io/installation)
+- NPX: [Node.js](https://nodejs.org/) `^22.23.4 || ^24.22.1 || >=26.12.1` and [pnpm](https://pnpm.io/installation)
 - Docker: [Docker](https://docs.docker.com/get-docker/)
 
 #### Using NPX in a local MCP Server
@@ -205,7 +205,7 @@ See [Self-Managed Remote MCP Server](#self-managed-remote-mcp-server). Use the [
 
 **Prerequisites:**
 - [CircleCI Personal API token](https://app.circleci.com/settings/user/tokens) ([learn more](https://circleci.com/docs/managing-api-tokens/))
-- NPX: [Node.js >= v18](https://nodejs.org/) and [pnpm](https://pnpm.io/installation)
+- NPX: [Node.js](https://nodejs.org/) `^22.23.4 || ^24.22.1 || >=26.12.1` and [pnpm](https://pnpm.io/installation)
 - Docker: [Docker](https://docs.docker.com/get-docker/)
 
 #### Using NPX in a local MCP Server
@@ -277,7 +277,7 @@ For more information: https://modelcontextprotocol.io/quickstart/user
 
 **Prerequisites:**
 - [CircleCI Personal API token](https://app.circleci.com/settings/user/tokens) ([learn more](https://circleci.com/docs/managing-api-tokens/))
-- NPX: [Node.js >= v18](https://nodejs.org/) and [pnpm](https://pnpm.io/installation)
+- NPX: [Node.js](https://nodejs.org/) `^22.23.4 || ^24.22.1 || >=26.12.1` and [pnpm](https://pnpm.io/installation)
 - Docker: [Docker](https://docs.docker.com/get-docker/)
 
 #### Using NPX in a local MCP Server
@@ -303,7 +303,7 @@ See [Self-Managed Remote MCP Server](#self-managed-remote-mcp-server) and the [C
 
 **Prerequisites:**
 - [CircleCI Personal API token](https://app.circleci.com/settings/user/tokens) ([learn more](https://circleci.com/docs/managing-api-tokens/))
-- NPX: [Node.js >= v18](https://nodejs.org/) and [pnpm](https://pnpm.io/installation)
+- NPX: [Node.js](https://nodejs.org/) `^22.23.4 || ^24.22.1 || >=26.12.1` and [pnpm](https://pnpm.io/installation)
 - Docker: [Docker](https://docs.docker.com/get-docker/)
 
 #### Using NPX in a local MCP Server
@@ -370,7 +370,7 @@ For more information: https://docs.windsurf.com/windsurf/mcp
 
 **Prerequisites:**
 - [CircleCI Personal API token](https://app.circleci.com/settings/user/tokens) ([learn more](https://circleci.com/docs/managing-api-tokens/))
-- NPX: [Node.js >= v18](https://nodejs.org/) and [pnpm](https://pnpm.io/installation)
+- NPX: [Node.js](https://nodejs.org/) `^22.23.4 || ^24.22.1 || >=26.12.1` and [pnpm](https://pnpm.io/installation)
 
 MCP client configuration in Amazon Q Developer is stored in JSON format in a file named `mcp.json`. Two levels of configuration are supported:
 
@@ -414,7 +414,7 @@ See [Self-Managed Remote MCP Server](#self-managed-remote-mcp-server). Use a wra
 
 **Prerequisites:**
 - [CircleCI Personal API token](https://app.circleci.com/settings/user/tokens) ([learn more](https://circleci.com/docs/managing-api-tokens/))
-- NPX: [Node.js >= v18](https://nodejs.org/) and [pnpm](https://pnpm.io/installation)
+- NPX: [Node.js](https://nodejs.org/) `^22.23.4 || ^24.22.1 || >=26.12.1` and [pnpm](https://pnpm.io/installation)
 
 #### Using NPX in a local MCP Server
 
@@ -991,7 +991,7 @@ Triggers a rollback for a CircleCI project. The tool interactively guides you th
 <details>
 <summary><strong>System Requirements</strong></summary>
 
-- **Node.js version:** Ensure >= 18.0.0 with `node --version`
+- **Node.js version:** Ensure it satisfies `^22.23.4 || ^24.22.1 || >=26.12.1` with `node --version`
 - **Update Node.js:** Consider latest LTS if experiencing compatibility issues
 - **Package manager:** Verify npm/pnpm is working: `npm --version`
 
