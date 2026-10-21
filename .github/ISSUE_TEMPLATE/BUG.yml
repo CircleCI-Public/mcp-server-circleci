@@ -61,8 +61,8 @@ body:
   - type: input
     attributes:
       label: 'Node.js version'
-      description: 'Which version of Node.js are you using? Note: This project requires Node.js >= v18.0.0'
-      placeholder: '18.0.0'
+      description: 'Which version of Node.js are you using? Note: This project requires Node.js ^22.23.4 || ^24.22.1 || >=26.12.1'
+      placeholder: '22.23.4'
 
   - type: input
     attributes:
