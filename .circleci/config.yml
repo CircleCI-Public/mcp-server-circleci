@@ -33,7 +33,7 @@ commands:
 executors:
   node-executor:
     docker:
-      - image: cimg/node:22.23
+      - image: cimg/node:22.23.4
 
   docker-executor:
     machine:
@@ -88,7 +88,7 @@ jobs:
           name: Upgrade npm for trusted publishing
           command: |
             # pnpm 10 delegates `pnpm publish` to the npm CLI on PATH, and OIDC
-            # trusted publishing requires npm >= 11.5.1; cimg/node:22.23 ships 10.x.
+            # trusted publishing requires npm >= 11.5.1; cimg/node:22.23.4 ships 10.x.
             sudo npm install -g npm@11.18.0
             npm --version
       - run:
